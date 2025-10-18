@@ -1,14 +1,32 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MBTools App</title>
-  <link rel="stylesheet" href="styles/main.css" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MBTools.app</title>
+  <link rel="stylesheet" href="shared/styles/shared.css">
 </head>
 <body>
-  <h1>Bienvenido a MBTools.app</h1>
-  <p>Tu sitio estático desplegado con Cloudflare Pages y GitLab.</p>
-  <script src="scripts/app.js"></script>
+  <header class="container">
+    <img src="assets/logo.svg" alt="MBTools" height="40">
+    <h1>MBTools.app</h1>
+    <p>Mini aplicaciones conectadas entre sí.</p>
+  </header>
+
+  <main class="container grid">
+    <a class="card" href="programs/">
+      <h2>Programs</h2>
+      <p>Gestiona programas y compártelos con otras apps.</p>
+    </a>
+    <!-- aquí irán más tarjetas a medida que creemos nuevas apps -->
+  </main>
+
+  <footer class="container">
+    <small>© <span id="y"></span> MBTools.app</small>
+  </footer>
+
+  <script type="module">
+    document.getElementById('y').textContent = new Date().getFullYear();
+  </script>
 </body>
 </html>

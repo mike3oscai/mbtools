@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Programs · MBTools</title>
+  <link rel="stylesheet" href="../shared/styles/shared.css">
+  <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+  <header class="container">
+    <a href="../" style="color:var(--accent)">← Volver</a>
+    <h1>Programs</h1>
+    <p>Primera mini-app de MBTools.</p>
+  </header>
+
+  <main class="container">
+    <section id="programs-list" class="grid"></section>
+  </main>
+
+  <script type="module">
+    import { renderPrograms } from "./scripts/main.js";
+    renderPrograms();
+  </script>
+</body>
+</html>
