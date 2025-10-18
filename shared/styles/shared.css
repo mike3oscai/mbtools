@@ -24,6 +24,8 @@ html[data-theme="dark"] {
   --card-hover: #5dd0ff20;
 }
 
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
 body {
   background: var(--bg);
   color: var(--fg);
@@ -43,28 +45,12 @@ body {
 }
 
 /* Header */
-header {
-  text-align: center;
-  margin-bottom: 2rem;
-}
-
-header h1 {
-  font-size: 2.2rem;
-  margin-bottom: 0.25rem;
-  font-weight: 600;
-}
-
-header p {
-  color: var(--muted);
-  font-size: 1rem;
-}
+header { text-align: center; margin-bottom: 2rem; }
+header h1 { font-size: 2.2rem; margin-bottom: 0.25rem; font-weight: 600; }
+header p { color: var(--muted); font-size: 1rem; }
 
 /* Grid y tarjetas */
-.grid {
-  display: grid;
-  gap: 1.5rem;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-}
+.grid { display: grid; gap: 1.5rem; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
 
 .card {
   display: block;
@@ -77,24 +63,14 @@ header p {
   transition: all 0.25s ease;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.04);
 }
-
 .card:hover {
   border-color: var(--accent);
   background: var(--card-hover);
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
   transform: translateY(-2px);
 }
-
-.card h2 {
-  font-size: 1.3rem;
-  margin-bottom: 0.5rem;
-  font-weight: 600;
-}
-
-.card p {
-  color: var(--muted);
-  font-size: 0.95rem;
-}
+.card h2 { font-size: 1.3rem; margin-bottom: 0.5rem; font-weight: 600; }
+.card p { color: var(--muted); font-size: 0.95rem; }
 
 /* Footer */
 footer {
@@ -140,7 +116,7 @@ footer {
   left: 4px;
   width: calc(50% - 8px);
   height: calc(100% - 8px);
-  background: #ffffff;
+  background: #ffffff; /* Se puede cambiar a var(--bg) si prefieres */
   border-radius: 999px;
   box-shadow: 0 2px 6px rgba(0,0,0,.10);
   transition: transform .25s ease;
