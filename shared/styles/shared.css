@@ -125,3 +125,56 @@ footer {
   font-size: 0.9rem;
   border-top: 1px solid #eee;
 }
+
+/* ===== Switch Light/Dark ===== */
+.theme-switch {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 9999;
+  cursor: pointer;
+  user-select: none;
+}
+.theme-switch input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.theme-switch .track {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 220px;
+  height: 40px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 999px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.06);
+  padding: 0 12px;
+}
+.theme-switch .thumb {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: calc(50% - 8px);
+  height: calc(100% - 8px);
+  background: #ffffff;
+  border-radius: 999px;
+  box-shadow: 0 2px 6px rgba(0,0,0,.10);
+  transition: transform .25s ease;
+}
+[data-theme="dark"] .theme-switch .thumb { transform: translateX(100%); }
+
+.theme-switch .labels {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  font-size: .9rem;
+  font-weight: 600;
+}
+.theme-switch .labels .light { color: var(--fg); opacity: .9; }
+.theme-switch .labels .dark  { color: var(--muted); }
+[data-theme="dark"] .theme-switch .labels .light { color: var(--muted); }
+[data-theme="dark"] .theme-switch .labels .dark  { color: var(--fg); opacity: .9; }
