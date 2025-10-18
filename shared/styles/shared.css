@@ -3,6 +3,29 @@
 /* Fuente principal */
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap');
 
+/* ===== Modo claro y oscuro ===== */
+:root {
+  /* Modo claro (por defecto) */
+  --bg: #ffffff;
+  --fg: #222222;
+  --muted: #666666;
+  --accent: #0078ff;
+  --card-bg: #f8f9fa;
+  --card-border: #e0e0e0;
+  --card-hover: #0078ff10;
+}
+
+/* Modo oscuro */
+[data-theme="dark"] {
+  --bg: #0e1116;
+  --fg: #e9ebee;
+  --muted: #9aa3ad;
+  --accent: #5dd0ff;
+  --card-bg: #181c22;
+  --card-border: #252a31;
+  --card-hover: #5dd0ff20;
+}
+
 /* Paleta base */
 :root {
   --bg: #ffffff;
