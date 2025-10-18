@@ -43,3 +43,10 @@ export function initThemeToggle() {
     }
   });
 }
+
+document.documentElement.setAttribute("data-theme", current);
+// y al cambiar:
+document.documentElement.setAttribute(
+  "data-theme",
+  document.documentElement.getAttribute("data-theme") === "light" ? "dark" : "light"
+);
