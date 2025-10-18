@@ -4,10 +4,18 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>MBTools.app</title>
+  <meta name="description" content="MBTools.app — Mini aplicaciones conectadas entre sí." />
+  <meta name="color-scheme" content="light dark" />
+  <!-- Opcional: si tienes icono -->
+  <link rel="icon" href="/assets/favicon.ico">
+  <!-- Opcional: pequeños hints para la fuente (Montserrat la traes en shared.css) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="shared/styles/shared.css">
 </head>
 <body>
   <header class="container">
+    <!-- Asegúrate de que /assets/logo.svg existe; si no, quita la línea -->
     <img src="assets/logo.svg" alt="MBTools" height="40">
     <h1>MBTools.app</h1>
     <p>Mini aplicaciones conectadas entre sí.</p>
@@ -26,12 +34,12 @@
   </footer>
 
   <script type="module">
+    // Año del footer
     document.getElementById('y').textContent = new Date().getFullYear();
-  </script>
-  <script type="module">
-  import { initThemeToggle } from "./shared/scripts/theme.js";
-  initThemeToggle();
-</script>
 
+    // Toggle de tema (switch horizontal)
+    import { initThemeToggle } from "./shared/scripts/theme.js";
+    initThemeToggle();
+  </script>
 </body>
 </html>
