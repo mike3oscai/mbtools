@@ -24,6 +24,6 @@ export function initThemeToggle() {
     const newTheme = html.dataset.theme === "light" ? "dark" : "light";
     html.dataset.theme = newTheme;
     localStorage.setItem("theme", newTheme);
-    btn.textContent = newTheme === "dark" ? "☀️" : "🌙";
+    btn.textContent = newTheme === "dark" ? "Light Mode" : "Dark Mode";
   });
 }
