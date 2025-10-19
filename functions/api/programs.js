@@ -14,7 +14,6 @@ export const onRequestGet = async ({ env, request }) => {
     return json(programs);
   }
 
-  // Carga las líneas por cada programa (sencillo y claro)
   for (const p of programs) {
     const linesRes = await env.DB.prepare(
       `SELECT pn, description, rrp, promoRrp, vatOnRrp, rebate, maxQty, totalProgramRebate, lineProgramNumber
@@ -31,7 +30,7 @@ export const onRequestPost = async ({ env, request }) => {
     const payload = await request.json();
     const { header, lines } = payload || {};
     if (!header || !Array.isArray(lines) || lines.length === 0) {
-      return json({ error: "Invalid payload" }, 400);
+      return json({ error: "Invalid payload (header/lines)" }, 400);
     }
 
     const id = payload.id || genId(header.programNumber, header.customer, header.startDay);
@@ -65,8 +64,10 @@ export const onRequestPost = async ({ env, request }) => {
       )
     );
 
+    // Importante: insertar todo en una sola operación
     await env.DB.batch([stmtHeader, ...lineStmts]);
-    return json({ ok: true, id, createdAt });
+
+    return json({ ok: true, id, createdAt, linesInserted: lines.length });
   } catch (e) {
     return json({ error: (e && e.message) || "Failed to save" }, 500);
   }
