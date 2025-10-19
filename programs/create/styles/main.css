@@ -238,3 +238,10 @@ td input[type="number"] {
     width: 95vw;
   }
 }
+/* Align Confirm and Delete buttons to the bottom-right like Save */
+#program-form .form-row:last-child {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
