@@ -305,7 +305,7 @@ export async function renderCreateForm(container) {
   function setPnOptions(list, selected = []) {
     const opts = list.map(p => ({ value: p.PN, label: fmtPN(p) }));
     pnSel.multiple = true;
-    pnSel.size = Math.min(12, Math.max(6, opts.length));
+    pnSel.size = 20;
     setSelectOptions(pnSel, opts, "Select PN(s) or filter by Product/RAM/ROM", selected);
   }
   function filteredProducts() {
