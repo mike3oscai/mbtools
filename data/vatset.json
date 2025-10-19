@@ -1,0 +1,517 @@
+[
+  {
+    "geo": "Benelux",
+    "country": "Belgium",
+    "vat": 21
+  },
+  {
+    "geo": "Benelux",
+    "country": "Netherlands",
+    "vat": 21
+  },
+  {
+    "geo": "Benelux",
+    "country": "Luxembourg",
+    "vat": 17
+  },
+  {
+    "geo": "Central Asia",
+    "country": "Kazakhstan",
+    "vat": 12
+  },
+  {
+    "geo": "DACH",
+    "country": "Germany",
+    "vat": 19
+  },
+  {
+    "geo": "DACH",
+    "country": "Austria",
+    "vat": 20
+  },
+  {
+    "geo": "DACH",
+    "country": "Switzerland",
+    "vat": 7.7
+  },
+  {
+    "geo": "France",
+    "country": "France",
+    "vat": 20
+  },
+  {
+    "geo": "Iberia",
+    "country": "Spain",
+    "vat": 21
+  },
+  {
+    "geo": "Iberia",
+    "country": "Portugal",
+    "vat": 23
+  },
+  {
+    "geo": "Italy",
+    "country": "Italy",
+    "vat": 22
+  },
+  {
+    "geo": "MEA",
+    "country": "Bahrain",
+    "vat": 15.0
+  },
+  {
+    "geo": "MEA",
+    "country": "Cyprus",
+    "vat": 19
+  },
+  {
+    "geo": "MEA",
+    "country": "Egypt",
+    "vat": 14
+  },
+  {
+    "geo": "MEA",
+    "country": "Iran",
+    "vat": 15.0
+  },
+  {
+    "geo": "MEA",
+    "country": "Iraq",
+    "vat": 15.0
+  },
+  {
+    "geo": "MEA",
+    "country": "Israel",
+    "vat": 17
+  },
+  {
+    "geo": "MEA",
+    "country": "Jordan",
+    "vat": 15.0
+  },
+  {
+    "geo": "MEA",
+    "country": "Kuwait",
+    "vat": 15.0
+  },
+  {
+    "geo": "MEA",
+    "country": "Lebanon",
+    "vat": 15.0
+  },
+  {
+    "geo": "MEA",
+    "country": "Oman",
+    "vat": 15.0
+  },
+  {
+    "geo": "MEA",
+    "country": "Qatar",
+    "vat": 0
+  },
+  {
+    "geo": "MEA",
+    "country": "Saudi Arabia",
+    "vat": 15
+  },
+  {
+    "geo": "MEA",
+    "country": "Syria",
+    "vat": 15.0
+  },
+  {
+    "geo": "MEA",
+    "country": "Turkey",
+    "vat": 20
+  },
+  {
+    "geo": "MEA",
+    "country": "United Arab Emirates",
+    "vat": 15.0
+  },
+  {
+    "geo": "MEA",
+    "country": "Yemen",
+    "vat": 15.0
+  },
+  {
+    "geo": "MEA",
+    "country": "Palestine",
+    "vat": 15.0
+  },
+  {
+    "geo": "MEA",
+    "country": "Algeria",
+    "vat": 15.0
+  },
+  {
+    "geo": "MEA",
+    "country": "Angola",
+    "vat": 15.0
+  },
+  {
+    "geo": "MEA",
+    "country": "Benin",
+    "vat": 15.0
+  },
+  {
+    "geo": "MEA",
+    "country": "Botswana",
+    "vat": 15.0
+  },
+  {
+    "geo": "MEA",
+    "country": "Burkina Faso",
+    "vat": 15.0
+  },
+  {
+    "geo": "MEA",
+    "country": "Burundi",
+    "vat": 15.0
+  },
+  {
+    "geo": "MEA",
+    "country": "Cabo Verde",
+    "vat": 15.0
+  },
+  {
+    "geo": "MEA",
+    "country": "Cameroon",
+    "vat": 15.0
+  },
+  {
+    "geo": "MEA",
+    "country": "Central African Republic",
+    "vat": 15.0
+  },
+  {
+    "geo": "MEA",
+    "country": "Chad",
+    "vat": 15.0
+  },
+  {
+    "geo": "MEA",
+    "country": "Comoros",
+    "vat": 15.0
+  },
+  {
+    "geo": "MEA",
+    "country": "Congo",
+    "vat": 15.0
+  },
+  {
+    "geo": "MEA",
+    "country": "Democratic Republic of the Congo",
+    "vat": 15.0
+  },
+  {
+    "geo": "MEA",
+    "country": "Djibouti",
+    "vat": 15.0
+  },
+  {
+    "geo": "MEA",
+    "country": "Equatorial Guinea",
+    "vat": 15.0
+  },
+  {
+    "geo": "MEA",
+    "country": "Eritrea",
+    "vat": 15.0
+  },
+  {
+    "geo": "MEA",
+    "country": "Eswatini",
+    "vat": 15.0
+  },
+  {
+    "geo": "MEA",
+    "country": "Ethiopia",
+    "vat": 15.0
+  },
+  {
+    "geo": "MEA",
+    "country": "Gabon",
+    "vat": 15.0
+  },
+  {
+    "geo": "MEA",
+    "country": "Gambia",
+    "vat": 15.0
+  },
+  {
+    "geo": "MEA",
+    "country": "Ghana",
+    "vat": 15.0
+  },
+  {
+    "geo": "MEA",
+    "country": "Guinea",
+    "vat": 15.0
+  },
+  {
+    "geo": "MEA",
+    "country": "Guinea-Bissau",
+    "vat": 15.0
+  },
+  {
+    "geo": "MEA",
+    "country": "Ivory Coast",
+    "vat": 15.0
+  },
+  {
+    "geo": "MEA",
+    "country": "Kenya",
+    "vat": 16
+  },
+  {
+    "geo": "MEA",
+    "country": "Lesotho",
+    "vat": 15.0
+  },
+  {
+    "geo": "MEA",
+    "country": "Liberia",
+    "vat": 15.0
+  },
+  {
+    "geo": "MEA",
+    "country": "Libya",
+    "vat": 15.0
+  },
+  {
+    "geo": "MEA",
+    "country": "Madagascar",
+    "vat": 15.0
+  },
+  {
+    "geo": "MEA",
+    "country": "Malawi",
+    "vat": 15.0
+  },
+  {
+    "geo": "MEA",
+    "country": "Mali",
+    "vat": 15.0
+  },
+  {
+    "geo": "MEA",
+    "country": "Mauritania",
+    "vat": 15.0
+  },
+  {
+    "geo": "MEA",
+    "country": "Mauritius",
+    "vat": 15.0
+  },
+  {
+    "geo": "MEA",
+    "country": "Morocco",
+    "vat": 20
+  },
+  {
+    "geo": "MEA",
+    "country": "Mozambique",
+    "vat": 15.0
+  },
+  {
+    "geo": "MEA",
+    "country": "Namibia",
+    "vat": 15.0
+  },
+  {
+    "geo": "MEA",
+    "country": "Niger",
+    "vat": 15.0
+  },
+  {
+    "geo": "MEA",
+    "country": "Nigeria",
+    "vat": 7.5
+  },
+  {
+    "geo": "MEA",
+    "country": "Rwanda",
+    "vat": 15.0
+  },
+  {
+    "geo": "MEA",
+    "country": "Sao Tome and Principe",
+    "vat": 15.0
+  },
+  {
+    "geo": "MEA",
+    "country": "Senegal",
+    "vat": 15.0
+  },
+  {
+    "geo": "MEA",
+    "country": "Seychelles",
+    "vat": 15.0
+  },
+  {
+    "geo": "MEA",
+    "country": "Sierra Leone",
+    "vat": 15.0
+  },
+  {
+    "geo": "MEA",
+    "country": "Somalia",
+    "vat": 15.0
+  },
+  {
+    "geo": "MEA",
+    "country": "South Africa",
+    "vat": 15
+  },
+  {
+    "geo": "MEA",
+    "country": "South Sudan",
+    "vat": 15.0
+  },
+  {
+    "geo": "MEA",
+    "country": "Sudan",
+    "vat": 15.0
+  },
+  {
+    "geo": "MEA",
+    "country": "Tanzania",
+    "vat": 15.0
+  },
+  {
+    "geo": "MEA",
+    "country": "Togo",
+    "vat": 15.0
+  },
+  {
+    "geo": "MEA",
+    "country": "Tunisia",
+    "vat": 19
+  },
+  {
+    "geo": "MEA",
+    "country": "Uganda",
+    "vat": 15.0
+  },
+  {
+    "geo": "MEA",
+    "country": "Zambia",
+    "vat": 15.0
+  },
+  {
+    "geo": "MEA",
+    "country": "Zimbabwe",
+    "vat": 15.0
+  },
+  {
+    "geo": "Nordics",
+    "country": "Sweden",
+    "vat": 25
+  },
+  {
+    "geo": "Nordics",
+    "country": "Norway",
+    "vat": 25
+  },
+  {
+    "geo": "Nordics",
+    "country": "Denmark",
+    "vat": 25
+  },
+  {
+    "geo": "Nordics",
+    "country": "Iceland",
+    "vat": 24
+  },
+  {
+    "geo": "Nordics",
+    "country": "Finland",
+    "vat": 24
+  },
+  {
+    "geo": "Poland",
+    "country": "Poland",
+    "vat": 23
+  },
+  {
+    "geo": "SEE",
+    "country": "Ukraine",
+    "vat": 20.0
+  },
+  {
+    "geo": "SEE",
+    "country": "Moldova",
+    "vat": 20.0
+  },
+  {
+    "geo": "SEE",
+    "country": "Romania",
+    "vat": 19
+  },
+  {
+    "geo": "SEE",
+    "country": "Bulgaria",
+    "vat": 20
+  },
+  {
+    "geo": "SEE",
+    "country": "Greece",
+    "vat": 24
+  },
+  {
+    "geo": "SEE",
+    "country": "Slovenia",
+    "vat": 22
+  },
+  {
+    "geo": "SEE",
+    "country": "Croatia",
+    "vat": 25
+  },
+  {
+    "geo": "SEE",
+    "country": "Bosnia and Herzegovina",
+    "vat": 17
+  },
+  {
+    "geo": "SEE",
+    "country": "Serbia",
+    "vat": 20
+  },
+  {
+    "geo": "SEE",
+    "country": "Montenegro",
+    "vat": 21
+  },
+  {
+    "geo": "SEE",
+    "country": "Kosovo",
+    "vat": 18
+  },
+  {
+    "geo": "SEE",
+    "country": "North Macedonia",
+    "vat": 18
+  },
+  {
+    "geo": "SEE",
+    "country": "Albania",
+    "vat": 20
+  },
+  {
+    "geo": "SEE",
+    "country": "Hungary",
+    "vat": 27
+  },
+  {
+    "geo": "UKI",
+    "country": "United Kingdom",
+    "vat": 20
+  },
+  {
+    "geo": "UKI",
+    "country": "Ireland",
+    "vat": 23
+  }
+]

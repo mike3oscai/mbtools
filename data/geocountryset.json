@@ -1,0 +1,160 @@
+[
+  {
+    "geo": "Benelux",
+    "countries": [
+      "Belgium",
+      "Netherlands",
+      "Luxembourg"
+    ]
+  },
+  {
+    "geo": "Central Asia",
+    "countries": [
+      "Kazakhstan"
+    ]
+  },
+  {
+    "geo": "DACH",
+    "countries": [
+      "Germany",
+      "Austria",
+      "Switzerland"
+    ]
+  },
+  {
+    "geo": "France",
+    "countries": [
+      "France"
+    ]
+  },
+  {
+    "geo": "Iberia",
+    "countries": [
+      "Spain",
+      "Portugal"
+    ]
+  },
+  {
+    "geo": "Italy",
+    "countries": [
+      "Italy"
+    ]
+  },
+  {
+    "geo": "MEA",
+    "countries": [
+      "Bahrain",
+      "Cyprus",
+      "Egypt",
+      "Iran",
+      "Iraq",
+      "Israel",
+      "Jordan",
+      "Kuwait",
+      "Lebanon",
+      "Oman",
+      "Qatar",
+      "Saudi Arabia",
+      "Syria",
+      "Turkey",
+      "United Arab Emirates",
+      "Yemen",
+      "Palestine",
+      "Algeria",
+      "Angola",
+      "Benin",
+      "Botswana",
+      "Burkina Faso",
+      "Burundi",
+      "Cabo Verde",
+      "Cameroon",
+      "Central African Republic",
+      "Chad",
+      "Comoros",
+      "Congo",
+      "Democratic Republic of the Congo",
+      "Djibouti",
+      "Equatorial Guinea",
+      "Eritrea",
+      "Eswatini",
+      "Ethiopia",
+      "Gabon",
+      "Gambia",
+      "Ghana",
+      "Guinea",
+      "Guinea-Bissau",
+      "Ivory Coast",
+      "Kenya",
+      "Lesotho",
+      "Liberia",
+      "Libya",
+      "Madagascar",
+      "Malawi",
+      "Mali",
+      "Mauritania",
+      "Mauritius",
+      "Morocco",
+      "Mozambique",
+      "Namibia",
+      "Niger",
+      "Nigeria",
+      "Rwanda",
+      "Sao Tome and Principe",
+      "Senegal",
+      "Seychelles",
+      "Sierra Leone",
+      "Somalia",
+      "South Africa",
+      "South Sudan",
+      "Sudan",
+      "Tanzania",
+      "Togo",
+      "Tunisia",
+      "Uganda",
+      "Zambia",
+      "Zimbabwe"
+    ]
+  },
+  {
+    "geo": "Nordics",
+    "countries": [
+      "Sweden",
+      "Norway",
+      "Denmark",
+      "Iceland",
+      "Finland"
+    ]
+  },
+  {
+    "geo": "Poland",
+    "countries": [
+      "Poland"
+    ]
+  },
+  {
+    "geo": "SEE",
+    "countries": [
+      "Ukraine",
+      "Moldova",
+      "Romania",
+      "Bulgaria",
+      "Greece",
+      "Slovenia",
+      "Croatia",
+      "Bosnia and Herzegovina",
+      "Serbia",
+      "Montenegro",
+      "Kosovo",
+      "North Macedonia",
+      "Albania",
+      "Hungary"
+    ]
+  },
+  {
+    "geo": "UKI",
+    "countries": [
+      "United Kingdom",
+      "Ireland"
+    ]
+  }
+]
