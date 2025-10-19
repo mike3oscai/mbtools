@@ -4,7 +4,7 @@
 
 .form-card h2 {
   margin-bottom: 1rem;
-  font-weight: 400;
+  font-weight: 500;
 }
 
 /* Form layout: label left, input right */
@@ -22,7 +22,7 @@
 .form-label {
   align-self: center;
   color: var(--muted);
-  font-weight: 400;
+  font-weight: 500;
 }
 
 .form-control {
@@ -61,7 +61,7 @@ input[type="number"] { text-align: right; }
   color: var(--fg);
   border-radius: 10px;
   padding: .6rem 1rem;
-  font-weight: 400;
+  font-weight: 500;
   cursor: not-allowed;
 }
 
