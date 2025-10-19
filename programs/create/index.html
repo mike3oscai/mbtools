@@ -5,17 +5,41 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Create Program · MBTools</title>
   <link rel="stylesheet" href="../../shared/styles/shared.css">
+  <link rel="stylesheet" href="styles/main.css">
 </head>
 <body>
   <header class="container">
     <a href="../" class="back-link">← Back</a>
     <h1>Create a Program</h1>
-    <p>(Placeholder page)</p>
+    <p>Fill in the required fields to create a new program.</p>
   </header>
 
+  <main class="container">
+    <section class="card">
+      <h2 style="margin-bottom: .75rem;">Program header</h2>
+
+      <!-- horizontal scroll container to keep columns readable -->
+      <div class="scroll">
+        <div id="program-header-grid" class="grid-header" aria-label="Program grid header"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="container">
+    <small>© <span id="y"></span> MBTools.app</small>
+  </footer>
+
   <script type="module">
+    // Footer year
+    document.getElementById('y').textContent = new Date().getFullYear();
+
+    // Theme switch
     import { initThemeToggle } from "../../shared/scripts/theme.js";
     initThemeToggle();
+
+    // Render header grid
+    import { renderHeaderGrid } from "./scripts/main.js";
+    renderHeaderGrid();
   </script>
 </body>
 </html>

@@ -1,0 +1,34 @@
+/* Page-specific styles for Create a Program (English comments) */
+
+.back-link { color: var(--accent); text-decoration: none; }
+
+.scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: .5rem;
+}
+
+/* 16 columns grid for the header row */
+.grid-header {
+  display: grid;
+  grid-template-columns: repeat(16, minmax(160px, 1fr));
+  gap: 8px;
+  min-width: 2560px; /* keeps columns readable; scrolls on small screens */
+  padding: 8px;
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  background: var(--bg);
+}
+
+/* Header cell look */
+.grid-header .cell {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  padding: .6rem .7rem;
+  font-weight: 600;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* Optional: when we add rows later, reuse similar grid with lighter cells */
