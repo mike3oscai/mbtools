@@ -98,3 +98,27 @@ td input[type="number"] {
   max-width: 140px;
   text-align: center;
 }
+/* --- Hacer ancha solo la tarjeta que contiene la tabla --- */
+.card:has(#productsTable) {
+  /* 90% de la ventana, pero nunca más de 1400px */
+  width: min(90vw, 1400px);
+  margin-inline: auto;          /* centrar */
+}
+
+/* Asegurar scroll horizontal interno si hiciera falta */
+.card:has(#productsTable) .scroll {
+  overflow-x: auto;
+}
+
+/* Un poco menos de padding para que la tabla respire */
+.card:has(#productsTable) {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+/* En pantallas pequeñas, ocupar casi todo el ancho */
+@media (max-width: 1024px) {
+  .card:has(#productsTable) {
+    width: 95vw;
+  }
+}
