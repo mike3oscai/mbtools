@@ -234,3 +234,34 @@ input[type="number"]{ text-align: right; }
     grid-template-columns: 160px minmax(0,1fr);
   }
 }
+/* --- Override: neutralizar la grid antigua del <form> --- */
+#program-form{
+  display: block !important;              /* deja de ser grid (220px|1fr) */
+  grid-template-columns: unset !important;
+  gap: 0 !important;
+}
+
+/* Asegurar que la malla de 4 columnas manda y ocupa todo el ancho */
+#program-form .header-grid{
+  display: grid !important;
+  grid-template-columns: 160px minmax(0,1fr) 160px minmax(0,1fr) !important;
+  gap: 14px 18px;
+  align-items: center;
+  width: 100%;
+}
+
+#program-form .actions-row{
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-end;
+  gap: .75rem;
+  margin-top: .25rem;
+}
+
+/* Controles a 100% sin empujar columnas */
+#program-form select.form-control,
+#program-form input.form-control{
+  width: 100%;
+  min-width: 0;
+  height: 44px;
+}
