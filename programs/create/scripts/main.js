@@ -1,7 +1,7 @@
 // Vertical card form renderer for "Create a Program".
 // Pure modular code – no side effects on import.
 
-import { loadCustomerSet } from "/shared/scripts/data.js";
+import { loadCustomerSet, loadProductSet } from "/shared/scripts/data.js";
 
 // --- Form schema ------------------------------------------------------------
 const SCHEMA = [
@@ -47,23 +47,22 @@ const SCHEMA = [
       { value: "Telco",  label: "Telco" }
     ]
   },
-  // Customer becomes dynamic and stays disabled until we have results
-  {
-    label: "Customer",
-    key: "customer",
-    type: "select",
-    placeholder: "Select a customer (choose Geo first)",
-    options: [],
-    disabled: true
-  },
+  // Customer is dynamic; filtered by Geo (and optionally Vertical)
+  { label: "Customer", key: "customer", type: "select", placeholder: "Select a customer (choose Geo first)", options: [], disabled: true },
 
+  // --- Product & SKU selection (dual path) ---------------------------------
+  // PN select (shows PN — Description). Syncs with Product/RAM/ROM.
+  { label: "PN",      key: "pn",      type: "select", placeholder: "Select PN or filter by Product/RAM/ROM", options: [], disabled: false },
+  // Product becomes a dynamic select (program in productset)
+  { label: "Product", key: "product", type: "select", placeholder: "Select a product", options: [], disabled: false },
+  // RAM/ROM are selects but their options narrow based on Product/PN/ROM/RAM combination
+  { label: "RAM",     key: "ram",     type: "select", placeholder: "Choose RAM", options: [], disabled: false },
+  { label: "ROM",     key: "rom",     type: "select", placeholder: "Choose ROM", options: [], disabled: false },
+
+  // --- Rest of the form -----------------------------------------------------
   { label: "Activity",  key: "activity",  type: "text",   placeholder: "Describe the activity" },
   { label: "Start Day", key: "startDay",  type: "date" },
   { label: "End Day",   key: "endDay",    type: "date" },
-  { label: "PN",        key: "pn",        type: "text",   placeholder: "Part Number" },
-  { label: "Product",   key: "product",   type: "text",   placeholder: "Model / SKU" },
-  { label: "RAM",       key: "ram",       type: "select", placeholder: "Choose RAM", options: ["2 GB","3 GB","4 GB","6 GB","8 GB","12 GB"] },
-  { label: "ROM",       key: "rom",       type: "select", placeholder: "Choose ROM", options: ["32 GB","64 GB","128 GB","256 GB","512 GB"] },
   { label: "RRP",       key: "rrp",       type: "number", placeholder: "0.00" },
   { label: "Promo RRP", key: "promoRrp",  type: "number", placeholder: "0.00" },
   { label: "Calculated on RRP - VAT (Yes/No)", key: "calcOnRrpVat", type: "select", placeholder: "Select one", options: ["Yes","No"] },
@@ -80,7 +79,7 @@ function h(tag, props = {}, ...children) {
   return el;
 }
 
-// --- Control factory --------------------------------------------------------
+// --- Control helpers --------------------------------------------------------
 function setSelectOptions(sel, options = [], placeholder = "Select...") {
   sel.replaceChildren();
   sel.append(h("option", { value: "", disabled: true, selected: true }, placeholder));
@@ -121,15 +120,23 @@ export async function renderCreateForm(container) {
     })
   );
 
-  // Refs for dynamic behavior
+  // --- References for dynamic behavior -------------------------------------
   const geoSel      = container.querySelector('#fld-geo');
   const verticalSel = container.querySelector('#fld-vertical');
   const custSel     = container.querySelector('#fld-customer');
 
-  // Load customers once
-  const customers = await loadCustomerSet();
+  const pnSel       = container.querySelector('#fld-pn');
+  const productSel  = container.querySelector('#fld-product');
+  const ramSel      = container.querySelector('#fld-ram');
+  const romSel      = container.querySelector('#fld-rom');
 
-  // Build the filter and update the Customer select
+  // --- Load data ------------------------------------------------------------
+  const [customers, products] = await Promise.all([
+    loadCustomerSet(),
+    loadProductSet()
+  ]);
+
+  // ---- Customer filtering (Geo + optional Vertical) -----------------------
   const refreshCustomers = () => {
     const g  = geoSel.value;
     const v  = verticalSel.value;
@@ -140,13 +147,10 @@ export async function renderCreateForm(container) {
       return;
     }
 
-    // Filter by Geo and (optionally) Vertical
     let list = customers.filter(c => c.geo === g);
     if (v) list = list.filter(c => c.vertical === v);
 
-    // Prepare options: value=CRM number, label=customer name (UPPERCASE already in dataset)
     const opts = list.map(c => ({ value: c.crmNumber, label: c.customerName }));
-
     custSel.disabled = opts.length === 0;
     setSelectOptions(
       custSel,
@@ -157,10 +161,107 @@ export async function renderCreateForm(container) {
     );
   };
 
-  // Wire up events
   geoSel.addEventListener('change', refreshCustomers);
   verticalSel.addEventListener('change', refreshCustomers);
-
-  // Initial state
   refreshCustomers();
+
+  // ---- Product/PN dual selection ------------------------------------------
+  // Helpers to build unique sets filtered
+  const unique = (arr) => [...new Set(arr)];
+  const fmtPN = (p) => `${p.PN} — ${p.Description}`; // shows PN and Description
+
+  // Populate base options
+  const initProductOptions = () => {
+    const prods = unique(products.map(p => p.Program)).map(v => ({ value: v, label: v }));
+    setSelectOptions(productSel, prods, "Select a product");
+  };
+
+  const initPNOptions = (list = products) => {
+    const opts = list.map(p => ({ value: p.PN, label: fmtPN(p) }));
+    setSelectOptions(pnSel, opts, "Select PN or filter by Product/RAM/ROM");
+  };
+
+  const setRamOptions = (list) => {
+    const rams = unique(list.map(p => p.RAM)).map(v => ({ value: v, label: v }));
+    setSelectOptions(ramSel, rams, "Choose RAM");
+  };
+
+  const setRomOptions = (list) => {
+    const roms = unique(list.map(p => p.ROM)).map(v => ({ value: v, label: v }));
+    setSelectOptions(romSel, roms, "Choose ROM");
+  };
+
+  // Filter products based on current selections
+  const filteredProducts = () => {
+    const selProduct = productSel.value;
+    const selRam = ramSel.value;
+    const selRom = romSel.value;
+
+    return products.filter(p =>
+      (!selProduct || p.Program === selProduct) &&
+      (!selRam || p.RAM === selRam) &&
+      (!selRom || p.ROM === selRom)
+    );
+  };
+
+  // When the user changes PN: sync Product/RAM/ROM to match that SKU
+  const onPNChange = () => {
+    const pn = pnSel.value;
+    if (!pn) return;
+
+    const p = products.find(x => x.PN === pn);
+    if (!p) return;
+
+    // First update dependent selects with filtered options containing this product
+    // so the values are guaranteed to exist.
+    const listByProduct = products.filter(x => x.Program === p.Program);
+    setRamOptions(listByProduct);
+    setRomOptions(listByProduct);
+
+    // Set values
+    productSel.value = p.Program;
+    ramSel.value = p.RAM;
+    romSel.value = p.ROM;
+
+    // Finally, narrow PN to the coherent subset (optional, but keeps list short)
+    const list = filteredProducts();
+    initPNOptions(list);
+    pnSel.value = pn; // keep the current PN selected
+  };
+
+  // When the user changes Product/RAM/ROM: update the PN list and also narrow RAM/ROM
+  const onPRRChange = () => {
+    const list = filteredProducts();
+
+    // Narrow PN list to the current filter
+    initPNOptions(list);
+
+    // Narrow RAM/ROM options to what exists for the selected product
+    const baseForOptions = productSel.value
+      ? products.filter(p => p.Program === productSel.value)
+      : products;
+
+    setRamOptions(baseForOptions);
+    setRomOptions(baseForOptions);
+
+    // If current RAM/ROM are now invalid, clear them
+    if (ramSel.value && !baseForOptions.some(p => p.RAM === ramSel.value)) ramSel.value = "";
+    if (romSel.value && !baseForOptions.some(p => p.ROM === romSel.value)) romSel.value = "";
+
+    // If exactly one PN matches, auto-select it; otherwise leave placeholder
+    if (list.length === 1) pnSel.value = list[0].PN;
+    else pnSel.value = "";
+  };
+
+  // Initial fill
+  initProductOptions();
+  setRamOptions(products);
+  setRomOptions(products);
+  initPNOptions(products);
+
+  // Wire events
+  pnSel.addEventListener('change', onPNChange);
+  productSel.addEventListener('change', onPRRChange);
+  ramSel.addEventListener('change', onPRRChange);
+  romSel.addEventListener('change', onPRRChange);
 }

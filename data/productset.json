@@ -1,0 +1,182 @@
+[
+  {
+    "PN": "PN763E",
+    "EAN": "108162427463",
+    "Program": "Apple",
+    "Description": "Apple 12GB 512GB Green",
+    "RAM": "12GB",
+    "ROM": "512GB",
+    "Color": "Green"
+  },
+  {
+    "PN": "PNG0HT",
+    "EAN": "742143328610",
+    "Program": "Banana",
+    "Description": "Banana 12GB 128GB Silver",
+    "RAM": "12GB",
+    "ROM": "128GB",
+    "Color": "Silver"
+  },
+  {
+    "PN": "PNPX5B",
+    "EAN": "110165196220",
+    "Program": "Cherry",
+    "Description": "Cherry 16GB 128GB White",
+    "RAM": "16GB",
+    "ROM": "128GB",
+    "Color": "White"
+  },
+  {
+    "PN": "PN2DDH",
+    "EAN": "074895716990",
+    "Program": "Mango",
+    "Description": "Mango 16GB 512GB Silver",
+    "RAM": "16GB",
+    "ROM": "512GB",
+    "Color": "Silver"
+  },
+  {
+    "PN": "PNP4MG",
+    "EAN": "385193337055",
+    "Program": "Pineapple",
+    "Description": "Pineapple 4GB 512GB Gold",
+    "RAM": "4GB",
+    "ROM": "512GB",
+    "Color": "Gold"
+  },
+  {
+    "PN": "PN93TF",
+    "EAN": "001660417763",
+    "Program": "Orange",
+    "Description": "Orange 12GB 256GB Black",
+    "RAM": "12GB",
+    "ROM": "256GB",
+    "Color": "Black"
+  },
+  {
+    "PN": "PNV38G",
+    "EAN": "662212460428",
+    "Program": "Strawberry",
+    "Description": "Strawberry 4GB 128GB Orange",
+    "RAM": "4GB",
+    "ROM": "128GB",
+    "Color": "Orange"
+  },
+  {
+    "PN": "PNXU7B",
+    "EAN": "004594446073",
+    "Program": "Grape",
+    "Description": "Grape 12GB 128GB White",
+    "RAM": "12GB",
+    "ROM": "128GB",
+    "Color": "White"
+  },
+  {
+    "PN": "PN6IWK",
+    "EAN": "815460316171",
+    "Program": "Peach",
+    "Description": "Peach 16GB 128GB Blue",
+    "RAM": "16GB",
+    "ROM": "128GB",
+    "Color": "Blue"
+  },
+  {
+    "PN": "PNPKA5",
+    "EAN": "531264650775",
+    "Program": "Pear",
+    "Description": "Pear 12GB 1TB Green",
+    "RAM": "12GB",
+    "ROM": "1TB",
+    "Color": "Green"
+  },
+  {
+    "PN": "PNCTGG",
+    "EAN": "513162029032",
+    "Program": "Watermelon",
+    "Description": "Watermelon 8GB 1TB Purple",
+    "RAM": "8GB",
+    "ROM": "1TB",
+    "Color": "Purple"
+  },
+  {
+    "PN": "PNML83",
+    "EAN": "566951181627",
+    "Program": "Blueberry",
+    "Description": "Blueberry 8GB 1TB Blue",
+    "RAM": "8GB",
+    "ROM": "1TB",
+    "Color": "Blue"
+  },
+  {
+    "PN": "PN8ZME",
+    "EAN": "745448525029",
+    "Program": "Kiwi",
+    "Description": "Kiwi 8GB 256GB Black",
+    "RAM": "8GB",
+    "ROM": "256GB",
+    "Color": "Black"
+  },
+  {
+    "PN": "PNZ6RK",
+    "EAN": "528701990324",
+    "Program": "Papaya",
+    "Description": "Papaya 12GB 256GB Yellow",
+    "RAM": "12GB",
+    "ROM": "256GB",
+    "Color": "Yellow"
+  },
+  {
+    "PN": "PNJJAA",
+    "EAN": "552520784136",
+    "Program": "Plum",
+    "Description": "Plum 8GB 128GB Blue",
+    "RAM": "8GB",
+    "ROM": "128GB",
+    "Color": "Blue"
+  },
+  {
+    "PN": "PNVUPR",
+    "EAN": "219976214011",
+    "Program": "Apricot",
+    "Description": "Apricot 16GB 1TB Red",
+    "RAM": "16GB",
+    "ROM": "1TB",
+    "Color": "Red"
+  },
+  {
+    "PN": "PNU8YF",
+    "EAN": "168027356564",
+    "Program": "Coconut",
+    "Description": "Coconut 8GB 256GB Red",
+    "RAM": "8GB",
+    "ROM": "256GB",
+    "Color": "Red"
+  },
+  {
+    "PN": "PNJ83S",
+    "EAN": "109463235284",
+    "Program": "Pomegranate",
+    "Description": "Pomegranate 8GB 128GB Blue",
+    "RAM": "8GB",
+    "ROM": "128GB",
+    "Color": "Blue"
+  },
+  {
+    "PN": "PN4JJQ",
+    "EAN": "161325915797",
+    "Program": "Guava",
+    "Description": "Guava 8GB 64GB Red",
+    "RAM": "8GB",
+    "ROM": "64GB",
+    "Color": "Red"
+  },
+  {
+    "PN": "PNIEJD",
+    "EAN": "046416062554",
+    "Program": "Lemon",
+    "Description": "Lemon 12GB 128GB Gold",
+    "RAM": "12GB",
+    "ROM": "128GB",
+    "Color": "Gold"
+  }
+]
