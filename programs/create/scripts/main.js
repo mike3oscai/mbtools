@@ -349,7 +349,7 @@ geoSel.addEventListener("change", async () => {
       return;
     }
     // Lock header fields
-    [programTypeSel, geoSel, verticalSel, customerSel, startDayInp, endDayInp].forEach(el => el.disabled = true);
+    [programTypeSel, geoSel, countrySel, verticalSel, customerSel, startDayInp, endDayInp].forEach(el => el.disabled = true);
 
     // Autogenerate Program Number if empty
     if (!programNumInp.value.trim()) {
@@ -363,7 +363,7 @@ geoSel.addEventListener("change", async () => {
 
   btnDelete.addEventListener("click", () => {
     // Unlock and clear header
-    [programTypeSel, geoSel, verticalSel, customerSel, startDayInp, endDayInp].forEach(el => {
+    [programTypeSel, geoSel, countrySel, verticalSel, customerSel, startDayInp, endDayInp].forEach(el => {
       el.disabled = false;
       el.value = "";
     });
