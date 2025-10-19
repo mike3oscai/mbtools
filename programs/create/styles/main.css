@@ -1,217 +1,125 @@
-/* Page-specific styles for Create a Program (vertical card form) */
+/* ===== Create Program (vista) =========================================== */
 
+/* Ancho máximo deseado para la tabla amplia (puedes subir a 1760px) */
+:root { --page-max: 1600px; }
+
+/* Enlaces */
 .back-link { color: var(--accent); text-decoration: none; }
 
-.form-card h2 {
-  margin-bottom: 1rem;
-  font-weight: 500;
-}
-
-/* Form layout: label left, input right */
+/* ---------- Formulario (card superior) ---------- */
 #program-form {
   display: grid;
-  grid-template-columns: 1fr 2fr;
-  gap: 12px 14px;
-}
-
-/* Each row uses the two-column grid */
-.form-row {
-  display: contents; /* let the label + control occupy the two grid columns */
-}
-
-.form-label {
-  align-self: center;
-  color: var(--muted);
-  font-weight: 500;
-}
-
-.form-control {
-  width: 100%;
-  padding: .65rem .75rem;
-  border: 1px solid var(--card-border);
-  border-radius: 10px;
-  background: var(--bg);
-  color: var(--fg);
-  font: inherit;
-  outline: none;
-  transition: border-color .15s ease, box-shadow .15s ease;
-}
-
-.form-control::placeholder { color: var(--muted); opacity: .7; }
-
-.form-control:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px var(--card-hover);
-}
-
-/* Numeric controls look aligned */
-input[type="number"] { text-align: right; }
-
-/* Actions */
-.form-actions {
-  margin-top: 1rem;
-  display: flex;
-  justify-content: flex-end;
-  gap: .5rem;
-}
-
-.form-actions button {
-  border: 1px solid var(--card-border);
-  background: var(--bg);
-  color: var(--fg);
-  border-radius: 10px;
-  padding: .6rem 1rem;
-  font-weight: 500;
-  cursor: not-allowed;
-}
-
-/* Responsive: stack on small screens */
-@media (max-width: 720px) {
-  #program-form {
-    grid-template-columns: 1fr;
-  }
-  .form-label { margin-top: .5rem; }
-}
-/* --- FE badge (appears when VAT = No) --- */
-.fe-badge {
-  display: inline-block;          /* el JS ya la oculta/muestra */
-  padding: 0.2rem 0.55rem;
-  border-radius: 9999px;          /* pill */
-  font-size: 0.85rem;
-  font-weight: 600;
-  line-height: 1;
-  background: #eef6ff;            /* suave azul */
-  color: #0b5cab;                 /* azul texto */
-  border: 1px solid #dbe7ff;
-  white-space: nowrap;
-}
-
-/* Alineación agradable del contenido en la celda de Rebate */
-td[data-col="rebate"] > div {
-  display: inline-flex;
-  align-items: center;
-  gap: .5rem;
-}
-
-/* Input numéricos más compactos dentro de la tabla */
-td input[type="number"] {
-  max-width: 140px;
-  text-align: center;
-}
-/* --- Hacer ancha solo la tarjeta que contiene la tabla --- */
-.card:has(#productsTable) {
-  /* 90% de la ventana, pero nunca más de 1400px */
-  width: min(90vw, 1400px);
-  margin-inline: auto;          /* centrar */
-}
-
-/* Asegurar scroll horizontal interno si hiciera falta */
-.card:has(#productsTable) .scroll {
-  overflow-x: auto;
-}
-
-/* Un poco menos de padding para que la tabla respire */
-.card:has(#productsTable) {
-  padding-left: 1rem;
-  padding-right: 1rem;
-}
-
-/* En pantallas pequeñas, ocupar casi todo el ancho */
-@media (max-width: 1024px) {
-  .card:has(#productsTable) {
-    width: 95vw;
-  }
-}
-/* ===== Layout de la tarjeta de cabecera y productos ===== */
-
-/* Grid de cada fila de formulario (label + control) */
-.form-row {
-  display: grid;
-  grid-template-columns: 220px 1fr;
+  grid-template-columns: 220px 1fr; /* label | control */
   gap: 12px 16px;
-  align-items: center;
-  margin-bottom: .75rem;
 }
 
-.form-label {
-  color: var(--muted);
-  font-weight: 600;
-  padding-top: .25rem;
-}
+.form-row { display: contents; }
+.form-label { align-self: center; color: var(--muted); font-weight: 600; }
 
-/* Tamaño y estética uniforme de inputs/selects dentro de las cards */
 .form-control {
   width: 100%;
   height: 40px;
   padding: 0 .8rem;
   border: 1px solid var(--card-border);
   border-radius: 10px;
-  background: #fff;
+  background: var(--bg);
   color: var(--fg);
 }
+.form-control:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--card-hover);
+}
+input[type="number"]{ text-align: right; }
 
-/* Card general (ya tienes estilos, esto solo afina espaciados) */
-.card {
-  margin: 0 auto 1rem auto;
+@media (max-width: 900px){
+  #program-form { grid-template-columns: 1fr; }
 }
 
-/* La tarjeta "Products" mantiene un ancho cómodo y centrado */
-.card:has(#fld-pn) {
-  max-width: 1100px;            /* igual que tu .container */
-  width: 100%;
+/* Multiselect de PN cómodo */
+#fld-pn.form-control[multiple]{
+  height: auto;
+  min-height: 360px;
+  padding: .5rem;
+  line-height: 1.2;
 }
 
-/* ===== Hacer ancha la tarjeta de la TABLA ===== */
-/* Truco: centramos independientemente del padding del contenedor padre */
-.card:has(#productsTable) {
-  position: relative;
-  left: 50%;
-  transform: translateX(-50%);
-  width: min(90vw, 1400px);     /* ~90% del viewport, con tope */
-  margin: 1rem 0 2rem 0;        /* que no herede el auto del resto */
-  padding-left: 1rem;
-  padding-right: 1rem;
+/* ---------- Cards base ---------- */
+.card { position: relative; z-index: 0; margin: 24px auto; }
+
+/* Filtro/selección de productos (altura y ancho razonables) */
+#productsSection{
+  max-width: 1000px;
+  width: min(1000px, 94vw);
+  margin-inline: auto;
 }
 
-/* Si la tabla necesita scroll horizontal */
-.card:has(#productsTable) .scroll {
-  overflow-x: auto;
+/* ---------- Selected products (tabla ancha sin scroll) ---------- */
+#selectedProductsCard{
+  /* se centra respecto al viewport y no depende del ancho del .container */
+  width: min(var(--page-max), 98vw);
+  max-width: var(--page-max);
+  margin-inline: auto;
+  overflow: visible;
+  padding-bottom: 16px;
+  z-index: 3;
 }
 
-/* ===== Tabla: alineación y respiración ===== */
-#productsTable {
+/* El wrapper de la tabla NO genera scroll horizontal */
+#selectedProductsCard .scroll{
+  overflow-x: hidden;
+  overflow-y: visible;
+}
+
+/* Tabla fluida y predecible */
+#productsTable{
   width: 100%;
   border-collapse: collapse;
+  table-layout: fixed;      /* reparte ancho entre columnas */
 }
 
 #productsTable th,
-#productsTable td {
-  padding: .6rem .5rem;
+#productsTable td{
+  padding: .65rem .55rem;
   border-top: 1px solid var(--card-border);
   text-align: center;
-  white-space: nowrap;
+  white-space: normal;      /* permite saltos de línea */
+  word-break: break-word;   /* rompe textos largos si hace falta */
 }
 
-#productsTable thead th {
+#productsTable thead th{
   border-top: 0;
   border-bottom: 1px solid var(--card-border);
   font-weight: 600;
 }
 
-#productsTable td[data-col="desc"] {
-  white-space: normal;          /* la descripción puede ocupar 2 líneas */
+#productsTable td[data-col="desc"]{
   min-width: 200px;
   text-align: left;
 }
 
-/* Inputs numéricos en tabla: tamaño razonable y centrados */
-#productsTable input[type="number"] {
-  max-width: 130px;
+/* Inputs/selects no fuerzan ancho mínimo (clave para no scrollear) */
+#productsTable input.form-control,
+#productsTable select.form-control{
+  min-width: 0;
+  width: 100%;
+  max-width: 140px;
   text-align: center;
 }
 
-/* Pill del FE, ya definida; aseguramos que no estire la celda */
-.fe-badge {
+/* Reparto de columnas pensado para ~1600px (ajusta si quieres) */
+#productsTable th:nth-child(1),  #productsTable td:nth-child(1){  width: 8%;  } /* PN */
+#productsTable th:nth-child(2),  #productsTable td:nth-child(2){  width: 20%; } /* Description */
+#productsTable th:nth-child(3),  #productsTable td:nth-child(3){  width: 10%; } /* RRP */
+#productsTable th:nth-child(4),  #productsTable td:nth-child(4){  width: 11%; } /* Promo RRP */
+#productsTable th:nth-child(5),  #productsTable td:nth-child(5){  width: 14%; } /* Calc RRP - VAT */
+#productsTable th:nth-child(6),  #productsTable td:nth-child(6){  width: 12%; } /* FE - Rebate */
+#productsTable th:nth-child(7),  #productsTable td:nth-child(7){  width: 9%;  } /* Max Qty */
+#productsTable th:nth-child(8),  #productsTable td:nth-child(8){  width: 10%; } /* Total Rebate */
+#productsTable th:nth-child(9),  #productsTable td:nth-child(9){  width: 14%; } /* Program Number */
+#productsTable th:nth-child(10), #productsTable td:nth-child(10){ width: 8%;  } /* Actions */
+
+/* Badge de FE compacto */
+.fe-badge{
   display: inline-block;
   padding: .2rem .55rem;
   border-radius: 9999px;
@@ -223,362 +131,9 @@ td input[type="number"] {
   white-space: nowrap;
 }
 
-/* Botón "Save Program" a la derecha dentro de la tarjeta de la tabla */
-.card:has(#productsTable) > div:last-child {
-  text-align: right;
-}
-
-/* ===== Responsivo ===== */
-@media (max-width: 900px) {
-  .form-row {
-    grid-template-columns: 1fr; /* label encima del control */
-  }
-  .form-label { padding: 0; }
-  .card:has(#productsTable) {
-    width: 95vw;
-  }
-}
-/* Align Confirm and Delete buttons to the bottom-right like Save */
-#program-form .form-row:last-child {
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.75rem;
-  margin-top: 1rem;
-}
-/* --- Multiselect (PN) alto y usable --- */
-select.form-control[multiple] {
-  height: auto;          /* anula el alto fijo de .form-control */
-  min-height: 320px;     /* ajusta a gusto: 240/320/400px */
-  padding: .5rem;        /* un poco de respiración interna */
-  line-height: 1.2;
-}
-
-/* Si quieres afectar solo al campo PN por ID */
-#fld-pn.form-control[multiple] {
-  min-height: 360px;     /* opcional: un poco más alto aún */
-}
-/* ---- Layout cards: evitar solapes y mantener separación ---- */
-.card {
-  position: relative;           /* crea contexto de apilado */
-  z-index: 0;
-  margin-block: 24px;           /* separa verticalmente todas las cards */
-}
-
-/* Products (filtro/selección PN): centrado normal */
-#productsSection {
-  max-width: 1000px;            /* mismo ancho que el header */
-  width: min(1000px, 94vw);
-  margin-inline: auto;
-}
-
-/* Selected products: más ancho que el resto, centrado y sin solapes */
-#selectedProductsCard {
-  max-width: 1280px;            /* tabla amplia */
-  width: min(1280px, 96vw);
-  margin-inline: auto;
-  overflow: visible;            /* deja ver sombras y bordes */
-  padding-bottom: 16px;         /* evita que el botón pise el borde */
-}
-
-/* Contenedor con scroll horizontal solo dentro de la tabla, no en la card */
-#selectedProductsCard .scroll {
-  overflow-x: auto;
-  overflow-y: hidden;
-  padding-bottom: 6px;          /* deja hueco para la barra de scroll */
-}
-
-/* Cabeceras y celdas: no permitir que desborden verticalmente al colapsar */
-#selectedProductsCard table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-/* Botón "Save Program" pegado a la derecha sin salir de la tarjeta */
-#selectedProductsCard .action-cta {
-  white-space: nowrap;
-}
-
-/* PN multiselect alto y usable (si aún no lo añadiste) */
-#fld-pn.form-control[multiple] {
-  height: auto;
-  min-height: 360px;
-  padding: .5rem;
-  line-height: 1.2;
-}
-
-/* Asegura que inputs dentro de la tabla no rompan el layout */
-#selectedProductsCard input.form-control,
-#selectedProductsCard select.form-control {
-  min-width: 110px;
-}
-
-/* Pequeña rejilla para los bloques dentro de la página (más separación) */
-main .container > .card + .card {
-  margin-top: 28px;
-}
-/* --- Selected products: sin solapes y centrada -------------------------- */
-.card { position: relative; z-index: 0; }        /* base */
-#selectedProductsCard { 
-  z-index: 2;                                     /* por encima del resto */
-  max-width: 1280px;
-  width: min(1280px, 96vw);
-  margin: 28px auto;                              /* separada y centrada */
-  padding-bottom: 16px;
-}
-
-/* Anula el antiguo “truco” de translate que causaba el overlay */
-.card:has(#productsTable) {
-  left: auto !important;
-  transform: none !important;
-  width: auto !important;
-  margin: 0 auto !important;
-  padding-left: 1rem;
-  padding-right: 1rem;
-}
-
-/* --- Tabla fluida, sin barra horizontal --------------------------------- */
-#selectedProductsCard .scroll {
-  overflow-x: hidden;   /* no más scroll horizontal */
-}
-
-#productsTable {
-  width: 100%;
-  border-collapse: collapse;
-  table-layout: fixed;  /* reparte el ancho entre columnas */
-}
-
-#productsTable th,
-#productsTable td {
-  padding: .6rem .5rem;
-  border-top: 1px solid var(--card-border);
-  text-align: center;
-  white-space: normal;          /* permitir salto de línea */
-  word-break: break-word;       /* romper textos largos si hace falta */
-}
-
-/* La descripción puede ocupar dos líneas cómodas */
-#productsTable td[data-col="desc"] { min-width: 180px; text-align: left; }
-
-/* Inputs/selects dentro de la tabla: ocupan su celda sin forzar ancho */
-#productsTable input.form-control,
-#productsTable select.form-control {
-  min-width: 0;   /* anula mínimos que obligaban scroll */
-  width: 100%;
-  max-width: 140px;
-  text-align: center;
-}
-
-/* FE pill pequeño y sin estirar la celda */
-.fe-badge { white-space: nowrap; display: inline-block; }
-
-/* --- Multiselect de PN alto y cómodo (por si no estaba al final) --------- */
-#fld-pn.form-control[multiple] {
-  height: auto;
-  min-height: 360px;      /* súbelo a 400px si quieres aún más alto */
-  padding: .5rem;
-  line-height: 1.2;
-}
-/* ==== Create Program – layout y tabla sin scroll ==== */
-
-/* Separa visualmente las tarjetas para que no “pisen” el hover entre sí */
-section.card + section.card { margin-top: 1.25rem; }
-
-/* El wrapper que envolvía la tabla ya no hace falta que recorte en X */
-#productsTable { width: 100%; table-layout: fixed; border-collapse: collapse; }
-
-/* Anchos de columna pensados para 1280px; ajustan sin scroll horizontal */
-#productsTable th:nth-child(1),
-#productsTable td:nth-child(1){ width: 8%; }   /* PN */
-
-#productsTable th:nth-child(2),
-#productsTable td:nth-child(2){ width: 20%; }  /* Description */
-
-#productsTable th:nth-child(3),
-#productsTable td:nth-child(3){ width: 10%; }  /* RRP */
-
-#productsTable th:nth-child(4),
-#productsTable td:nth-child(4){ width: 11%; }  /* Promo RRP */
-
-#productsTable th:nth-child(5),
-#productsTable td:nth-child(5){ width: 14%; }  /* Calculated RRP - VAT */
-
-#productsTable th:nth-child(6),
-#productsTable td:nth-child(6){ width: 12%; }  /* FE - Rebate (badge + input) */
-
-#productsTable th:nth-child(7),
-#productsTable td:nth-child(7){ width: 9%; }   /* Max Qty */
-
-#productsTable th:nth-child(8),
-#productsTable td:nth-child(8){ width: 10%; }  /* Total Program Rebate */
-
-#productsTable th:nth-child(9),
-#productsTable td:nth-child(9){ width: 16%; }  /* Program Number */
-
-#productsTable th:nth-child(10),
-#productsTable td:nth-child(10){ width: 8%; }  /* Actions */
-
-/* Inputs de la tabla más compactos para que no se amontonen */
-#productsTable td input.form-control{ min-width: 0; width: 100%; }
-#productsTable td select.form-control{ width: 100%; }
-
-/* El badge FE no debe empujar demasiado: */
-#productsTable td[data-col="rebate"] .fe-badge{
-  flex-shrink: 0;
-}
-#productsTable td[data-col="rebate"] > div{ gap: .4rem; }
-
-/* Si la pantalla es estrecha, reducimos un poco la densidad */
-@media (max-width: 1200px){
-  #productsTable th, #productsTable td { padding: .4rem; }
-  #productsTable th:nth-child(2),
-  #productsTable td:nth-child(2){ width: 18%; }
-  #productsTable th:nth-child(9),
-  #productsTable td:nth-child(9){ width: 14%; }
-}
-/* Evita solapes de sombras/hover entre tarjetas contiguas */
-.card{ position: relative; z-index: 0; }
-.card:hover{ z-index: 1; }
-/* Listado PN (multi-select) con altura cómoda */
-#fld-pn{
-  min-height: 260px;     /* sube si quieres más */
-  font-size: 0.92rem;
-}
-/* --- Altura del multiselect de PN --- */
-#fld-pn{
-  min-height: 22rem;     /* suficiente para ver muchas líneas */
-}
-
-/* --- Selected products: que ocupe bien el ancho y sin solapes --- */
-.selected-products-card,
-#productsTable{
-  width: 100%;
-}
-
-.selected-products-card{
-  position: relative;
-  z-index: 3;                  /* por encima del contenedor superior */
-  overflow: visible;           /* nada de recortes arriba/abajo */
-}
-
-.selected-products-card .scroll{
-  overflow-x: hidden;          /* sin scroll horizontal */
-}
-
-/* Tabla: layout fijo, columnas predecibles y sin “reventar” celdas */
-#productsTable{
-  table-layout: fixed;
-  border-collapse: collapse;
-}
-
-/* Inputs dentro de la tabla: que se adapten a su celda */
-#productsTable input.form-control,
-#productsTable select.form-control{
-  width: 100%;
-  min-width: 0;                /* clave para que no generen scroll */
-}
-
-/* Distribución de columnas (ajústalo si quieres) */
-#productsTable th:nth-child(1),  #productsTable td:nth-child(1){  width: 10%; } /* PN */
-#productsTable th:nth-child(2),  #productsTable td:nth-child(2){  width: 20%; } /* Description */
-#productsTable th:nth-child(3),  #productsTable td:nth-child(3){  width: 9%;  } /* RRP */
-#productsTable th:nth-child(4),  #productsTable td:nth-child(4){  width: 10%; } /* Promo RRP */
-#productsTable th:nth-child(5),  #productsTable td:nth-child(5){  width: 13%; } /* VAT Yes/No */
-#productsTable th:nth-child(6),  #productsTable td:nth-child(6){  width: 10%; } /* FE - Rebate */
-#productsTable th:nth-child(7),  #productsTable td:nth-child(7){  width: 10%; } /* Max Qty */
-#productsTable th:nth-child(8),  #productsTable td:nth-child(8){  width: 10%; } /* Total Rebate */
-#productsTable th:nth-child(9),  #productsTable td:nth-child(9){  width: 16%; } /* Program Number */
-#productsTable th:nth-child(10), #productsTable td:nth-child(10){ width: 8%;  } /* Actions */
-
-/* Mejor legibilidad: ligeramente más altos */
-#productsTable th, #productsTable td{
-  padding: .65rem .6rem;
-}
-
-/* Botón Save alineado y dentro de la tarjeta */
-.selected-products-card .actions-row{
+/* Alineación del botón Save dentro de la tarjeta */
+#selectedProductsCard .actions-row{
   display: flex;
   justify-content: flex-end;
   margin-top: 1rem;
-}
-/* === Selected products: ancho cómodo y sin scroll horizontal === */
-
-/* Asegúrate de usar este id en la card que envuelve la tabla */
-#selectedProductsCard{
-  /* que mande su propio ancho, por encima de otros estilos previos */
-  max-width: var(--page-max) !important;
-  width: min(var(--page-max), 98vw) !important;
-  margin-inline: auto !important;
-  overflow: visible;                /* deja ver sombras/bordes */
-  padding-bottom: 16px;             /* que el botón no pise el borde */
-  z-index: 3;                       /* por encima de otras cards */
-}
-
-/* Nada de desplazamiento horizontal dentro de la tarjeta */
-#selectedProductsCard .scroll{
-  overflow-x: hidden !important;
-  overflow-y: visible;
-}
-
-/* Si en algún punto se aplicó un translate/left para centrar, lo anulamos */
-.card:has(#productsTable){
-  left: auto !important;
-  transform: none !important;
-  width: auto !important;
-  margin: 0 auto !important;
-  padding-left: 1rem;
-  padding-right: 1rem;
-}
-
-/* === Tabla: columnas previsibles y textos que rompen línea === */
-#productsTable{
-  width: 100%;
-  border-collapse: collapse;
-  table-layout: fixed;              /* reparte el ancho entre columnas */
-}
-
-#productsTable th,
-#productsTable td{
-  padding: .6rem .55rem;
-  border-top: 1px solid var(--card-border);
-  text-align: center;
-  white-space: normal;              /* permite saltos de línea */
-  word-break: break-word;           /* rompe textos largos */
-}
-
-/* Descripción un poco más ancha y alineada a la izquierda */
-#productsTable td[data-col="desc"]{
-  min-width: 200px;
-  text-align: left;
-}
-
-/* Inputs/selects: que no fuercen ancho mínimo (clave para no scrollear) */
-#productsTable input.form-control,
-#productsTable select.form-control{
-  min-width: 0;
-  width: 100%;
-  max-width: 140px;                 /* no hace falta más para números */
-  text-align: center;
-}
-
-/* Distribución de columnas pensada para ~1600px; ajusta si lo ves estrecho */
-#productsTable th:nth-child(1),  #productsTable td:nth-child(1){  width: 8%;  }  /* PN */
-#productsTable th:nth-child(2),  #productsTable td:nth-child(2){  width: 20%; }  /* Description */
-#productsTable th:nth-child(3),  #productsTable td:nth-child(3){  width: 10%; }  /* RRP */
-#productsTable th:nth-child(4),  #productsTable td:nth-child(4){  width: 11%; }  /* Promo RRP */
-#productsTable th:nth-child(5),  #productsTable td:nth-child(5){  width: 14%; }  /* Calc RRP - VAT */
-#productsTable th:nth-child(6),  #productsTable td:nth-child(6){  width: 12%; }  /* FE - Rebate */
-#productsTable th:nth-child(7),  #productsTable td:nth-child(7){  width: 9%;  }  /* Max Qty */
-#productsTable th:nth-child(8),  #productsTable td:nth-child(8){  width: 10%; }  /* Total Rebate */
-#productsTable th:nth-child(9),  #productsTable td:nth-child(9){  width: 14%; }  /* Program Number */
-#productsTable th:nth-child(10), #productsTable td:nth-child(10){ width: 8%;  }  /* Actions */
-
-/* Pill FE compacto*
-.fe-badge{ white-space: nowrap; display: inline-block; }
-
-/* Multiselect de PN alto y cómodo (por si no estaba aplicado) */
-#fld-pn.form-control[multiple]{
-  height: auto;
-  min-height: 360px;
-  padding: .5rem;
-  line-height: 1.2;
 }

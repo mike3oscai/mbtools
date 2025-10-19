@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Create Program · MBTools</title>
 
-  <!-- Global styles -->
+  <!-- Global -->
   <link rel="stylesheet" href="../../shared/styles/shared.css">
-  <!-- Page styles (create) -->
+  <!-- Page -->
   <link rel="stylesheet" href="styles/main.css">
 </head>
 <body>
@@ -18,48 +18,11 @@
   </header>
 
   <main class="container">
-    <!-- Program form card -->
+    <!-- Program header card. La sección de productos y la tabla
+         se crean y añaden dinámicamente desde scripts/main.js -->
     <section class="card form-card" aria-labelledby="program-header-title">
       <h2 id="program-header-title">Program header</h2>
       <form id="program-form" novalidate aria-label="Create program form"></form>
-    </section>
-
-    <!-- Selected products card (wide, no horizontal scroll) -->
-    <section id="selectedProductsCard" class="card" aria-labelledby="selected-products-title">
-      <div class="card-header">
-        <h2 id="selected-products-title">Selected products</h2>
-      </div>
-
-      <div class="card-body">
-        <!-- Tabla ancha: los estilos de create/main.css gestionan el layout -->
-        <div class="table-responsive" role="region" aria-label="Selected products table">
-          <table id="productsTable">
-            <thead>
-              <tr>
-                <th scope="col">PN</th>
-                <th scope="col">Description</th>
-                <th scope="col">RRP</th>
-                <th scope="col">Promo RRP</th>
-                <th scope="col">Calculated RRP<br><small>- VAT (Yes/No)</small></th>
-                <th scope="col">FE - Rebate</th>
-                <th scope="col">Max Quantity</th>
-                <th scope="col">Total Program<br>Rebate</th>
-                <th scope="col">Program Number</th>
-                <th scope="col">Actions</th>
-              </tr>
-            </thead>
-            <tbody id="productsTbody">
-              <!-- Las filas se inyectan desde scripts/main.js -->
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="card-footer" style="display:flex; justify-content:flex-end; gap:.75rem;">
-        <button id="save-program-btn" type="button" class="btn btn-primary">
-          Save Program
-        </button>
-      </div>
     </section>
   </main>
 
@@ -68,28 +31,16 @@
   </footer>
 
   <script type="module">
-    // Footer year
+    // Año footer
     document.getElementById('y').textContent = new Date().getFullYear();
 
-    // Theme switch (shared)
+    // Tema (compartido)
     import { initThemeToggle } from "../../shared/scripts/theme.js";
     initThemeToggle();
 
-    // Render vertical form
-    import { renderCreateForm, wireSelectedProducts } from "./scripts/main.js";
-
-    // Monta el formulario del “Program header”
+    // Render del formulario + inserción dinámica de secciones
+    import { renderCreateForm } from "./scripts/main.js";
     renderCreateForm(document.getElementById("program-form"));
-
-    // (Opcional pero recomendado) Hook para que tu JS pueble/gestione la tabla
-    // Si tu main.js no exporta wireSelectedProducts, no pasa nada.
-    if (typeof wireSelectedProducts === "function") {
-      wireSelectedProducts({
-        table: document.getElementById("productsTable"),
-        tbody: document.getElementById("productsTbody"),
-        saveBtn: document.getElementById("save-program-btn")
-      });
-    }
   </script>
 </body>
 </html>

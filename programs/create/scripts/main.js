@@ -1,21 +1,16 @@
-// Create a Program – vertical card form with 2-step UX.
-// Step 1: mandatory header (confirm/delete) + auto Program Number
-// Step 2: multi PN selection (or filter by Product/RAM/ROM) + table of added products
-// Adds: Country (from /data/geocountryset.json) + VAT loader and Rebate calc.
+// Create a Program – vertical card form + productos y tabla dinámica
+// La tabla "Selected products" se genera SOLO desde este archivo.
 
 import { loadCustomerSet, loadProductSet, loadVatSet } from "/shared/scripts/data.js";
 const GEOCOUNTRY_URL = "/data/geocountryset.json";
 
-// ---------------------------------------------------------------------------
-// Options
-// ---------------------------------------------------------------------------
+/* ---------- Opciones ---------- */
 const PROGRAM_TYPE_OPTIONS = [
   { value: "PR", label: "PR – Price reduction in T1" },
   { value: "SO", label: "SO – Sell Out Promotion in T2" },
   { value: "PP", label: "PP – Price Protection in T1 or T2" },
   { value: "CO", label: "CO – Co-op non contractual" }
 ];
-
 const GEO_OPTIONS = [
   { value: "Benelux",      label: "Benelux" },
   { value: "Central Asia", label: "Central Asia" },
@@ -29,27 +24,23 @@ const GEO_OPTIONS = [
   { value: "SEE",          label: "SEE (South East Europe)" },
   { value: "UKI",          label: "UKI (United Kingdom & Ireland)" }
 ];
-
 const VERTICAL_OPTIONS = [
   { value: "B2B",    label: "B2B" },
   { value: "Retail", label: "Retail" },
   { value: "Telco",  label: "Telco" }
 ];
 
-// ---------------------------------------------------------------------------
-// Tiny helpers
-// ---------------------------------------------------------------------------
+/* ---------- Helpers ---------- */
 function h(tag, props = {}, ...children) {
   const el = Object.assign(document.createElement(tag), props);
   for (const c of children.flat()) el.append(c?.nodeType ? c : document.createTextNode(c ?? ""));
   return el;
 }
 const unique = (arr) => [...new Set(arr)];
-const fmtPN = (p) => `${p.PN} — ${p.Description}`;
+const fmtPN  = (p) => `${p.PN} — ${p.Description}`;
+const byId   = (id) => document.getElementById(id);
 
-// ---------------------------------------------------------------------------
-// Select helpers (preserve selection; supports single/multiple)
-// ---------------------------------------------------------------------------
+/* Select genérico (single/multiple) */
 function setSelectOptions(selectEl, options = [], placeholder = "Select...", selected = "") {
   const multiple = !!selectEl.multiple;
   const current = multiple ? Array.from(selectEl.selectedOptions).map(o => o.value) : selectEl.value;
@@ -59,7 +50,6 @@ function setSelectOptions(selectEl, options = [], placeholder = "Select...", sel
   if (!multiple) {
     selectEl.append(h("option", { value: "", disabled: true, selected: !(target && String(target).length) }, placeholder));
   }
-
   for (const opt of options) {
     const val = typeof opt === "object" ? opt.value : opt;
     const lbl = typeof opt === "object" ? opt.label : opt;
@@ -73,10 +63,7 @@ function setSelectOptions(selectEl, options = [], placeholder = "Select...", sel
   }
 }
 
-// ---------------------------------------------------------------------------
-// Program Number generator
-// CODE + GEO(UPPER) + YEAR + incremental(7 digits) per (CODE|GEO|YEAR)
-// ---------------------------------------------------------------------------
+/* ---------- Program number ---------- */
 function nextSequence(code, geo, year) {
   const key = `seq:${code}|${geo.toUpperCase()}|${year}`;
   const current = parseInt(localStorage.getItem(key) || "0", 10);
@@ -89,9 +76,7 @@ function buildProgramNumber(code, geo, startDateISO) {
   return `${code}${geo.toUpperCase()}${year}${nextSequence(code, geo, year)}`;
 }
 
-// ---------------------------------------------------------------------------
-// Countries loader from geocountryset.json
-// ---------------------------------------------------------------------------
+/* ---------- Countries loader ---------- */
 async function loadCountriesByGeo(geo) {
   if (!geo) return [];
   try {
@@ -100,19 +85,16 @@ async function loadCountriesByGeo(geo) {
     const data = await res.json();
     const entry = data.find(e => e.geo === geo);
     return entry ? entry.countries : [];
-  } catch (err) {
-    console.error("Error loading geocountryset.json:", err);
+  } catch {
     return [];
   }
 }
 
-// ---------------------------------------------------------------------------
-// Public API
-// ---------------------------------------------------------------------------
+/* =================== API principal =================== */
 export async function renderCreateForm(container) {
   if (!container) return;
 
-  // ----- Build header fields -----
+  // ----- Header controls -----
   const programTypeSel = buildSelect("programType", PROGRAM_TYPE_OPTIONS, "Select a program type");
   const geoSel         = buildSelect("geo", GEO_OPTIONS, "Select a geo");
   const verticalSel    = buildSelect("vertical", VERTICAL_OPTIONS, "Select a vertical");
@@ -136,32 +118,28 @@ export async function renderCreateForm(container) {
   container.replaceChildren(
     ...headerRows.map(([label, control]) => {
       const row = h("div", { className: "form-row" });
-      row.append(
-        h("label", { className: "form-label", htmlFor: control.id }, label),
-        control
-      );
+      row.append(h("label", { className: "form-label", htmlFor: control.id }, label), control);
       return row;
     }),
     h("div", { className: "form-row" },
       h("div", { className: "form-label" }, ""),
       h("div", {},
         h("button", { id: "btnConfirm", className: "action-cta", type: "button", style: "margin-right:.5rem" }, "Confirm"),
-        h("button", { id: "btnDelete", className: "action-cta", type: "button" }, "Delete")
+        h("button", { id: "btnDelete",  className: "action-cta", type: "button" }, "Delete")
       )
     )
   );
 
-  // Product area (hidden until Confirm)
-  const productsSection = h("section", { id: "productsSection", className: "card", style: "margin-top:1rem; display:none" },
+  /* ---------- Sección Products (oculta hasta Confirm) ---------- */
+  const productsSection = h("section", { id: "productsSection", className: "card", style: "display:none" },
     h("h2", {}, "Products"),
     h("div", { className: "form-row" },
       h("label", { className: "form-label", htmlFor: "fld-pn" }, "PN (multi-select)"),
       h("div", {},
         h("label", { style: "display:inline-flex;align-items:center;gap:.5rem;margin-bottom:.5rem" },
-          h("input", { type: "checkbox", id: "chkSelectAll" }),
-          "Select all"
+          h("input", { type: "checkbox", id: "chkSelectAll" }), "Select all"
         ),
-        h("select", { id: "fld-pn", name: "pn", className: "form-control", multiple: true, size: 8 })
+        h("select", { id: "fld-pn", name: "pn", className: "form-control", multiple: true, size: 20 })
       )
     ),
     h("div", { className: "form-row" },
@@ -178,35 +156,35 @@ export async function renderCreateForm(container) {
     ),
     h("div", { className: "form-row" },
       h("div", { className: "form-label" }, ""),
-      h("div", {},
-        h("button", { id: "btnAddProducts", className: "action-cta", type: "button" }, "Add Products")
-      )
+      h("div", {}, h("button", { id: "btnAddProducts", className: "action-cta", type: "button" }, "Add Products"))
     )
   );
-  container.parentElement.appendChild(productsSection);
+  // Lo inserto después del header
+  const mainContainer = container.closest("main") || container.parentElement;
+  mainContainer.appendChild(productsSection);
 
-  // Selected products table
-  const tableWrap = h("section", { id: "selectedProductsCard", className: "card", style: "margin-top:1rem; display:none" },
+  /* ---------- Tarjeta Selected products (tabla) ---------- */
+  const tableCard = h("section", { id: "selectedProductsCard", className: "card", style: "display:none" },
     h("h2", {}, "Selected products"),
     h("div", { className: "scroll" },
-      h("table", { id: "productsTable", style: "width:100%; border-collapse:collapse" },
+      h("table", { id: "productsTable" },
         h("thead", {},
           trHead([
-            "PN", "Description", "RRP", "Promo RRP",
-            "Calculated RRP - VAT (Yes/No)", "FE - Rebate",
-            "Max Quantity", "Total Program Rebate", "Program Number", "Actions"
+            "PN","Description","RRP","Promo RRP",
+            "Calculated RRP - VAT (Yes/No)","FE - Rebate",
+            "Max Quantity","Total Program Rebate","Program Number","Actions"
           ])
         ),
         h("tbody", { id: "productsTbody" })
       )
     ),
-    h("div", { style: "margin-top:1rem; text-align:right" },
+    h("div", { className: "actions-row" },
       h("button", { id: "btnSaveProgram", className: "action-cta", type: "button", disabled: true }, "Save Program")
     )
   );
-  container.parentElement.appendChild(tableWrap);
+  mainContainer.appendChild(tableCard);
 
-  // Refs
+  /* ---------- Refs ---------- */
   const pnSel          = byId("fld-pn");
   const productSel     = byId("fld-product");
   const ramSel         = byId("fld-ram");
@@ -218,22 +196,22 @@ export async function renderCreateForm(container) {
   const btnSaveProgram = byId("btnSaveProgram");
   const tbody          = byId("productsTbody");
 
-  // Data
+  /* ---------- Data ---------- */
   const [customers, products, vatset] = await Promise.all([
-    loadCustomerSet(),
-    loadProductSet(),
-    loadVatSet()
+    loadCustomerSet(), loadProductSet(), loadVatSet()
   ]);
 
-  // VAT lookup by country
-  function getVatForCountry(country) {
-    if (!country) return null;
+  const todayISO = new Date().toISOString().slice(0, 10);
+  startDayInp.min = todayISO;
+
+  /* VAT por país */
+  const getVatForCountry = (country) => {
     const entry = vatset.find(v => v.country === country);
     return entry && typeof entry.vat === "number" ? entry.vat : null;
-  }
+  };
 
-  /** Parse "10%" -> 0.10 or numeric like 10 -> 0.10; default 0 */
-  function parsePercentToDecimal(v) {
+  /* Frontend por cliente (decimal) */
+  const parsePercentToDecimal = (v) => {
     if (v == null) return 0;
     if (typeof v === "string") {
       const s = v.trim().replace(",", ".").replace("%", "");
@@ -242,31 +220,21 @@ export async function renderCreateForm(container) {
     }
     if (typeof v === "number") return v > 1 ? v / 100 : v;
     return 0;
-  }
-
-  /** Get customer's frontend (decimal) from loaded customers by CRM number. */
-  function getFrontendForCustomer(crmNumber) {
-    if (!crmNumber) return 0;
+  };
+  const getFrontendForCustomer = (crmNumber) => {
     const c = customers.find(x => x.crmNumber === crmNumber);
     return parsePercentToDecimal(c?.frontend);
-  }
+  };
+  const formatPercent = (d) => `${(d * 100 || 0).toFixed(0)}%`;
 
-  function formatPercent(dec) {
-    return Number.isFinite(dec) ? `${(dec * 100).toFixed(0)}%` : "0%";
-  }
-
-  // Header constraints/behavior
-  const todayISO = new Date().toISOString().slice(0, 10);
-  startDayInp.min = todayISO;
-
-  // Geo -> Countries
+  /* Geo → Países */
   geoSel.addEventListener("change", async () => {
     const countries = await loadCountriesByGeo(geoSel.value);
     setSelectOptions(countrySel, countries.map(c => ({ value: c, label: c })), "Select a country");
     refreshCustomers();
   });
 
-  // Customers (Geo + optional Vertical)
+  /* Clientes (Geo + Vertical) */
   function refreshCustomers() {
     const g = geoSel.value;
     const v = verticalSel.value;
@@ -282,62 +250,53 @@ export async function renderCreateForm(container) {
     setSelectOptions(customerSel, opts, opts.length ? `Select a customer (${g}${v ? " · " + v : ""})` : "No customers for this filter");
   }
   verticalSel.addEventListener("change", refreshCustomers);
-  customerSel.addEventListener("change", () => {
-    // Frontend depends on the selected customer
-    recalcAllRows(tbody, countrySel);
-  });
+  customerSel.addEventListener("change", () => recalcAllRows(tbody, countrySel));
 
-  // Initial load for countries if Geo preset (optional)
+  /* Precarga países si ya hay Geo (opcional) */
   if (geoSel.value) {
     const countries = await loadCountriesByGeo(geoSel.value);
     setSelectOptions(countrySel, countries.map(c => ({ value: c, label: c })), "Select a country");
   }
 
-  // Product/PN dual selection (PN is multi)
-  function setRamOptions(list, selected = []) {
-    const rams = unique(list.map(p => p.RAM)).map(v => ({ value: v, label: v }));
-    setSelectOptions(ramSel, rams, "Choose RAM", selected);
-  }
-  function setRomOptions(list, selected = []) {
-    const roms = unique(list.map(p => p.ROM)).map(v => ({ value: v, label: v }));
-    setSelectOptions(romSel, roms, "Choose ROM", selected);
-  }
-  function setPnOptions(list, selected = []) {
+  /* Filtros producto/PN */
+  const setRamOptions = (list, selected = []) =>
+    setSelectOptions(ramSel, unique(list.map(p => p.RAM)).map(v => ({ value: v, label: v })), "Choose RAM", selected);
+  const setRomOptions = (list, selected = []) =>
+    setSelectOptions(romSel, unique(list.map(p => p.ROM)).map(v => ({ value: v, label: v })), "Choose ROM", selected);
+  const setPnOptions = (list, selected = []) => {
     const opts = list.map(p => ({ value: p.PN, label: fmtPN(p) }));
-    pnSel.multiple = true;
-    pnSel.size = 20;
+    pnSel.multiple = true; pnSel.size = 20;
     setSelectOptions(pnSel, opts, "Select PN(s) or filter by Product/RAM/ROM", selected);
-  }
-  function filteredProducts() {
-    const selProduct = productSel.value;
-    const selRam = ramSel.value;
-    const selRom = romSel.value;
+  };
+  const filteredProducts = () => {
+    const selProduct = productSel.value, selRam = ramSel.value, selRom = romSel.value;
     return products.filter(p =>
       (!selProduct || p.Program === selProduct) &&
       (!selRam || p.RAM === selRam) &&
       (!selRom || p.ROM === selRom)
     );
-  }
+  };
+
   chkSelectAll.addEventListener("change", () => {
     const list = filteredProducts();
     const values = chkSelectAll.checked ? list.map(p => p.PN) : [];
     setPnOptions(list, values);
   });
+
   pnSel.addEventListener("change", () => {
     const selectedPNs = Array.from(pnSel.selectedOptions).map(o => o.value);
-    if (selectedPNs.length === 0) return;
+    if (!selectedPNs.length) return;
     const selectedProducts = products.filter(p => selectedPNs.includes(p.PN));
     const progs = unique(selectedProducts.map(p => p.Program));
-    const rams = unique(selectedProducts.map(p => p.RAM));
-    const roms = unique(selectedProducts.map(p => p.ROM));
+    const rams  = unique(selectedProducts.map(p => p.RAM));
+    const roms  = unique(selectedProducts.map(p => p.ROM));
     if (progs.length === 1) productSel.value = progs[0];
-    if (rams.length === 1)  ramSel.value = rams[0];
-    if (roms.length === 1)  romSel.value = roms[0];
+    if (rams.length  === 1) ramSel.value = rams[0];
+    if (roms.length  === 1) romSel.value = roms[0];
   });
+
   function onPRRChange() {
-    const baseForOptions = productSel.value
-      ? products.filter(p => p.Program === productSel.value)
-      : products;
+    const baseForOptions = productSel.value ? products.filter(p => p.Program === productSel.value) : products;
     setRamOptions(baseForOptions, Array.from(ramSel.selectedOptions).map(o => o.value));
     setRomOptions(baseForOptions, Array.from(romSel.selectedOptions).map(o => o.value));
     const list = filteredProducts();
@@ -349,8 +308,8 @@ export async function renderCreateForm(container) {
   ramSel.addEventListener("change", onPRRChange);
   romSel.addEventListener("change", onPRRChange);
 
-  // Init product filters
-  (function initProductArea() {
+  // Inicialización filtros
+  (function initProductArea(){
     const programs = unique(products.map(p => p.Program)).map(v => ({ value: v, label: v }));
     setSelectOptions(productSel, programs, "Select a product");
     setRamOptions(products);
@@ -358,50 +317,39 @@ export async function renderCreateForm(container) {
     setPnOptions(products);
   })();
 
-  // -------------------------------------------------------------------------
-  // Step 1: Confirm / Delete (header)
-  // -------------------------------------------------------------------------
+  /* ---------- Paso 1: Confirm / Delete ---------- */
   const today = todayISO;
   byId("btnConfirm").addEventListener("click", () => {
     const err = validateHeader();
     if (err) return alert(err);
 
-    // Lock header fields
     [programTypeSel, geoSel, countrySel, verticalSel, customerSel, startDayInp, endDayInp].forEach(el => el.disabled = true);
 
-    // Autogenerate Program Number if empty
     if (!programNumInp.value.trim()) {
       programNumInp.value = buildProgramNumber(programTypeSel.value, geoSel.value, startDayInp.value);
     }
 
-    // Show product area and table
     productsSection.style.display = "";
-    tableWrap.style.display = "";
+    tableCard.style.display = "";
   });
 
   byId("btnDelete").addEventListener("click", () => {
-    // Unlock and clear header
     [programTypeSel, geoSel, countrySel, verticalSel, customerSel, startDayInp, endDayInp].forEach(el => {
-      el.disabled = false;
-      el.value = "";
+      el.disabled = false; el.value = "";
     });
     programNumInp.value = "";
     refreshCustomers();
 
-    // Hide product area and table, clear table rows
     productsSection.style.display = "none";
-    tableWrap.style.display = "none";
+    tableCard.style.display = "none";
     tbody.replaceChildren();
     btnSaveProgram.disabled = true;
 
-    // Reset product filters/PNs
     productSel.value = "";
     ramSel.value = "";
     romSel.value = "";
     chkSelectAll.checked = false;
-    setRamOptions(products);
-    setRomOptions(products);
-    setPnOptions(products);
+    setRamOptions(products); setRomOptions(products); setPnOptions(products);
   });
 
   function validateHeader() {
@@ -412,29 +360,20 @@ export async function renderCreateForm(container) {
     if (!customerSel.value) return "Customer is required.";
 
     const startISO = startDayInp.value;
-    const endISO = endDayInp.value;
+    const endISO   = endDayInp.value;
     if (!startISO) return "Start Day is required.";
     if (startISO < today) return "Start Day must be today or in the future.";
     if (endISO && endISO < startISO) return "End Day cannot be earlier than Start Day.";
     return "";
   }
 
-  // -------------------------------------------------------------------------
-  // Step 2: Add Products → table + VAT-based rebate calc
-  // -------------------------------------------------------------------------
+  /* ---------- Paso 2: Add Products + cálculo ---------- */
   btnAddProducts.addEventListener("click", () => {
     const selectedPNs = Array.from(pnSel.selectedOptions).map(o => o.value);
-    const subset = selectedPNs.length
-      ? products.filter(p => selectedPNs.includes(p.PN))
-      : filteredProducts();
+    const subset = selectedPNs.length ? products.filter(p => selectedPNs.includes(p.PN)) : filteredProducts();
+    if (!subset.length) return alert("Please select at least one PN or narrow filters to a non-empty list.");
 
-    if (subset.length === 0) {
-      alert("Please select at least one PN or narrow filters to a non-empty list.");
-      return;
-    }
-
-    // Add rows (avoid duplicates by PN)
-    const existing = new Set(Array.from(tbody.querySelectorAll('tr')).map(tr => tr.dataset.pn));
+    const existing = new Set(Array.from(tbody.querySelectorAll("tr")).map(tr => tr.dataset.pn));
     subset.forEach(p => {
       if (existing.has(p.PN)) return;
       const tr = rowForProduct(p, programNumInp.value);
@@ -446,19 +385,17 @@ export async function renderCreateForm(container) {
     btnSaveProgram.disabled = tbody.children.length === 0;
   });
 
-  // Save Program (payload ready; persistence next step)
   btnSaveProgram.addEventListener("click", () => {
     const header = {
       programType: programTypeSel.value,
       geo: geoSel.value,
       country: countrySel.value,
       vertical: verticalSel.value,
-      customer: customerSel.value, // CRM number
+      customer: customerSel.value,
       startDay: startDayInp.value,
       endDay: endDayInp.value || null,
       programNumber: programNumInp.value
     };
-
     const lines = Array.from(tbody.querySelectorAll("tr")).map(tr => ({
       pn: tr.dataset.pn,
       description: getCell(tr, "desc")?.textContent ?? "",
@@ -470,13 +407,12 @@ export async function renderCreateForm(container) {
       totalProgramRebate: numVal(getCell("span", tr, "total")),
       programNumber: (getCell("input", tr, "lineProgramNumber")?.value) || header.programNumber
     }));
-
-    if (lines.length === 0) return alert("No products added.");
+    if (!lines.length) return alert("No products added.");
     console.log({ header, lines });
-    alert("Program ready to be saved (persistence comes next). Check console for payload.");
+    alert("Program ready to be saved. Check console for payload.");
   });
 
-  // ---------------- Table row helpers + Rebate calc -------------------------
+  /* ---------- Helpers de tabla + cálculo ---------- */
   function rowForProduct(p, programNumber) {
     const tr = h("tr", { "data-pn": p.PN, style: "border-top:1px solid var(--card-border)" },
       td(p.PN),
@@ -491,13 +427,9 @@ export async function renderCreateForm(container) {
       tdActionRemove()
     );
     return tr;
-
-    function onAnyChange() {
-      recalcRow(tr, countrySel);
-    }
+    function onAnyChange(){ recalcRow(tr, countrySel); }
   }
 
-  // Core recalculation for a row
   function recalcRow(tr, countrySelRef) {
     const rrpInput    = getCell("input", tr, "rrp");
     const promoInput  = getCell("input", tr, "promoRrp");
@@ -520,29 +452,25 @@ export async function renderCreateForm(container) {
         rebateInput.value = "0.00";
         rebateInput.disabled = true;
       } else {
-        // Rebate = (RRP - Promo RRP) / (1 + VAT)
         const vatDec = vatRate / 100;
-        const rebate = (rrp - promo) / (1 + vatDec);
+        const rebate = (rrp - promo) / (1 + vatDec);   // (RRP - Promo) sin VAT
         rebateInput.value = rebate.toFixed(2);
         rebateInput.disabled = true;
       }
-      // Hide FE badge when VAT = Yes
       if (feBadge) feBadge.style.display = "none";
     } else {
-      // VAT = No -> ((RRP/(1+VAT))*(1-frontend)) - ((Promo/(1+VAT))*(1-frontend))
       const vatRate = getVatForCountry(countrySelRef?.value);
       const vatDec  = (vatRate && vatRate > 0) ? (vatRate / 100) : 0;
       const baseRRP   = vatDec > 0 ? (rrp / (1 + vatDec))   : rrp;
       const basePromo = vatDec > 0 ? (promo / (1 + vatDec)) : promo;
 
-      const feDec = getFrontendForCustomer(customerSel.value); // decimal e.g. 0.10
+      const feDec = getFrontendForCustomer(customerSel.value); // decimal
       const factor = 1 - (feDec || 0);
 
       const rebate = (baseRRP * factor) - (basePromo * factor);
       rebateInput.value = (Number.isFinite(rebate) ? rebate : 0).toFixed(2);
       rebateInput.disabled = true;
 
-      // Show FE badge only when VAT = No
       if (feBadge) {
         feBadge.textContent = `FE ${formatPercent(feDec)}`;
         feBadge.style.display = "inline-block";
@@ -552,70 +480,33 @@ export async function renderCreateForm(container) {
     const rebateVal = parseFloat(rebateInput.value || "0") || 0;
     totalSpan.textContent = (rebateVal * qty).toFixed(2);
   }
-
-  function recalcAllRows(tbodyEl, countrySelRef) {
+  function recalcAllRows(tbodyEl, countrySelRef){
     Array.from(tbodyEl.querySelectorAll("tr")).forEach(tr => recalcRow(tr, countrySelRef));
   }
 
-  // Recalc all rows if Country changes (affects VAT rate)
-  countrySel.addEventListener("change", () => {
-    recalcAllRows(tbody, countrySel);
-  });
-
-  // ---------------- small HTML helpers for table ----------------------------
-  function trHead(cols) { return h("tr", {}, ...cols.map(c => h("th", { style: thStyle() }, c))); }
-
-  function td(txt, data = {}) {
-    const el = h("td", { style: tdStyle() }, txt);
-    if (data && data["data-col"]) el.dataset.col = data["data-col"];
-    return el;
+  /* ---------- Pequeños helpers de HTML ---------- */
+  function trHead(cols){ return h("tr", {}, ...cols.map(c => h("th", {}, c))); }
+  function td(txt, data = {}) { const el = h("td", {}, txt); if (data["data-col"]) el.dataset.col = data["data-col"]; return el; }
+  function tdInputNumber(col, initial = 0, onInput){
+    const inp = h("input", { type: "number", step: "0.01", value: initial, className: "form-control" });
+    const cell = h("td", {}, inp); cell.dataset.col = col; if (onInput) inp.addEventListener("input", onInput); return cell;
   }
-
-  function tdInputNumber(col, initial = 0, onInput) {
-    const inp = h("input", { type: "number", step: "0.01", value: initial, className: "form-control", style: "min-width:120px" });
-    const cell = h("td", { style: tdStyle() }, inp);
-    cell.dataset.col = col;
-    if (onInput) inp.addEventListener("input", onInput);
-    return cell;
-  }
-
-  function tdRebateCell(onInput) {
-    const fe = h("span", { className: "fe-badge", style: "display:none;margin-right:.5rem;white-space:nowrap" }, "FE 0% –");
-    const inp = h("input", { type: "number", step: "0.01", value: 0, className: "form-control", style: "min-width:120px;display:inline-block;width:auto" });
+  function tdRebateCell(onInput){
+    const fe = h("span", { className: "fe-badge", style: "display:none;margin-right:.5rem" }, "FE 0%");
+    const inp = h("input", { type: "number", step: "0.01", value: 0, className: "form-control", style: "display:inline-block;width:auto" });
     const wrap = h("div", { style: "display:flex;align-items:center;justify-content:center;gap:.5rem" }, fe, inp);
-    const cell = h("td", { style: tdStyle() }, wrap);
-    cell.dataset.col = "rebate";
-    if (onInput) inp.addEventListener("input", onInput);
-    return cell;
+    const cell = h("td", {}, wrap); cell.dataset.col = "rebate"; if (onInput) inp.addEventListener("input", onInput); return cell;
   }
-
-  function tdInputText(col, val = "") {
-    const inp = h("input", { type: "text", value: val, className: "form-control", style: "min-width:160px" });
-    const cell = h("td", { style: tdStyle() }, inp);
-    cell.dataset.col = col;
-    return cell;
-  }
-
-  function tdReadOnly(col, val = "") {
-    const span = h("span", {}, val);
-    const cell = h("td", { style: tdStyle() }, span);
-    cell.dataset.col = col;
-    return cell;
-  }
-
-  function tdSelect(col, opts, def, onChange) {
-    const sel = h("select", { className: "form-control" },
-      ...opts.map(o => h("option", { value: o, selected: o === def }, o))
-    );
+  function tdInputText(col, val=""){ const inp = h("input", { type: "text", value: val, className: "form-control" }); const cell = h("td", {}, inp); cell.dataset.col = col; return cell; }
+  function tdReadOnly(col, val=""){ const span = h("span", {}, val); const cell = h("td", {}, span); cell.dataset.col = col; return cell; }
+  function tdSelect(col, opts, def, onChange){
+    const sel = h("select", { className: "form-control" }, ...opts.map(o => h("option", { value: o, selected: o === def }, o)));
     if (onChange) sel.addEventListener("change", onChange);
-    const cell = h("td", { style: tdStyle() }, sel);
-    cell.dataset.col = col;
-    return cell;
+    const cell = h("td", {}, sel); cell.dataset.col = col; return cell;
   }
-
-  function tdActionRemove() {
+  function tdActionRemove(){
     const btn = h("button", { type: "button", className: "action-cta" }, "Remove");
-    const cell = h("td", { style: tdStyle() }, btn);
+    const cell = h("td", {}, btn);
     btn.addEventListener("click", () => {
       btn.closest("tr")?.remove();
       btnSaveProgram.disabled = tbody.children.length === 0;
@@ -623,41 +514,23 @@ export async function renderCreateForm(container) {
     return cell;
   }
 
-  function tdStyle() { return "padding:.5rem;border-top:1px solid var(--card-border);text-align:center"; }
-  function thStyle() { return "padding:.5rem;border-bottom:1px solid var(--card-border);text-align:center;font-weight:600"; }
-  function byId(id) { return document.getElementById(id); }
-
-  // Get numeric from input/select/span (defensive)
-  function numVal(node) {
+  function numVal(node){
     if (!node) return 0;
-    const el = node.tagName ? node : null;
-    const t = el?.tagName;
-    let v = "0";
-    if (t === "INPUT" || t === "SELECT") v = el.value ?? "0";
-    else if (t === "SPAN") v = el.textContent ?? "0";
-    const n = parseFloat(v);
-    return Number.isFinite(n) ? n : 0;
+    const t = node.tagName;
+    const v = (t === "INPUT" || t === "SELECT") ? node.value : (t === "SPAN" ? node.textContent : "0");
+    const n = parseFloat(v); return Number.isFinite(n) ? n : 0;
   }
-
-  // Utility to build labeled selects with id/name convention
-  function buildSelect(key, options, placeholder, disabled = false) {
+  function buildSelect(key, options, placeholder, disabled = false){
     const sel = h("select", { className: "form-control", id: `fld-${key}`, name: key, disabled });
     setSelectOptions(sel, options, placeholder);
     return sel;
   }
-
-  // --- dataset helpers for rows ---
-  function getCellInput(type, tr, col) {
-    const td = tr.querySelector(`[data-col="${col}"]`);
-    return td ? td.querySelector(type) : null;
-    }
-  function getCell(typeOrTr, maybeTr, maybeCol) {
+  function getCell(typeOrTr, maybeTr, maybeCol){
     if (typeof typeOrTr === "string") {
-      return getCellInput(typeOrTr, maybeTr, maybeCol);
-    } else {
-      const tr = typeOrTr;
-      const col = maybeTr;
-      return tr.querySelector(`[data-col="${col}"]`)?.querySelector("*") || tr.querySelector(`[data-col="${col}"]`);
+      const td = maybeTr.querySelector(`[data-col="${maybeCol}"]`);
+      return td ? td.querySelector(typeOrTr) : null;
     }
+    const tr = typeOrTr, col = maybeTr;
+    return tr.querySelector(`[data-col="${col}"]`)?.querySelector("*") || tr.querySelector(`[data-col="${col}"]`);
   }
 }
