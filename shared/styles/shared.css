@@ -140,3 +140,61 @@ footer {
   opacity: .6;
   cursor: not-allowed;
 }
+/* ============================
+   BUTTON STYLE – GLOBAL
+============================ */
+button,
+.action-cta {
+  display: inline-block;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  letter-spacing: 0.2px;
+  color: #fff;
+  background: linear-gradient(90deg, #007bff 0%, #0056d2 100%);
+  border: none;
+  border-radius: 8px;
+  padding: 0.55rem 1.2rem;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+button:hover,
+.action-cta:hover {
+  background: linear-gradient(90deg, #0056d2 0%, #0041a3 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+button:active,
+.action-cta:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+/* Variant: danger (Delete, Remove) */
+button.danger,
+.action-cta.danger {
+  background: linear-gradient(90deg, #dc3545 0%, #b02a37 100%);
+}
+
+button.danger:hover,
+.action-cta.danger:hover {
+  background: linear-gradient(90deg, #b02a37 0%, #8b1f2b 100%);
+}
+
+/* Disabled buttons */
+button:disabled,
+.action-cta:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Consistent spacing between buttons */
+button + button,
+.action-cta + .action-cta {
+  margin-left: 0.5rem;
+}
