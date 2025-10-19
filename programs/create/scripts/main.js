@@ -1,7 +1,7 @@
 // Create a Program – vertical card form with 2-step UX.
 // Step 1: mandatory header (confirm/delete) + auto Program Number
 // Step 2: multi PN selection (or filter by Product/RAM/ROM) + table of added products
-// Adds: Country (from /data/geocountryset.json) + VAT loader and Rebate calc when VAT=Yes.
+// Adds: Country (from /data/geocountryset.json) + VAT loader and Rebate calc.
 
 import { loadCustomerSet, loadProductSet, loadVatSet } from "/shared/scripts/data.js";
 const GEOCOUNTRY_URL = "/data/geocountryset.json";
@@ -75,8 +75,7 @@ function setSelectOptions(selectEl, options = [], placeholder = "Select...", sel
 
 // ---------------------------------------------------------------------------
 // Program Number generator
-// CODE + GEO(UPPER) + YEAR + incremental(7 digits)
-// Stored per (CODE|GEO|YEAR) in localStorage
+// CODE + GEO(UPPER) + YEAR + incremental(7 digits) per (CODE|GEO|YEAR)
 // ---------------------------------------------------------------------------
 function nextSequence(code, geo, year) {
   const key = `seq:${code}|${geo.toUpperCase()}|${year}`;
@@ -113,7 +112,7 @@ async function loadCountriesByGeo(geo) {
 export async function renderCreateForm(container) {
   if (!container) return;
 
-  // ----- Build static header fields (new order + Country) -----
+  // ----- Build header fields -----
   const programTypeSel = buildSelect("programType", PROGRAM_TYPE_OPTIONS, "Select a program type");
   const geoSel         = buildSelect("geo", GEO_OPTIONS, "Select a geo");
   const verticalSel    = buildSelect("vertical", VERTICAL_OPTIONS, "Select a vertical");
@@ -121,7 +120,7 @@ export async function renderCreateForm(container) {
   const startDayInp    = h("input", { className: "form-control", type: "date", id: "fld-startDay", name: "startDay" });
   const endDayInp      = h("input", { className: "form-control", type: "date", id: "fld-endDay", name: "endDay" });
   const programNumInp  = h("input", { className: "form-control", type: "text", id: "fld-programNumber", name: "programNumber", placeholder: "Auto after Confirm (editable)" });
-  const countrySel     = buildSelect("country", [], "Select a country"); // injected after Geo
+  const countrySel     = buildSelect("country", [], "Select a country");
 
   const headerRows = [
     ["Program Type", programTypeSel],
@@ -134,7 +133,6 @@ export async function renderCreateForm(container) {
     ["Program Number", programNumInp]
   ];
 
-  // Render header grid + actions
   container.replaceChildren(
     ...headerRows.map(([label, control]) => {
       const row = h("div", { className: "form-row" });
@@ -194,7 +192,9 @@ export async function renderCreateForm(container) {
       h("table", { id: "productsTable", style: "width:100%; border-collapse:collapse" },
         h("thead", {},
           trHead([
-            "PN", "Description", "RRP", "Promo RRP", "Calculated RRP - VAT (Yes/No)", "FE - Rebate", "Max Quantity", "Total Program Rebate", "Program Number", "Actions"
+            "PN", "Description", "RRP", "Promo RRP",
+            "Calculated RRP - VAT (Yes/No)", "FE – Rebate",
+            "Max Quantity", "Total Program Rebate", "Program Number", "Actions"
           ])
         ),
         h("tbody", { id: "productsTbody" })
@@ -233,28 +233,27 @@ export async function renderCreateForm(container) {
   }
 
   /** Parse "10%" -> 0.10 or numeric like 10 -> 0.10; default 0 */
-function parsePercentToDecimal(v) {
-  if (v == null) return 0;
-  if (typeof v === "string") {
-    const s = v.trim().replace(",", ".").replace("%", "");
-    const n = parseFloat(s);
-    return Number.isFinite(n) ? (n / 100) : 0;
+  function parsePercentToDecimal(v) {
+    if (v == null) return 0;
+    if (typeof v === "string") {
+      const s = v.trim().replace(",", ".").replace("%", "");
+      const n = parseFloat(s);
+      return Number.isFinite(n) ? (n / 100) : 0;
+    }
+    if (typeof v === "number") return v > 1 ? v / 100 : v;
+    return 0;
   }
-  if (typeof v === "number") return v > 1 ? v / 100 : v;
-  return 0;
-}
 
-/** Get customer's frontend (decimal) from loaded customers by CRM number. */
-function getFrontendForCustomer(crmNumber) {
-  if (!crmNumber) return 0;
-  const c = customers.find(x => x.crmNumber === crmNumber);
-  return parsePercentToDecimal(c?.frontend);
-}
-function formatPercent(dec) {
-  return Number.isFinite(dec) ? `${(dec * 100).toFixed(0)}%` : "0%";
-}
+  /** Get customer's frontend (decimal) from loaded customers by CRM number. */
+  function getFrontendForCustomer(crmNumber) {
+    if (!crmNumber) return 0;
+    const c = customers.find(x => x.crmNumber === crmNumber);
+    return parsePercentToDecimal(c?.frontend);
+  }
 
-
+  function formatPercent(dec) {
+    return Number.isFinite(dec) ? `${(dec * 100).toFixed(0)}%` : "0%";
+  }
 
   // Header constraints/behavior
   const todayISO = new Date().toISOString().slice(0, 10);
@@ -264,7 +263,6 @@ function formatPercent(dec) {
   geoSel.addEventListener("change", async () => {
     const countries = await loadCountriesByGeo(geoSel.value);
     setSelectOptions(countrySel, countries.map(c => ({ value: c, label: c })), "Select a country");
-    // Also refresh customers when geo changes
     refreshCustomers();
   });
 
@@ -285,10 +283,9 @@ function formatPercent(dec) {
   }
   verticalSel.addEventListener("change", refreshCustomers);
   customerSel.addEventListener("change", () => {
-  // Frontend depends on the selected customer
-  recalcAllRows(tbody, countrySel);
-    });
-
+    // Frontend depends on the selected customer
+    recalcAllRows(tbody, countrySel);
+  });
 
   // Initial load for countries if Geo preset (optional)
   if (geoSel.value) {
@@ -443,7 +440,6 @@ function formatPercent(dec) {
       const tr = rowForProduct(p, programNumInp.value);
       tbody.append(tr);
       existing.add(p.PN);
-      // Initial calc (in case VAT=Yes and RRP already filled later)
       recalcRow(tr, countrySel);
     });
 
@@ -501,20 +497,17 @@ function formatPercent(dec) {
     }
   }
 
-  // Core recalculation for a row (VAT-Yes path)
+  // Core recalculation for a row
   function recalcRow(tr, countrySelRef) {
-    // Defensive selectors
     const rrpInput    = getCell("input", tr, "rrp");
     const promoInput  = getCell("input", tr, "promoRrp");
     const vatSelect   = getCell("select", tr, "vat");
     const rebateInput = getCell("input", tr, "rebate");
     const qtyInput    = getCell("input", tr, "maxQty");
     const totalSpan   = getCell("span", tr, "total");
-    const rebateTd   = tr.querySelector('[data-col="rebate"]');
-    const feBadge    = rebateTd ? rebateTd.querySelector('.fe-badge') : null;
+    const rebateTd    = tr.querySelector('[data-col="rebate"]');
+    const feBadge     = rebateTd ? rebateTd.querySelector('.fe-badge') : null;
 
-
-    // If structure is incomplete, bail out gracefully
     if (!rrpInput || !promoInput || !vatSelect || !rebateInput || !qtyInput || !totalSpan) return;
 
     const rrp   = parseFloat(rrpInput.value || "0") || 0;
@@ -527,37 +520,34 @@ function formatPercent(dec) {
         rebateInput.value = "0.00";
         rebateInput.disabled = true;
       } else {
-        // Spec: Rebate = (RRP - Promo RRP) / VAT
+        // Rebate = (RRP - Promo RRP) / (1 + VAT)
         const vatDec = vatRate / 100;
-const rebate = (rrp - promo) / (1 + vatDec);
-rebateInput.value = rebate.toFixed(2);
-rebateInput.disabled = true;
-
-// NEW: paint FE badge
-const feDecYes = getFrontendForCustomer(customerSel.value); // decimal
-if (feBadge) feBadge.textContent = `FE ${formatPercent(feDecYes)} –`;
-
+        const rebate = (rrp - promo) / (1 + vatDec);
+        rebateInput.value = rebate.toFixed(2);
+        rebateInput.disabled = true;
       }
-} else {
-  // VAT = No  -> Rebate = ((RRP/(1+VAT))*(1-frontend)) - ((Promo RRP/(1+VAT))*(1-frontend))
-  // Uses customer's frontend from customerset.json// VAT = No  -> Rebate = ((RRP/(1+VAT))*(1-frontend)) - ((Promo RRP/(1+VAT))*(1-frontend))
-const vatRate = getVatForCountry(countrySelRef?.value);
-const vatDec  = (vatRate && vatRate > 0) ? (vatRate / 100) : 0;
-const baseRRP   = vatDec > 0 ? (rrp / (1 + vatDec))   : rrp;
-const basePromo = vatDec > 0 ? (promo / (1 + vatDec)) : promo;
+      // Hide FE badge when VAT = Yes
+      if (feBadge) feBadge.style.display = "none";
+    } else {
+      // VAT = No -> ((RRP/(1+VAT))*(1-frontend)) - ((Promo/(1+VAT))*(1-frontend))
+      const vatRate = getVatForCountry(countrySelRef?.value);
+      const vatDec  = (vatRate && vatRate > 0) ? (vatRate / 100) : 0;
+      const baseRRP   = vatDec > 0 ? (rrp / (1 + vatDec))   : rrp;
+      const basePromo = vatDec > 0 ? (promo / (1 + vatDec)) : promo;
 
-const feDec = getFrontendForCustomer(customerSel.value); // decimal (e.g. 0.10)
-const factor = 1 - (feDec || 0);
+      const feDec = getFrontendForCustomer(customerSel.value); // decimal e.g. 0.10
+      const factor = 1 - (feDec || 0);
 
-const rebate = (baseRRP * factor) - (basePromo * factor);
-rebateInput.value = (Number.isFinite(rebate) ? rebate : 0).toFixed(2);
-rebateInput.disabled = true;
+      const rebate = (baseRRP * factor) - (basePromo * factor);
+      rebateInput.value = (Number.isFinite(rebate) ? rebate : 0).toFixed(2);
+      rebateInput.disabled = true;
 
-// NEW: paint FE badge
-if (feBadge) feBadge.textContent = `FE ${formatPercent(feDec)} –`;
-
-}
-
+      // Show FE badge only when VAT = No
+      if (feBadge) {
+        feBadge.textContent = `FE ${formatPercent(feDec)} –`;
+        feBadge.style.display = "inline-block";
+      }
+    }
 
     const rebateVal = parseFloat(rebateInput.value || "0") || 0;
     totalSpan.textContent = (rebateVal * qty).toFixed(2);
@@ -588,16 +578,16 @@ if (feBadge) feBadge.textContent = `FE ${formatPercent(feDec)} –`;
     if (onInput) inp.addEventListener("input", onInput);
     return cell;
   }
-  function tdRebateCell(onInput) {
-  const fe = h("span", { className: "fe-badge", style: "margin-right:.5rem;white-space:nowrap" }, "FE 0% –");
-  const inp = h("input", { type: "number", step: "0.01", value: 0, className: "form-control", style: "min-width:120px;display:inline-block;width:auto" });
-  const wrap = h("div", { style: "display:flex;align-items:center;justify-content:center;gap:.5rem" }, fe, inp);
-  const cell = h("td", { style: tdStyle() }, wrap);
-  cell.dataset.col = "rebate";
-  if (onInput) inp.addEventListener("input", onInput);
-  return cell;
-}
 
+  function tdRebateCell(onInput) {
+    const fe = h("span", { className: "fe-badge", style: "display:none;margin-right:.5rem;white-space:nowrap" }, "FE 0% –");
+    const inp = h("input", { type: "number", step: "0.01", value: 0, className: "form-control", style: "min-width:120px;display:inline-block;width:auto" });
+    const wrap = h("div", { style: "display:flex;align-items:center;justify-content:center;gap:.5rem" }, fe, inp);
+    const cell = h("td", { style: tdStyle() }, wrap);
+    cell.dataset.col = "rebate";
+    if (onInput) inp.addEventListener("input", onInput);
+    return cell;
+  }
 
   function tdInputText(col, val = "") {
     const inp = h("input", { type: "text", value: val, className: "form-control", style: "min-width:160px" });
@@ -660,14 +650,13 @@ if (feBadge) feBadge.textContent = `FE ${formatPercent(feDec)} –`;
   function getCellInput(type, tr, col) {
     const td = tr.querySelector(`[data-col="${col}"]`);
     return td ? td.querySelector(type) : null;
-  }
+    }
   function getCell(typeOrTr, maybeTr, maybeCol) {
-    // Overload for save: getCell("input", tr, "rrp") OR getCell(tr, "desc")
     if (typeof typeOrTr === "string") {
       return getCellInput(typeOrTr, maybeTr, maybeCol);
     } else {
       const tr = typeOrTr;
-      const col = maybeTr; // when called as getCell(tr, "desc")
+      const col = maybeTr;
       return tr.querySelector(`[data-col="${col}"]`)?.querySelector("*") || tr.querySelector(`[data-col="${col}"]`);
     }
   }
