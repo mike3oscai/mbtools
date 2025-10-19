@@ -5,7 +5,8 @@
     "customerCluster": "",
     "vertical": "Retail",
     "geo": "Benelux",
-    "type": "Distributor T1"
+    "type": "Distributor T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "PVDRFXH4",
@@ -13,7 +14,8 @@
     "customerCluster": "",
     "vertical": "Telco",
     "geo": "Benelux",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "WJQNPDED",
@@ -21,7 +23,8 @@
     "customerCluster": "",
     "vertical": "Telco",
     "geo": "Benelux",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "UFXSH3K4",
@@ -29,7 +32,8 @@
     "customerCluster": "",
     "vertical": "Telco",
     "geo": "Benelux",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "10LQL7V8",
@@ -37,7 +41,8 @@
     "customerCluster": "",
     "vertical": "B2B",
     "geo": "Benelux",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "KH3Y8NHB",
@@ -45,7 +50,8 @@
     "customerCluster": "",
     "vertical": "B2B",
     "geo": "Benelux",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "N2F6CICV",
@@ -53,7 +59,8 @@
     "customerCluster": "",
     "vertical": "Retail",
     "geo": "Benelux",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "89DQX5GU",
@@ -61,7 +68,8 @@
     "customerCluster": "",
     "vertical": "Retail",
     "geo": "Benelux",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "N434LVFP",
@@ -69,7 +77,8 @@
     "customerCluster": "",
     "vertical": "Retail",
     "geo": "Central Asia",
-    "type": "Distributor T1"
+    "type": "Distributor T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "5PAFDX8V",
@@ -77,7 +86,8 @@
     "customerCluster": "",
     "vertical": "Telco",
     "geo": "Central Asia",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "5GBXW0HS",
@@ -85,7 +95,8 @@
     "customerCluster": "",
     "vertical": "Telco",
     "geo": "Central Asia",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "ECRJJE8I",
@@ -93,7 +104,8 @@
     "customerCluster": "",
     "vertical": "Telco",
     "geo": "Central Asia",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "MHOW52HD",
@@ -101,7 +113,8 @@
     "customerCluster": "",
     "vertical": "B2B",
     "geo": "Central Asia",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "LSBH3227",
@@ -109,7 +122,8 @@
     "customerCluster": "",
     "vertical": "B2B",
     "geo": "Central Asia",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "ZT60JBE0",
@@ -117,7 +131,8 @@
     "customerCluster": "",
     "vertical": "Retail",
     "geo": "Central Asia",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "FUIVDRZS",
@@ -125,7 +140,8 @@
     "customerCluster": "",
     "vertical": "Retail",
     "geo": "Central Asia",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "L8R0QTQL",
@@ -133,7 +149,8 @@
     "customerCluster": "",
     "vertical": "Retail",
     "geo": "DACH",
-    "type": "Distributor T1"
+    "type": "Distributor T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "DZVMUYRC",
@@ -141,7 +158,8 @@
     "customerCluster": "",
     "vertical": "Telco",
     "geo": "DACH",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "KEJI94SL",
@@ -149,7 +167,8 @@
     "customerCluster": "",
     "vertical": "Telco",
     "geo": "DACH",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "434NONY2",
@@ -157,7 +176,8 @@
     "customerCluster": "",
     "vertical": "Telco",
     "geo": "DACH",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "X8VRGKJF",
@@ -165,7 +185,8 @@
     "customerCluster": "",
     "vertical": "B2B",
     "geo": "DACH",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "3M6ORJSP",
@@ -173,7 +194,8 @@
     "customerCluster": "",
     "vertical": "B2B",
     "geo": "DACH",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "YL0C2UZ6",
@@ -181,7 +203,8 @@
     "customerCluster": "",
     "vertical": "Retail",
     "geo": "DACH",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "0SPUH9RH",
@@ -189,7 +212,8 @@
     "customerCluster": "",
     "vertical": "Retail",
     "geo": "DACH",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "B0VTYIUB",
@@ -197,7 +221,8 @@
     "customerCluster": "",
     "vertical": "Retail",
     "geo": "France",
-    "type": "Distributor T1"
+    "type": "Distributor T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "Q721XKCB",
@@ -205,7 +230,8 @@
     "customerCluster": "",
     "vertical": "Telco",
     "geo": "France",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "1MEJWO6L",
@@ -213,7 +239,8 @@
     "customerCluster": "",
     "vertical": "Telco",
     "geo": "France",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "37BGIRSG",
@@ -221,7 +248,8 @@
     "customerCluster": "",
     "vertical": "Telco",
     "geo": "France",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "0ET3PHYW",
@@ -229,7 +257,8 @@
     "customerCluster": "",
     "vertical": "B2B",
     "geo": "France",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "A7IB1ZBI",
@@ -237,7 +266,8 @@
     "customerCluster": "",
     "vertical": "B2B",
     "geo": "France",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "J4YYDLPG",
@@ -245,7 +275,8 @@
     "customerCluster": "",
     "vertical": "Retail",
     "geo": "France",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "4FCCYBZQ",
@@ -253,7 +284,8 @@
     "customerCluster": "",
     "vertical": "Retail",
     "geo": "France",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "9L9B4GF6",
@@ -261,7 +293,8 @@
     "customerCluster": "",
     "vertical": "Retail",
     "geo": "Iberia",
-    "type": "Distributor T1"
+    "type": "Distributor T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "82PYOSO5",
@@ -269,7 +302,8 @@
     "customerCluster": "",
     "vertical": "Telco",
     "geo": "Iberia",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "5FF5ZFI5",
@@ -277,7 +311,8 @@
     "customerCluster": "",
     "vertical": "Telco",
     "geo": "Iberia",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "AH5Y2Y7L",
@@ -285,7 +320,8 @@
     "customerCluster": "",
     "vertical": "Telco",
     "geo": "Iberia",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "FUWAQCAL",
@@ -293,7 +329,8 @@
     "customerCluster": "",
     "vertical": "B2B",
     "geo": "Iberia",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "EOGF10XJ",
@@ -301,7 +338,8 @@
     "customerCluster": "",
     "vertical": "B2B",
     "geo": "Iberia",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "89MNOV5R",
@@ -309,7 +347,8 @@
     "customerCluster": "",
     "vertical": "Retail",
     "geo": "Iberia",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "1G1X9WE5",
@@ -317,7 +356,8 @@
     "customerCluster": "",
     "vertical": "Retail",
     "geo": "Iberia",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "0VQ1UNG4",
@@ -325,7 +365,8 @@
     "customerCluster": "",
     "vertical": "Retail",
     "geo": "Italy",
-    "type": "Distributor T1"
+    "type": "Distributor T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "GGPOKUW9",
@@ -333,7 +374,8 @@
     "customerCluster": "",
     "vertical": "Telco",
     "geo": "Italy",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "MOU4PFXZ",
@@ -341,7 +383,8 @@
     "customerCluster": "",
     "vertical": "Telco",
     "geo": "Italy",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "M8WF26M5",
@@ -349,7 +392,8 @@
     "customerCluster": "",
     "vertical": "Telco",
     "geo": "Italy",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "3LT9YINS",
@@ -357,7 +401,8 @@
     "customerCluster": "",
     "vertical": "B2B",
     "geo": "Italy",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "QT9GJZEK",
@@ -365,7 +410,8 @@
     "customerCluster": "",
     "vertical": "B2B",
     "geo": "Italy",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "9W43OM5O",
@@ -373,7 +419,8 @@
     "customerCluster": "",
     "vertical": "Retail",
     "geo": "Italy",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "48DEGJ0A",
@@ -381,7 +428,8 @@
     "customerCluster": "",
     "vertical": "Retail",
     "geo": "Italy",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "LAZHXMBC",
@@ -389,7 +437,8 @@
     "customerCluster": "",
     "vertical": "Retail",
     "geo": "MEA",
-    "type": "Distributor T1"
+    "type": "Distributor T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "ZS0A7D79",
@@ -397,7 +446,8 @@
     "customerCluster": "",
     "vertical": "Telco",
     "geo": "MEA",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "9HZS0EJC",
@@ -405,7 +455,8 @@
     "customerCluster": "",
     "vertical": "Telco",
     "geo": "MEA",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "JXDY02Z9",
@@ -413,7 +464,8 @@
     "customerCluster": "",
     "vertical": "Telco",
     "geo": "MEA",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "FZ3J56VQ",
@@ -421,7 +473,8 @@
     "customerCluster": "",
     "vertical": "B2B",
     "geo": "MEA",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "895VIIJB",
@@ -429,7 +482,8 @@
     "customerCluster": "",
     "vertical": "B2B",
     "geo": "MEA",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "JHIJH44O",
@@ -437,7 +491,8 @@
     "customerCluster": "",
     "vertical": "Retail",
     "geo": "MEA",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "GBTQZTR6",
@@ -445,7 +500,8 @@
     "customerCluster": "",
     "vertical": "Retail",
     "geo": "MEA",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "AH6D31L1",
@@ -453,7 +509,8 @@
     "customerCluster": "",
     "vertical": "Retail",
     "geo": "Nordics",
-    "type": "Distributor T1"
+    "type": "Distributor T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "54TP6A2H",
@@ -461,7 +518,8 @@
     "customerCluster": "",
     "vertical": "Telco",
     "geo": "Nordics",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "HGX899UF",
@@ -469,7 +527,8 @@
     "customerCluster": "",
     "vertical": "Telco",
     "geo": "Nordics",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "0FQBHCTU",
@@ -477,7 +536,8 @@
     "customerCluster": "",
     "vertical": "Telco",
     "geo": "Nordics",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "KGGEFVL2",
@@ -485,7 +545,8 @@
     "customerCluster": "",
     "vertical": "B2B",
     "geo": "Nordics",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "Z7T7CYBD",
@@ -493,7 +554,8 @@
     "customerCluster": "",
     "vertical": "B2B",
     "geo": "Nordics",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "P4U9XYAF",
@@ -501,7 +563,8 @@
     "customerCluster": "",
     "vertical": "Retail",
     "geo": "Nordics",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "2VPOIPSZ",
@@ -509,7 +572,8 @@
     "customerCluster": "",
     "vertical": "Retail",
     "geo": "Nordics",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "QNDWPD72",
@@ -517,7 +581,8 @@
     "customerCluster": "",
     "vertical": "Retail",
     "geo": "Poland",
-    "type": "Distributor T1"
+    "type": "Distributor T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "0OH631W4",
@@ -525,7 +590,8 @@
     "customerCluster": "",
     "vertical": "Telco",
     "geo": "Poland",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "K8M7QGGO",
@@ -533,7 +599,8 @@
     "customerCluster": "",
     "vertical": "Telco",
     "geo": "Poland",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "JQNC85JL",
@@ -541,7 +608,8 @@
     "customerCluster": "",
     "vertical": "Telco",
     "geo": "Poland",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "H8G71Z3R",
@@ -549,7 +617,8 @@
     "customerCluster": "",
     "vertical": "B2B",
     "geo": "Poland",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "0SHBVJA5",
@@ -557,7 +626,8 @@
     "customerCluster": "",
     "vertical": "B2B",
     "geo": "Poland",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "OBGDV0AV",
@@ -565,7 +635,8 @@
     "customerCluster": "",
     "vertical": "Retail",
     "geo": "Poland",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "8Z47SSD5",
@@ -573,7 +644,8 @@
     "customerCluster": "",
     "vertical": "Retail",
     "geo": "Poland",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "H960676P",
@@ -581,7 +653,8 @@
     "customerCluster": "",
     "vertical": "Retail",
     "geo": "SEE",
-    "type": "Distributor T1"
+    "type": "Distributor T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "0Z26GRR7",
@@ -589,7 +662,8 @@
     "customerCluster": "",
     "vertical": "Telco",
     "geo": "SEE",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "8YDRVP04",
@@ -597,7 +671,8 @@
     "customerCluster": "",
     "vertical": "Telco",
     "geo": "SEE",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "7R0ULZGM",
@@ -605,7 +680,8 @@
     "customerCluster": "",
     "vertical": "Telco",
     "geo": "SEE",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "BXXIFWTP",
@@ -613,7 +689,8 @@
     "customerCluster": "",
     "vertical": "B2B",
     "geo": "SEE",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "ALXU0AI4",
@@ -621,7 +698,8 @@
     "customerCluster": "",
     "vertical": "B2B",
     "geo": "SEE",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "DH369K7S",
@@ -629,7 +707,8 @@
     "customerCluster": "",
     "vertical": "Retail",
     "geo": "SEE",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "9W83LISL",
@@ -637,7 +716,8 @@
     "customerCluster": "",
     "vertical": "Retail",
     "geo": "SEE",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "YPC1MEBV",
@@ -645,7 +725,8 @@
     "customerCluster": "",
     "vertical": "Retail",
     "geo": "UKI",
-    "type": "Distributor T1"
+    "type": "Distributor T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "YFUOFDB4",
@@ -653,7 +734,8 @@
     "customerCluster": "",
     "vertical": "Telco",
     "geo": "UKI",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "L2PGLFF2",
@@ -661,7 +743,8 @@
     "customerCluster": "",
     "vertical": "Telco",
     "geo": "UKI",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "OKIDUN39",
@@ -669,7 +752,8 @@
     "customerCluster": "",
     "vertical": "Telco",
     "geo": "UKI",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "QVS2EP9U",
@@ -677,7 +761,8 @@
     "customerCluster": "",
     "vertical": "B2B",
     "geo": "UKI",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "5L3J7FSG",
@@ -685,7 +770,8 @@
     "customerCluster": "",
     "vertical": "B2B",
     "geo": "UKI",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "TRHXGYHG",
@@ -693,7 +779,8 @@
     "customerCluster": "",
     "vertical": "Retail",
     "geo": "UKI",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "UDXB0783",
@@ -701,7 +788,8 @@
     "customerCluster": "",
     "vertical": "Retail",
     "geo": "UKI",
-    "type": "Direct T1"
+    "type": "Direct T1",
+    "frontend": "10%"
   },
   {
     "crmNumber": "G7BI5OL6",
@@ -709,7 +797,8 @@
     "customerCluster": "",
     "vertical": "Retail",
     "geo": "Benelux",
-    "type": "Indirect T2"
+    "type": "Indirect T2",
+    "frontend": "10%"
   },
   {
     "crmNumber": "MZJP36C2",
@@ -717,7 +806,8 @@
     "customerCluster": "",
     "vertical": "Retail",
     "geo": "Central Asia",
-    "type": "Indirect T2"
+    "type": "Indirect T2",
+    "frontend": "10%"
   },
   {
     "crmNumber": "8QRHWW2Q",
@@ -725,7 +815,8 @@
     "customerCluster": "",
     "vertical": "Retail",
     "geo": "DACH",
-    "type": "Indirect T2"
+    "type": "Indirect T2",
+    "frontend": "10%"
   },
   {
     "crmNumber": "17LEZVFK",
@@ -733,7 +824,8 @@
     "customerCluster": "",
     "vertical": "Retail",
     "geo": "France",
-    "type": "Indirect T2"
+    "type": "Indirect T2",
+    "frontend": "10%"
   },
   {
     "crmNumber": "KS10OVAX",
@@ -741,7 +833,8 @@
     "customerCluster": "",
     "vertical": "Retail",
     "geo": "Iberia",
-    "type": "Indirect T2"
+    "type": "Indirect T2",
+    "frontend": "10%"
   },
   {
     "crmNumber": "P99JFBYB",
@@ -749,7 +842,8 @@
     "customerCluster": "",
     "vertical": "Retail",
     "geo": "Italy",
-    "type": "Indirect T2"
+    "type": "Indirect T2",
+    "frontend": "10%"
   },
   {
     "crmNumber": "7EOCW6HZ",
@@ -757,7 +851,8 @@
     "customerCluster": "",
     "vertical": "Retail",
     "geo": "MEA",
-    "type": "Indirect T2"
+    "type": "Indirect T2",
+    "frontend": "10%"
   },
   {
     "crmNumber": "2K4QO6BV",
@@ -765,7 +860,8 @@
     "customerCluster": "",
     "vertical": "Telco",
     "geo": "Nordics",
-    "type": "Indirect T2"
+    "type": "Indirect T2",
+    "frontend": "10%"
   },
   {
     "crmNumber": "3HEYPB8R",
@@ -773,7 +869,8 @@
     "customerCluster": "",
     "vertical": "Telco",
     "geo": "Poland",
-    "type": "Indirect T2"
+    "type": "Indirect T2",
+    "frontend": "10%"
   },
   {
     "crmNumber": "GPZVM99A",
@@ -781,7 +878,8 @@
     "customerCluster": "",
     "vertical": "Telco",
     "geo": "SEE",
-    "type": "Indirect T2"
+    "type": "Indirect T2",
+    "frontend": "10%"
   },
   {
     "crmNumber": "MGKLCP43",
@@ -789,7 +887,8 @@
     "customerCluster": "",
     "vertical": "Telco",
     "geo": "UKI",
-    "type": "Indirect T2"
+    "type": "Indirect T2",
+    "frontend": "10%"
   },
   {
     "crmNumber": "6PVANGS6",
@@ -797,6 +896,7 @@
     "customerCluster": "",
     "vertical": "B2B",
     "geo": "Benelux",
-    "type": "Indirect T2"
+    "type": "Indirect T2",
+    "frontend": "10%"
   }
 ]
