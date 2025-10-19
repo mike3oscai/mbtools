@@ -433,16 +433,17 @@ export async function renderCreateForm(container) {
       endDay: endDayInp.value || null,
       programNumber: programNumInp.value
     };
+
     const lines = Array.from(tbody.querySelectorAll("tr")).map(tr => ({
       pn: tr.dataset.pn,
-      description: tr.querySelector('[data-col="desc"]').textContent,
-      rrp: numVal(tr.querySelector('[data-col="rrp"]')),
-      promoRrp: numVal(tr.querySelector('[data-col="promoRrp"]')),
-      vatOnRrp: tr.querySelector('[data-col="vat"] select').value, // "Yes"/"No"
-      rebate: numVal(tr.querySelector('[data-col="rebate"]')),
-      maxQty: numVal(tr.querySelector('[data-col="maxQty"]')),
-      totalProgramRebate: numVal(tr.querySelector('[data-col="total"]')),
-      programNumber: tr.querySelector('[data-col="lineProgramNumber"] input').value || header.programNumber
+      description: getCell(tr, "desc")?.textContent ?? "",
+      rrp: numVal(getCell("input", tr, "rrp")),
+      promoRrp: numVal(getCell("input", tr, "promoRrp")),
+      vatOnRrp: (getCell("select", tr, "vat")?.value) || "No",
+      rebate: numVal(getCell("input", tr, "rebate")),
+      maxQty: numVal(getCell("input", tr, "maxQty")),
+      totalProgramRebate: numVal(getCell("span", tr, "total")),
+      programNumber: (getCell("input", tr, "lineProgramNumber")?.value) || header.programNumber
     }));
 
     if (lines.length === 0) return alert("No products added.");
@@ -473,12 +474,16 @@ export async function renderCreateForm(container) {
 
   // Core recalculation for a row (VAT-Yes path)
   function recalcRow(tr, countrySelRef) {
-    const rrpInput      = tr.querySelector('[data-col="rrp"] input');
-    const promoInput    = tr.querySelector('[data-col="promoRrp"] input');
-    const vatSelect     = tr.querySelector('[data-col="vat"] select');
-    const rebateInput   = tr.querySelector('[data-col="rebate"] input');
-    const qtyInput      = tr.querySelector('[data-col="maxQty"] input');
-    const totalSpan     = tr.querySelector('[data-col="total"]');
+    // Defensive selectors
+    const rrpInput    = getCell("input", tr, "rrp");
+    const promoInput  = getCell("input", tr, "promoRrp");
+    const vatSelect   = getCell("select", tr, "vat");
+    const rebateInput = getCell("input", tr, "rebate");
+    const qtyInput    = getCell("input", tr, "maxQty");
+    const totalSpan   = getCell("span", tr, "total");
+
+    // If structure is incomplete, bail out gracefully
+    if (!rrpInput || !promoInput || !vatSelect || !rebateInput || !qtyInput || !totalSpan) return;
 
     const rrp   = parseFloat(rrpInput.value || "0") || 0;
     const promo = parseFloat(promoInput.value || "0") || 0;
@@ -515,43 +520,44 @@ export async function renderCreateForm(container) {
 
   // ---------------- small HTML helpers for table ----------------------------
   function trHead(cols) { return h("tr", {}, ...cols.map(c => h("th", { style: thStyle() }, c))); }
+
   function td(txt, data = {}) {
-  const el = h("td", { style: tdStyle() }, txt);
-  if (data && data["data-col"]) el.dataset.col = data["data-col"];
-  return el;
-}
+    const el = h("td", { style: tdStyle() }, txt);
+    if (data && data["data-col"]) el.dataset.col = data["data-col"];
+    return el;
+  }
 
-function tdInputNumber(col, initial = 0, onInput) {
-  const inp = h("input", { type: "number", step: "0.01", value: initial, className: "form-control", style: "min-width:120px" });
-  const cell = h("td", { style: tdStyle() }, inp);
-  cell.dataset.col = col;                 // <-- clave del fix
-  if (onInput) inp.addEventListener("input", onInput);
-  return cell;
-}
+  function tdInputNumber(col, initial = 0, onInput) {
+    const inp = h("input", { type: "number", step: "0.01", value: initial, className: "form-control", style: "min-width:120px" });
+    const cell = h("td", { style: tdStyle() }, inp);
+    cell.dataset.col = col;
+    if (onInput) inp.addEventListener("input", onInput);
+    return cell;
+  }
 
-function tdInputText(col, val = "") {
-  const inp = h("input", { type: "text", value: val, className: "form-control", style: "min-width:160px" });
-  const cell = h("td", { style: tdStyle() }, inp);
-  cell.dataset.col = col;                 // <-- clave del fix
-  return cell;
-}
+  function tdInputText(col, val = "") {
+    const inp = h("input", { type: "text", value: val, className: "form-control", style: "min-width:160px" });
+    const cell = h("td", { style: tdStyle() }, inp);
+    cell.dataset.col = col;
+    return cell;
+  }
 
-function tdReadOnly(col, val = "") {
-  const span = h("span", {}, val);
-  const cell = h("td", { style: tdStyle() }, span);
-  cell.dataset.col = col;                 // <-- clave del fix
-  return cell;
-}
+  function tdReadOnly(col, val = "") {
+    const span = h("span", {}, val);
+    const cell = h("td", { style: tdStyle() }, span);
+    cell.dataset.col = col;
+    return cell;
+  }
 
-function tdSelect(col, opts, def, onChange) {
-  const sel = h("select", { className: "form-control" },
-    ...opts.map(o => h("option", { value: o, selected: o === def }, o))
-  );
-  if (onChange) sel.addEventListener("change", onChange);
-  const cell = h("td", { style: tdStyle() }, sel);
-  cell.dataset.col = col;                 // <-- clave del fix
-  return cell;
-}
+  function tdSelect(col, opts, def, onChange) {
+    const sel = h("select", { className: "form-control" },
+      ...opts.map(o => h("option", { value: o, selected: o === def }, o))
+    );
+    if (onChange) sel.addEventListener("change", onChange);
+    const cell = h("td", { style: tdStyle() }, sel);
+    cell.dataset.col = col;
+    return cell;
+  }
 
   function tdActionRemove() {
     const btn = h("button", { type: "button", className: "action-cta" }, "Remove");
@@ -562,14 +568,19 @@ function tdSelect(col, opts, def, onChange) {
     });
     return cell;
   }
-  
+
   function tdStyle() { return "padding:.5rem;border-top:1px solid var(--card-border);text-align:center"; }
   function thStyle() { return "padding:.5rem;border-bottom:1px solid var(--card-border);text-align:center;font-weight:600"; }
   function byId(id) { return document.getElementById(id); }
-  function numVal(tdOrInp) {
-    if (!tdOrInp) return 0;
-    const el = tdOrInp.tagName === "TD" ? tdOrInp.querySelector("input,select,span") || tdOrInp : tdOrInp;
-    const v = el.tagName === "SPAN" ? el.textContent : el.value;
+
+  // Get numeric from input/select/span (defensive)
+  function numVal(node) {
+    if (!node) return 0;
+    const el = node.tagName ? node : null;
+    const t = el?.tagName;
+    let v = "0";
+    if (t === "INPUT" || t === "SELECT") v = el.value ?? "0";
+    else if (t === "SPAN") v = el.textContent ?? "0";
     const n = parseFloat(v);
     return Number.isFinite(n) ? n : 0;
   }
@@ -579,5 +590,21 @@ function tdSelect(col, opts, def, onChange) {
     const sel = h("select", { className: "form-control", id: `fld-${key}`, name: key, disabled });
     setSelectOptions(sel, options, placeholder);
     return sel;
+  }
+
+  // --- dataset helpers for rows ---
+  function getCellInput(type, tr, col) {
+    const td = tr.querySelector(`[data-col="${col}"]`);
+    return td ? td.querySelector(type) : null;
+  }
+  function getCell(typeOrTr, maybeTr, maybeCol) {
+    // Overload for save: getCell("input", tr, "rrp") OR getCell(tr, "desc")
+    if (typeof typeOrTr === "string") {
+      return getCellInput(typeOrTr, maybeTr, maybeCol);
+    } else {
+      const tr = typeOrTr;
+      const col = maybeTr; // when called as getCell(tr, "desc")
+      return tr.querySelector(`[data-col="${col}"]`)?.querySelector("*") || tr.querySelector(`[data-col="${col}"]`);
+    }
   }
 }
