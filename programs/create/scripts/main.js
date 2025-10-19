@@ -1,14 +1,13 @@
 // Create a Program – vertical card form with 2-step UX.
 // Step 1: mandatory header (confirm/delete) + auto Program Number
 // Step 2: multi PN selection (or filter by Product/RAM/ROM) + table of added products
-// All code modular; no side effects on import.
+// Adds: Country (from /data/geocountryset.json) + VAT loader and Rebate calc when VAT=Yes.
 
-import { loadCustomerSet, loadProductSet } from "/shared/scripts/data.js";
+import { loadCustomerSet, loadProductSet, loadVatSet } from "/shared/scripts/data.js";
 const GEOCOUNTRY_URL = "/data/geocountryset.json";
 
-
 // ---------------------------------------------------------------------------
-// Schema (header + product area fields)
+// Options
 // ---------------------------------------------------------------------------
 const PROGRAM_TYPE_OPTIONS = [
   { value: "PR", label: "PR – Price reduction in T1" },
@@ -38,7 +37,7 @@ const VERTICAL_OPTIONS = [
 ];
 
 // ---------------------------------------------------------------------------
-// Tiny DOM helper
+// Tiny helpers
 // ---------------------------------------------------------------------------
 function h(tag, props = {}, ...children) {
   const el = Object.assign(document.createElement(tag), props);
@@ -46,10 +45,10 @@ function h(tag, props = {}, ...children) {
   return el;
 }
 const unique = (arr) => [...new Set(arr)];
+const fmtPN = (p) => `${p.PN} — ${p.Description}`;
 
 // ---------------------------------------------------------------------------
-// Select helpers (preserve selected value(s) on rebuild)
-// - supports single and multiple selects (pass selected as string or array)
+// Select helpers (preserve selection; supports single/multiple)
 // ---------------------------------------------------------------------------
 function setSelectOptions(selectEl, options = [], placeholder = "Select...", selected = "") {
   const multiple = !!selectEl.multiple;
@@ -74,9 +73,6 @@ function setSelectOptions(selectEl, options = [], placeholder = "Select...", sel
   }
 }
 
-// Pretty label for PN dropdown
-const fmtPN = (p) => `${p.PN} — ${p.Description}`;
-
 // ---------------------------------------------------------------------------
 // Program Number generator
 // CODE + GEO(UPPER) + YEAR + incremental(7 digits)
@@ -93,8 +89,9 @@ function buildProgramNumber(code, geo, startDateISO) {
   const year = new Date(startDateISO || Date.now()).getFullYear();
   return `${code}${geo.toUpperCase()}${year}${nextSequence(code, geo, year)}`;
 }
+
 // ---------------------------------------------------------------------------
-// Load countries by GEO from geocountryset.json
+// Countries loader from geocountryset.json
 // ---------------------------------------------------------------------------
 async function loadCountriesByGeo(geo) {
   if (!geo) return [];
@@ -110,27 +107,36 @@ async function loadCountriesByGeo(geo) {
   }
 }
 
-
 // ---------------------------------------------------------------------------
 // Public API
 // ---------------------------------------------------------------------------
 export async function renderCreateForm(container) {
   if (!container) return;
 
-  // ----- Build static header fields -----
-  const header = [
-    ["Program Type", buildSelect("programType", PROGRAM_TYPE_OPTIONS, "Select a program type")],
-    ["Geo",          buildSelect("geo", GEO_OPTIONS, "Select a geo")],
-    ["Vertical",     buildSelect("vertical", VERTICAL_OPTIONS, "Select a vertical")],
-    ["Customer",     buildSelect("customer", [], "Select a customer (choose Geo first)", true)],
-    ["Start Day",    h("input", { className: "form-control", type: "date", id: "fld-startDay", name: "startDay" })],
-    ["End Day",      h("input", { className: "form-control", type: "date", id: "fld-endDay", name: "endDay" })],
-    ["Program Number", h("input", { className: "form-control", type: "text", id: "fld-programNumber", name: "programNumber", placeholder: "Auto after Confirm (editable)" })],
+  // ----- Build static header fields (new order + Country) -----
+  const programTypeSel = buildSelect("programType", PROGRAM_TYPE_OPTIONS, "Select a program type");
+  const geoSel         = buildSelect("geo", GEO_OPTIONS, "Select a geo");
+  const verticalSel    = buildSelect("vertical", VERTICAL_OPTIONS, "Select a vertical");
+  const customerSel    = buildSelect("customer", [], "Select a customer (choose Geo first)", true);
+  const startDayInp    = h("input", { className: "form-control", type: "date", id: "fld-startDay", name: "startDay" });
+  const endDayInp      = h("input", { className: "form-control", type: "date", id: "fld-endDay", name: "endDay" });
+  const programNumInp  = h("input", { className: "form-control", type: "text", id: "fld-programNumber", name: "programNumber", placeholder: "Auto after Confirm (editable)" });
+  const countrySel     = buildSelect("country", [], "Select a country"); // injected after Geo
+
+  const headerRows = [
+    ["Program Type", programTypeSel],
+    ["Geo",          geoSel],
+    ["Country",      countrySel],
+    ["Vertical",     verticalSel],
+    ["Customer",     customerSel],
+    ["Start Day",    startDayInp],
+    ["End Day",      endDayInp],
+    ["Program Number", programNumInp]
   ];
 
-  // Render header grid
+  // Render header grid + actions
   container.replaceChildren(
-    ...header.map(([label, control]) => {
+    ...headerRows.map(([label, control]) => {
       const row = h("div", { className: "form-row" });
       row.append(
         h("label", { className: "form-label", htmlFor: control.id }, label),
@@ -138,9 +144,8 @@ export async function renderCreateForm(container) {
       );
       return row;
     }),
-    // Header actions
     h("div", { className: "form-row" },
-      h("div", { className: "form-label" }, ""), // empty cell
+      h("div", { className: "form-label" }, ""),
       h("div", {},
         h("button", { id: "btnConfirm", className: "action-cta", type: "button", style: "margin-right:.5rem" }, "Confirm"),
         h("button", { id: "btnDelete", className: "action-cta", type: "button" }, "Delete")
@@ -148,7 +153,7 @@ export async function renderCreateForm(container) {
     )
   );
 
-  // ----- Product area (hidden until Confirm) -----
+  // Product area (hidden until Confirm)
   const productsSection = h("section", { className: "card", style: "margin-top:1rem; display:none" },
     h("h2", {}, "Products"),
     h("div", { className: "form-row" },
@@ -182,7 +187,7 @@ export async function renderCreateForm(container) {
   );
   container.parentElement.appendChild(productsSection);
 
-  // ----- Table area -----
+  // Selected products table
   const tableWrap = h("section", { className: "card", style: "margin-top:1rem; display:none" },
     h("h2", {}, "Selected products"),
     h("div", { className: "scroll" },
@@ -201,34 +206,7 @@ export async function renderCreateForm(container) {
   );
   container.parentElement.appendChild(tableWrap);
 
-  // ----- References -----
-  const programTypeSel = byId("fld-programType");
-  const geoSel         = byId("fld-geo");
-  const countrySel = buildSelect("country", [], "Select a country");
-        geoSel.closest(".form-row").after(
-        (() => {
-           const row = document.createElement("div");
-            row.className = "form-row";
-            row.append(
-            h("label", { className: "form-label", htmlFor: "fld-country" }, "Country"),
-            countrySel
-            );
-            return row;
-        })()
-    );
-
-// Update countries when Geo changes
-geoSel.addEventListener("change", async () => {
-  const countries = await loadCountriesByGeo(geoSel.value);
-  setSelectOptions(countrySel, countries.map(c => ({ value: c, label: c })), "Select a country");
-});
-
-  const verticalSel    = byId("fld-vertical");
-  const customerSel    = byId("fld-customer");
-  const startDayInp    = byId("fld-startDay");
-  const endDayInp      = byId("fld-endDay");
-  const programNumInp  = byId("fld-programNumber");
-
+  // Refs
   const pnSel          = byId("fld-pn");
   const productSel     = byId("fld-product");
   const ramSel         = byId("fld-ram");
@@ -240,14 +218,33 @@ geoSel.addEventListener("change", async () => {
   const btnSaveProgram = byId("btnSaveProgram");
   const tbody          = byId("productsTbody");
 
-  // ----- Data -----
-  const [customers, products] = await Promise.all([loadCustomerSet(), loadProductSet()]);
+  // Data
+  const [customers, products, vatset] = await Promise.all([
+    loadCustomerSet(),
+    loadProductSet(),
+    loadVatSet()
+  ]);
 
-  // ----- Start date constraint: today or future -----
+  // VAT lookup by country
+  function getVatForCountry(country) {
+    if (!country) return null;
+    const entry = vatset.find(v => v.country === country);
+    return entry && typeof entry.vat === "number" ? entry.vat : null;
+  }
+
+  // Header constraints/behavior
   const todayISO = new Date().toISOString().slice(0, 10);
   startDayInp.min = todayISO;
 
-  // ----- Customer filtering (Geo + optional Vertical) -----
+  // Geo -> Countries
+  geoSel.addEventListener("change", async () => {
+    const countries = await loadCountriesByGeo(geoSel.value);
+    setSelectOptions(countrySel, countries.map(c => ({ value: c, label: c })), "Select a country");
+    // Also refresh customers when geo changes
+    refreshCustomers();
+  });
+
+  // Customers (Geo + optional Vertical)
   function refreshCustomers() {
     const g = geoSel.value;
     const v = verticalSel.value;
@@ -262,11 +259,15 @@ geoSel.addEventListener("change", async () => {
     customerSel.disabled = opts.length === 0;
     setSelectOptions(customerSel, opts, opts.length ? `Select a customer (${g}${v ? " · " + v : ""})` : "No customers for this filter");
   }
-  geoSel.addEventListener("change", refreshCustomers);
   verticalSel.addEventListener("change", refreshCustomers);
-  refreshCustomers();
 
-  // ----- Product/PN dual selection (PN is multi) -----
+  // Initial load for countries if Geo preset (optional)
+  if (geoSel.value) {
+    const countries = await loadCountriesByGeo(geoSel.value);
+    setSelectOptions(countrySel, countries.map(c => ({ value: c, label: c })), "Select a country");
+  }
+
+  // Product/PN dual selection (PN is multi)
   function setRamOptions(list, selected = []) {
     const rams = unique(list.map(p => p.RAM)).map(v => ({ value: v, label: v }));
     setSelectOptions(ramSel, rams, "Choose RAM", selected);
@@ -278,7 +279,7 @@ geoSel.addEventListener("change", async () => {
   function setPnOptions(list, selected = []) {
     const opts = list.map(p => ({ value: p.PN, label: fmtPN(p) }));
     pnSel.multiple = true;
-    pnSel.size = Math.min(12, Math.max(6, opts.length)); // UX size
+    pnSel.size = Math.min(12, Math.max(6, opts.length));
     setSelectOptions(pnSel, opts, "Select PN(s) or filter by Product/RAM/ROM", selected);
   }
   function filteredProducts() {
@@ -291,14 +292,11 @@ geoSel.addEventListener("change", async () => {
       (!selRom || p.ROM === selRom)
     );
   }
-  // Select all toggle
   chkSelectAll.addEventListener("change", () => {
     const list = filteredProducts();
     const values = chkSelectAll.checked ? list.map(p => p.PN) : [];
     setPnOptions(list, values);
   });
-
-  // On PN manual change (multi): sync filters if exactly one unique Program/RAM/ROM remains
   pnSel.addEventListener("change", () => {
     const selectedPNs = Array.from(pnSel.selectedOptions).map(o => o.value);
     if (selectedPNs.length === 0) return;
@@ -306,21 +304,16 @@ geoSel.addEventListener("change", async () => {
     const progs = unique(selectedProducts.map(p => p.Program));
     const rams = unique(selectedProducts.map(p => p.RAM));
     const roms = unique(selectedProducts.map(p => p.ROM));
-
-    // If single value in a dimension, reflect it in its select (keeps UX coherent)
     if (progs.length === 1) productSel.value = progs[0];
     if (rams.length === 1)  ramSel.value = rams[0];
     if (roms.length === 1)  romSel.value = roms[0];
   });
-
-  // Filters change → narrow PN, preserve multi-selection where possible
   function onPRRChange() {
     const baseForOptions = productSel.value
       ? products.filter(p => p.Program === productSel.value)
       : products;
     setRamOptions(baseForOptions, Array.from(ramSel.selectedOptions).map(o => o.value));
     setRomOptions(baseForOptions, Array.from(romSel.selectedOptions).map(o => o.value));
-
     const list = filteredProducts();
     const current = Array.from(pnSel.selectedOptions).map(o => o.value).filter(v => list.some(p => p.PN === v));
     setPnOptions(list, current);
@@ -330,7 +323,7 @@ geoSel.addEventListener("change", async () => {
   ramSel.addEventListener("change", onPRRChange);
   romSel.addEventListener("change", onPRRChange);
 
-  // Initial fill
+  // Init product filters
   (function initProductArea() {
     const programs = unique(products.map(p => p.Program)).map(v => ({ value: v, label: v }));
     setSelectOptions(productSel, programs, "Select a product");
@@ -342,12 +335,11 @@ geoSel.addEventListener("change", async () => {
   // -------------------------------------------------------------------------
   // Step 1: Confirm / Delete (header)
   // -------------------------------------------------------------------------
-  btnConfirm.addEventListener("click", () => {
+  const today = todayISO;
+  byId("btnConfirm").addEventListener("click", () => {
     const err = validateHeader();
-    if (err) {
-      alert(err);
-      return;
-    }
+    if (err) return alert(err);
+
     // Lock header fields
     [programTypeSel, geoSel, countrySel, verticalSel, customerSel, startDayInp, endDayInp].forEach(el => el.disabled = true);
 
@@ -361,7 +353,7 @@ geoSel.addEventListener("change", async () => {
     tableWrap.style.display = "";
   });
 
-  btnDelete.addEventListener("click", () => {
+  byId("btnDelete").addEventListener("click", () => {
     // Unlock and clear header
     [programTypeSel, geoSel, countrySel, verticalSel, customerSel, startDayInp, endDayInp].forEach(el => {
       el.disabled = false;
@@ -389,27 +381,26 @@ geoSel.addEventListener("change", async () => {
   function validateHeader() {
     if (!PROGRAM_TYPE_OPTIONS.some(o => o.value === programTypeSel.value)) return "Program Type is required.";
     if (!GEO_OPTIONS.some(o => o.value === geoSel.value)) return "Geo is required.";
+    if (!countrySel.value) return "Country is required.";
     if (!VERTICAL_OPTIONS.some(o => o.value === verticalSel.value)) return "Vertical is required.";
     if (!customerSel.value) return "Customer is required.";
 
     const startISO = startDayInp.value;
     const endISO = endDayInp.value;
     if (!startISO) return "Start Day is required.";
-    // Start must be today or in the future
-    if (startISO < todayISO) return "Start Day must be today or in the future.";
-    // End optional, but if set must be >= start
+    if (startISO < today) return "Start Day must be today or in the future.";
     if (endISO && endISO < startISO) return "End Day cannot be earlier than Start Day.";
     return "";
   }
 
   // -------------------------------------------------------------------------
-  // Step 2: Add Products → table
+  // Step 2: Add Products → table + VAT-based rebate calc
   // -------------------------------------------------------------------------
   btnAddProducts.addEventListener("click", () => {
     const selectedPNs = Array.from(pnSel.selectedOptions).map(o => o.value);
     const subset = selectedPNs.length
       ? products.filter(p => selectedPNs.includes(p.PN))
-      : filteredProducts(); // if none explicitly selected, take the filtered list
+      : filteredProducts();
 
     if (subset.length === 0) {
       alert("Please select at least one PN or narrow filters to a non-empty list.");
@@ -420,20 +411,24 @@ geoSel.addEventListener("change", async () => {
     const existing = new Set(Array.from(tbody.querySelectorAll('tr')).map(tr => tr.dataset.pn));
     subset.forEach(p => {
       if (existing.has(p.PN)) return;
-      tbody.append(rowForProduct(p, programNumInp.value));
+      const tr = rowForProduct(p, programNumInp.value);
+      tbody.append(tr);
       existing.add(p.PN);
+      // Initial calc (in case VAT=Yes and RRP already filled later)
+      recalcRow(tr, countrySel);
     });
 
     btnSaveProgram.disabled = tbody.children.length === 0;
   });
 
-  // Save Program (stub – next step will persist to /data)
+  // Save Program (payload ready; persistence next step)
   btnSaveProgram.addEventListener("click", () => {
     const header = {
       programType: programTypeSel.value,
       geo: geoSel.value,
+      country: countrySel.value,
       vertical: verticalSel.value,
-      customer: customerSel.value, // CRM number as value
+      customer: customerSel.value, // CRM number
       startDay: startDayInp.value,
       endDay: endDayInp.value || null,
       programNumber: programNumInp.value
@@ -443,45 +438,82 @@ geoSel.addEventListener("change", async () => {
       description: tr.querySelector('[data-col="desc"]').textContent,
       rrp: numVal(tr.querySelector('[data-col="rrp"]')),
       promoRrp: numVal(tr.querySelector('[data-col="promoRrp"]')),
-      vatOnRrp: tr.querySelector('[data-col="vat"]').value, // "Yes"/"No"
+      vatOnRrp: tr.querySelector('[data-col="vat"] select').value, // "Yes"/"No"
       rebate: numVal(tr.querySelector('[data-col="rebate"]')),
       maxQty: numVal(tr.querySelector('[data-col="maxQty"]')),
       totalProgramRebate: numVal(tr.querySelector('[data-col="total"]')),
-      programNumber: tr.querySelector('[data-col="lineProgramNumber"]').value || header.programNumber
+      programNumber: tr.querySelector('[data-col="lineProgramNumber"] input').value || header.programNumber
     }));
 
-    // Minimal validation for table
     if (lines.length === 0) return alert("No products added.");
-    // Here we would persist to /data/... (next iteration)
     console.log({ header, lines });
     alert("Program ready to be saved (persistence comes next). Check console for payload.");
   });
 
-  // -------------------------------------------------------------------------
-  // Helpers (table rows, formatting)
-  // -------------------------------------------------------------------------
+  // ---------------- Table row helpers + Rebate calc -------------------------
   function rowForProduct(p, programNumber) {
     const tr = h("tr", { "data-pn": p.PN, style: "border-top:1px solid var(--card-border)" },
       td(p.PN),
       td(p.Description, { "data-col": "desc" }),
-      tdInputNumber("rrp", 0),
-      tdInputNumber("promoRrp", 0),
-      tdSelect("vat", ["Yes", "No"], "No"),
-      tdInputNumber("rebate", 0, onRecalc),
-      tdInputNumber("maxQty", 0, onRecalc),
+      tdInputNumber("rrp", 0, onAnyChange),
+      tdInputNumber("promoRrp", 0, onAnyChange),
+      tdSelect("vat", ["Yes", "No"], "No", onAnyChange),
+      tdInputNumber("rebate", 0, onAnyChange), // auto-filled & disabled when VAT=Yes
+      tdInputNumber("maxQty", 0, onAnyChange),
       tdReadOnly("total", "0.00"),
       tdInputText("lineProgramNumber", programNumber),
       tdActionRemove()
     );
     return tr;
 
-    function onRecalc() {
-      const rebate = numVal(tr.querySelector('[data-col="rebate"]'));
-      const qty = numVal(tr.querySelector('[data-col="maxQty"]'));
-      tr.querySelector('[data-col="total"]').textContent = (rebate * qty).toFixed(2);
+    function onAnyChange() {
+      recalcRow(tr, countrySel);
     }
   }
 
+  // Core recalculation for a row (VAT-Yes path)
+  function recalcRow(tr, countrySelRef) {
+    const rrpInput      = tr.querySelector('[data-col="rrp"] input');
+    const promoInput    = tr.querySelector('[data-col="promoRrp"] input');
+    const vatSelect     = tr.querySelector('[data-col="vat"] select');
+    const rebateInput   = tr.querySelector('[data-col="rebate"] input');
+    const qtyInput      = tr.querySelector('[data-col="maxQty"] input');
+    const totalSpan     = tr.querySelector('[data-col="total"]');
+
+    const rrp   = parseFloat(rrpInput.value || "0") || 0;
+    const promo = parseFloat(promoInput.value || "0") || 0;
+    const qty   = parseFloat(qtyInput.value || "0") || 0;
+
+    if (vatSelect.value === "Yes") {
+      const vatRate = getVatForCountry(countrySelRef?.value);
+      if (!vatRate || vatRate <= 0) {
+        rebateInput.value = "0.00";
+        rebateInput.disabled = true;
+      } else {
+        // Spec: Rebate = (RRP - Promo RRP) / VAT
+        const rebate = (rrp - promo) / vatRate;
+        rebateInput.value = rebate.toFixed(2);
+        rebateInput.disabled = true;
+      }
+    } else {
+      // Manual rebate when VAT = No
+      rebateInput.disabled = false;
+    }
+
+    const rebateVal = parseFloat(rebateInput.value || "0") || 0;
+    totalSpan.textContent = (rebateVal * qty).toFixed(2);
+  }
+
+  function recalcAllRows(tbodyEl, countrySelRef) {
+    Array.from(tbodyEl.querySelectorAll("tr")).forEach(tr => recalcRow(tr, countrySelRef));
+  }
+
+  // Recalc all rows if Country changes (affects VAT rate)
+  countrySel.addEventListener("change", () => {
+    recalcAllRows(tbody, countrySel);
+  });
+
+  // ---------------- small HTML helpers for table ----------------------------
   function trHead(cols) { return h("tr", {}, ...cols.map(c => h("th", { style: thStyle() }, c))); }
   function td(txt, data = {}) { return h("td", { style: tdStyle(), ...data }, txt); }
   function tdActionRemove() {
@@ -507,13 +539,15 @@ geoSel.addEventListener("change", async () => {
     const span = h("span", {}, val);
     return h("td", { style: tdStyle(), "data-col": col }, span);
   }
-  function tdSelect(col, opts, def) {
-    const sel = h("select", { className: "form-control" }, ...opts.map(o => h("option", { value: o, selected: o === def }, o)));
+  function tdSelect(col, opts, def, onChange) {
+    const sel = h("select", { className: "form-control" },
+      ...opts.map(o => h("option", { value: o, selected: o === def }, o))
+    );
+    if (onChange) sel.addEventListener("change", onChange);
     return h("td", { style: tdStyle(), "data-col": col }, sel);
   }
   function tdStyle() { return "padding:.5rem;border-top:1px solid var(--card-border);text-align:center"; }
   function thStyle() { return "padding:.5rem;border-bottom:1px solid var(--card-border);text-align:center;font-weight:600"; }
-  function tr(...cells) { return h("tr", {}, ...cells); }
   function byId(id) { return document.getElementById(id); }
   function numVal(tdOrInp) {
     if (!tdOrInp) return 0;

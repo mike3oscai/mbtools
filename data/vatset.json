@@ -32,7 +32,7 @@
   {
     "geo": "DACH",
     "country": "Switzerland",
-    "vat": 7.7
+    "vat": 8.1
   },
   {
     "geo": "France",
@@ -57,7 +57,7 @@
   {
     "geo": "MEA",
     "country": "Bahrain",
-    "vat": 15.0
+    "vat": 10
   },
   {
     "geo": "MEA",
@@ -72,12 +72,12 @@
   {
     "geo": "MEA",
     "country": "Iran",
-    "vat": 15.0
+    "vat": 9
   },
   {
     "geo": "MEA",
     "country": "Iraq",
-    "vat": 15.0
+    "vat": 0
   },
   {
     "geo": "MEA",
@@ -87,22 +87,22 @@
   {
     "geo": "MEA",
     "country": "Jordan",
-    "vat": 15.0
+    "vat": 16
   },
   {
     "geo": "MEA",
     "country": "Kuwait",
-    "vat": 15.0
+    "vat": 0
   },
   {
     "geo": "MEA",
     "country": "Lebanon",
-    "vat": 15.0
+    "vat": 11
   },
   {
     "geo": "MEA",
     "country": "Oman",
-    "vat": 15.0
+    "vat": 5
   },
   {
     "geo": "MEA",
@@ -117,7 +117,7 @@
   {
     "geo": "MEA",
     "country": "Syria",
-    "vat": 15.0
+    "vat": null
   },
   {
     "geo": "MEA",
@@ -127,137 +127,137 @@
   {
     "geo": "MEA",
     "country": "United Arab Emirates",
-    "vat": 15.0
+    "vat": 5
   },
   {
     "geo": "MEA",
     "country": "Yemen",
-    "vat": 15.0
+    "vat": 5
   },
   {
     "geo": "MEA",
     "country": "Palestine",
-    "vat": 15.0
+    "vat": 16
   },
   {
     "geo": "MEA",
     "country": "Algeria",
-    "vat": 15.0
+    "vat": 19
   },
   {
     "geo": "MEA",
     "country": "Angola",
-    "vat": 15.0
+    "vat": 14
   },
   {
     "geo": "MEA",
     "country": "Benin",
-    "vat": 15.0
+    "vat": 18
   },
   {
     "geo": "MEA",
     "country": "Botswana",
-    "vat": 15.0
+    "vat": 14
   },
   {
     "geo": "MEA",
     "country": "Burkina Faso",
-    "vat": 15.0
+    "vat": 18
   },
   {
     "geo": "MEA",
     "country": "Burundi",
-    "vat": 15.0
+    "vat": null
   },
   {
     "geo": "MEA",
     "country": "Cabo Verde",
-    "vat": 15.0
+    "vat": null
   },
   {
     "geo": "MEA",
     "country": "Cameroon",
-    "vat": 15.0
+    "vat": 19.25
   },
   {
     "geo": "MEA",
     "country": "Central African Republic",
-    "vat": 15.0
+    "vat": 19
   },
   {
     "geo": "MEA",
     "country": "Chad",
-    "vat": 15.0
+    "vat": null
   },
   {
     "geo": "MEA",
     "country": "Comoros",
-    "vat": 15.0
+    "vat": 10
   },
   {
     "geo": "MEA",
     "country": "Congo",
-    "vat": 15.0
+    "vat": 18
   },
   {
     "geo": "MEA",
     "country": "Democratic Republic of the Congo",
-    "vat": 15.0
+    "vat": 16
   },
   {
     "geo": "MEA",
     "country": "Djibouti",
-    "vat": 15.0
+    "vat": 10
   },
   {
     "geo": "MEA",
     "country": "Equatorial Guinea",
-    "vat": 15.0
+    "vat": 15
   },
   {
     "geo": "MEA",
     "country": "Eritrea",
-    "vat": 15.0
+    "vat": 5
   },
   {
     "geo": "MEA",
     "country": "Eswatini",
-    "vat": 15.0
+    "vat": 15
   },
   {
     "geo": "MEA",
     "country": "Ethiopia",
-    "vat": 15.0
+    "vat": 15
   },
   {
     "geo": "MEA",
     "country": "Gabon",
-    "vat": 15.0
+    "vat": 18
   },
   {
     "geo": "MEA",
     "country": "Gambia",
-    "vat": 15.0
+    "vat": 15
   },
   {
     "geo": "MEA",
     "country": "Ghana",
-    "vat": 15.0
+    "vat": 15
   },
   {
     "geo": "MEA",
     "country": "Guinea",
-    "vat": 15.0
+    "vat": 18
   },
   {
     "geo": "MEA",
     "country": "Guinea-Bissau",
-    "vat": 15.0
+    "vat": 18
   },
   {
     "geo": "MEA",
     "country": "Ivory Coast",
-    "vat": 15.0
+    "vat": 18
   },
   {
     "geo": "MEA",
@@ -267,42 +267,42 @@
   {
     "geo": "MEA",
     "country": "Lesotho",
-    "vat": 15.0
+    "vat": 15
   },
   {
     "geo": "MEA",
     "country": "Liberia",
-    "vat": 15.0
+    "vat": 10
   },
   {
     "geo": "MEA",
     "country": "Libya",
-    "vat": 15.0
+    "vat": 0
   },
   {
     "geo": "MEA",
     "country": "Madagascar",
-    "vat": 15.0
+    "vat": 20
   },
   {
     "geo": "MEA",
     "country": "Malawi",
-    "vat": 15.0
+    "vat": null
   },
   {
     "geo": "MEA",
     "country": "Mali",
-    "vat": 15.0
+    "vat": 18
   },
   {
     "geo": "MEA",
     "country": "Mauritania",
-    "vat": 15.0
+    "vat": null
   },
   {
     "geo": "MEA",
     "country": "Mauritius",
-    "vat": 15.0
+    "vat": 15
   },
   {
     "geo": "MEA",
@@ -312,17 +312,17 @@
   {
     "geo": "MEA",
     "country": "Mozambique",
-    "vat": 15.0
+    "vat": 16
   },
   {
     "geo": "MEA",
     "country": "Namibia",
-    "vat": 15.0
+    "vat": 15
   },
   {
     "geo": "MEA",
     "country": "Niger",
-    "vat": 15.0
+    "vat": 19
   },
   {
     "geo": "MEA",
@@ -332,32 +332,32 @@
   {
     "geo": "MEA",
     "country": "Rwanda",
-    "vat": 15.0
+    "vat": 18
   },
   {
     "geo": "MEA",
     "country": "Sao Tome and Principe",
-    "vat": 15.0
+    "vat": 15
   },
   {
     "geo": "MEA",
     "country": "Senegal",
-    "vat": 15.0
+    "vat": 18
   },
   {
     "geo": "MEA",
     "country": "Seychelles",
-    "vat": 15.0
+    "vat": 15
   },
   {
     "geo": "MEA",
     "country": "Sierra Leone",
-    "vat": 15.0
+    "vat": 15
   },
   {
     "geo": "MEA",
     "country": "Somalia",
-    "vat": 15.0
+    "vat": 0
   },
   {
     "geo": "MEA",
@@ -367,22 +367,22 @@
   {
     "geo": "MEA",
     "country": "South Sudan",
-    "vat": 15.0
+    "vat": 18
   },
   {
     "geo": "MEA",
     "country": "Sudan",
-    "vat": 15.0
+    "vat": 18
   },
   {
     "geo": "MEA",
     "country": "Tanzania",
-    "vat": 15.0
+    "vat": 18
   },
   {
     "geo": "MEA",
     "country": "Togo",
-    "vat": 15.0
+    "vat": 18
   },
   {
     "geo": "MEA",
@@ -392,17 +392,17 @@
   {
     "geo": "MEA",
     "country": "Uganda",
-    "vat": 15.0
+    "vat": 18
   },
   {
     "geo": "MEA",
     "country": "Zambia",
-    "vat": 15.0
+    "vat": 16
   },
   {
     "geo": "MEA",
     "country": "Zimbabwe",
-    "vat": 15.0
+    "vat": 15
   },
   {
     "geo": "Nordics",
@@ -437,12 +437,12 @@
   {
     "geo": "SEE",
     "country": "Ukraine",
-    "vat": 20.0
+    "vat": 20
   },
   {
     "geo": "SEE",
     "country": "Moldova",
-    "vat": 20.0
+    "vat": 20
   },
   {
     "geo": "SEE",
