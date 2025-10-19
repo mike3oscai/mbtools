@@ -138,43 +138,57 @@ input[type="number"]{ text-align: right; }
   margin-top: 1rem;
 }
 
-/* === Ajuste: el header debe tener el mismo ancho que la tarjeta inferior === */
-.form-card {
+/* ===== UX: Program header más cómodo en 2 columnas ===== */
+
+/* La tarjeta usa el mismo ancho que la de Selected products */
+.form-card{
   width: min(var(--page-max), 98vw);
   max-width: var(--page-max);
   margin-inline: auto;
 }
 
-/* ====== Program header en 2 columnas ====== */
+/* Dos columnas fluidas y con más aire entre ellas */
 .form-card .form-columns{
   display: grid;
-  grid-template-columns: 1fr 1fr;   /* 2 columnas */
-  gap: 24px;
+  grid-template-columns: repeat(2, minmax(0, 1fr)); /* 2 columnas flexibles */
+  gap: 28px 40px;                                   /* fila x columna */
+  align-items: start;
 }
 
-/* Cada columna contiene sus filas (label + control) */
+/* Cada columna: label a la izquierda (fijo) y control el resto */
 .form-card .field-grid{
   display: grid;
-  grid-template-columns: 200px 1fr; /* label | control */
+  grid-template-columns: 160px minmax(0, 1fr); /* label | control */
   gap: 12px 16px;
 }
 
-/* Estilo de la etiqueta */
+/* Labels más consistentes */
 .form-card .form-label{
   align-self: center;
   color: var(--muted);
   font-weight: 600;
+  line-height: 1.2;
+  padding-top: 2px;
 }
 
-/* Botones al final ocupando las 2 columnas */
+/* Controles ocupan el 100% del espacio disponible */
+.form-card select.form-control,
+.form-card input.form-control{
+  width: 100%;
+  min-width: 0;          /* evita que el input empuje la columna */
+  height: 44px;
+}
+
+/* Botones alineados a la derecha y con buen espaciado */
 .form-card .actions-row{
-  grid-column: 1 / -1;
+  grid-column: 1 / -1;   /* ocupa las dos columnas */
   display: flex;
+  justify-content: flex-end;
   gap: .75rem;
   margin-top: .5rem;
 }
 
-/* Responsive: apilar columnas en pantallas estrechas */
-@media (max-width: 1024px){
+/* Responsive: apilar columnas en pantallas más estrechas */
+@media (max-width: 1200px){
   .form-card .form-columns{ grid-template-columns: 1fr; }
 }
