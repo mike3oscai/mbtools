@@ -192,3 +192,45 @@ input[type="number"]{ text-align: right; }
 @media (max-width: 1200px){
   .form-card .form-columns{ grid-template-columns: 1fr; }
 }
+/* === Program header: grid de 4 columnas (label|control|label|control) === */
+.form-card{
+  width: min(var(--page-max), 98vw);
+  max-width: var(--page-max);
+  margin-inline: auto;
+}
+
+.form-card .header-grid{
+  display: grid;
+  grid-template-columns: 160px minmax(0,1fr) 160px minmax(0,1fr);
+  gap: 14px 18px; /* filas x columnas */
+  align-items: center;
+}
+
+.form-card .form-label{
+  color: var(--muted);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.form-card select.form-control,
+.form-card input.form-control{
+  width: 100%;
+  min-width: 0;   /* ¡clave! evita que el input empuje la malla */
+  height: 44px;
+}
+
+/* Fila de acciones ocupa las 4 columnas y alinea a la derecha */
+.form-card .actions-row{
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-end;
+  gap: .75rem;
+  margin-top: .25rem;
+}
+
+/* Responsive: apilar en una sola columna en pantallas estrechas */
+@media (max-width: 1100px){
+  .form-card .header-grid{
+    grid-template-columns: 160px minmax(0,1fr);
+  }
+}

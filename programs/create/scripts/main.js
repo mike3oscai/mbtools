@@ -94,48 +94,43 @@ async function loadCountriesByGeo(geo) {
 export async function renderCreateForm(container) {
   if (!container) return;
 
-    // ----- Header controls -----
+      // ----- Header controls -----
   const programTypeSel = buildSelect("programType", PROGRAM_TYPE_OPTIONS, "Select a program type");
   const geoSel         = buildSelect("geo", GEO_OPTIONS, "Select a geo");
+  const countrySel     = buildSelect("country", [], "Select a country");
   const verticalSel    = buildSelect("vertical", VERTICAL_OPTIONS, "Select a vertical");
+
   const customerSel    = buildSelect("customer", [], "Select a customer (choose Geo first)", true);
   const startDayInp    = h("input", { className: "form-control", type: "date", id: "fld-startDay", name: "startDay", placeholder: "dd/mm/aaaa" });
   const endDayInp      = h("input", { className: "form-control", type: "date", id: "fld-endDay", name: "endDay", placeholder: "dd/mm/aaaa" });
   const programNumInp  = h("input", { className: "form-control", type: "text", id: "fld-programNumber", name: "programNumber", placeholder: "Auto after Confirm (editable)" });
-  const countrySel     = buildSelect("country", [], "Select a country");
 
-  // === NUEVO LAYOUT: 2 columnas ===
-  const columns = h("div", { className: "form-columns" });
-  const colLeft = h("div", { className: "field-grid" });
-  const colRight= h("div", { className: "field-grid" });
+  // === NUEVO LAYOUT: grid de 4 columnas (label|control|label|control) ===
+  const grid = h("div", { className: "header-grid" });
 
-  const row = (label, control) => {
-    const wrapLabel = h("label", { className: "form-label", htmlFor: control.id }, label);
-    return [wrapLabel, control];
-  };
+  const L = (forId, text) => h("label", { className: "form-label", htmlFor: forId }, text);
+  grid.append(
+    /* fila 1 */
+    L(programTypeSel.id, "Program Type"), programTypeSel,
+    L(customerSel.id,    "Customer"),      customerSel,
+    /* fila 2 */
+    L(geoSel.id,         "Geo"),           geoSel,
+    L(startDayInp.id,    "Start Day"),     startDayInp,
+    /* fila 3 */
+    L(countrySel.id,     "Country"),       countrySel,
+    L(endDayInp.id,      "End Day"),       endDayInp,
+    /* fila 4 */
+    L(verticalSel.id,    "Vertical"),      verticalSel,
+    L(programNumInp.id,  "Program Number"),programNumInp
+  );
 
-  // Columna izquierda: Program type, Geo, Country, Vertical
-  colLeft.append(...row("Program Type", programTypeSel));
-  colLeft.append(...row("Geo",          geoSel));
-  colLeft.append(...row("Country",      countrySel));
-  colLeft.append(...row("Vertical",     verticalSel));
-
-  // Columna derecha: Customer, Start Day, End Day, Program Number
-  colRight.append(...row("Customer",       customerSel));
-  colRight.append(...row("Start Day",      startDayInp));
-  colRight.append(...row("End Day",        endDayInp));
-  colRight.append(...row("Program Number", programNumInp));
-
-  columns.append(colLeft, colRight);
-
-  // Fila de acciones que ocupa las 2 columnas
   const actions = h("div", { className: "actions-row" },
     h("button", { id: "btnConfirm", className: "action-cta", type: "button" }, "Confirm"),
     h("button", { id: "btnDelete",  className: "action-cta", type: "button" }, "Delete")
   );
 
-  // Montaje final del header
-  container.replaceChildren(columns, actions);
+  container.replaceChildren(grid, actions);
+
 ;
 
   /* ---------- Sección Products (oculta hasta Confirm) ---------- */
