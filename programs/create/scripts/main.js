@@ -193,7 +193,7 @@ export async function renderCreateForm(container) {
         h("thead", {},
           trHead([
             "PN", "Description", "RRP", "Promo RRP",
-            "Calculated RRP - VAT (Yes/No)", "FE – Rebate",
+            "Calculated RRP - VAT (Yes/No)", "FE  Rebate",
             "Max Quantity", "Total Program Rebate", "Program Number", "Actions"
           ])
         ),
