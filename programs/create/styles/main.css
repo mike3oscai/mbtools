@@ -122,3 +122,119 @@ td input[type="number"] {
     width: 95vw;
   }
 }
+/* ===== Layout de la tarjeta de cabecera y productos ===== */
+
+/* Grid de cada fila de formulario (label + control) */
+.form-row {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 12px 16px;
+  align-items: center;
+  margin-bottom: .75rem;
+}
+
+.form-label {
+  color: var(--muted);
+  font-weight: 600;
+  padding-top: .25rem;
+}
+
+/* Tamaño y estética uniforme de inputs/selects dentro de las cards */
+.form-control {
+  width: 100%;
+  height: 40px;
+  padding: 0 .8rem;
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--fg);
+}
+
+/* Card general (ya tienes estilos, esto solo afina espaciados) */
+.card {
+  margin: 0 auto 1rem auto;
+}
+
+/* La tarjeta "Products" mantiene un ancho cómodo y centrado */
+.card:has(#fld-pn) {
+  max-width: 1100px;            /* igual que tu .container */
+  width: 100%;
+}
+
+/* ===== Hacer ancha la tarjeta de la TABLA ===== */
+/* Truco: centramos independientemente del padding del contenedor padre */
+.card:has(#productsTable) {
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(90vw, 1400px);     /* ~90% del viewport, con tope */
+  margin: 1rem 0 2rem 0;        /* que no herede el auto del resto */
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+/* Si la tabla necesita scroll horizontal */
+.card:has(#productsTable) .scroll {
+  overflow-x: auto;
+}
+
+/* ===== Tabla: alineación y respiración ===== */
+#productsTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+#productsTable th,
+#productsTable td {
+  padding: .6rem .5rem;
+  border-top: 1px solid var(--card-border);
+  text-align: center;
+  white-space: nowrap;
+}
+
+#productsTable thead th {
+  border-top: 0;
+  border-bottom: 1px solid var(--card-border);
+  font-weight: 600;
+}
+
+#productsTable td[data-col="desc"] {
+  white-space: normal;          /* la descripción puede ocupar 2 líneas */
+  min-width: 200px;
+  text-align: left;
+}
+
+/* Inputs numéricos en tabla: tamaño razonable y centrados */
+#productsTable input[type="number"] {
+  max-width: 130px;
+  text-align: center;
+}
+
+/* Pill del FE, ya definida; aseguramos que no estire la celda */
+.fe-badge {
+  display: inline-block;
+  padding: .2rem .55rem;
+  border-radius: 9999px;
+  font-size: .85rem;
+  font-weight: 600;
+  background: #eef6ff;
+  color: #0b5cab;
+  border: 1px solid #dbe7ff;
+  white-space: nowrap;
+}
+
+/* Botón "Save Program" a la derecha dentro de la tarjeta de la tabla */
+.card:has(#productsTable) > div:last-child {
+  text-align: right;
+}
+
+/* ===== Responsivo ===== */
+@media (max-width: 900px) {
+  .form-row {
+    grid-template-columns: 1fr; /* label encima del control */
+  }
+  .form-label { padding: 0; }
+  .card:has(#productsTable) {
+    width: 95vw;
+  }
+}
