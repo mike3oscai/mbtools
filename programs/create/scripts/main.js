@@ -3,7 +3,9 @@
 
 import { loadCustomerSet, loadProductSet } from "/shared/scripts/data.js";
 
-// --- Form schema ------------------------------------------------------------
+// ---------------------------------------------------------------------------
+// Form schema
+// ---------------------------------------------------------------------------
 const SCHEMA = [
   {
     label: "Program Type",
@@ -51,11 +53,10 @@ const SCHEMA = [
   { label: "Customer", key: "customer", type: "select", placeholder: "Select a customer (choose Geo first)", options: [], disabled: true },
 
   // --- Product & SKU selection (dual path) ---------------------------------
-  // PN select (shows PN — Description). Syncs with Product/RAM/ROM.
+  // PN shows "PN — Description" and syncs with Product/RAM/ROM
   { label: "PN",      key: "pn",      type: "select", placeholder: "Select PN or filter by Product/RAM/ROM", options: [], disabled: false },
-  // Product becomes a dynamic select (program in productset)
+  // Product, RAM and ROM act as filters that narrow the PN list
   { label: "Product", key: "product", type: "select", placeholder: "Select a product", options: [], disabled: false },
-  // RAM/ROM are selects but their options narrow based on Product/PN/ROM/RAM combination
   { label: "RAM",     key: "ram",     type: "select", placeholder: "Choose RAM", options: [], disabled: false },
   { label: "ROM",     key: "rom",     type: "select", placeholder: "Choose ROM", options: [], disabled: false },
 
@@ -72,41 +73,48 @@ const SCHEMA = [
   { label: "Program Number", key: "programNumber", type: "text", placeholder: "Auto/Manual code" }
 ];
 
-// --- Tiny DOM helper --------------------------------------------------------
+// ---------------------------------------------------------------------------
+// Tiny DOM helper
+// ---------------------------------------------------------------------------
 function h(tag, props = {}, ...children) {
   const el = Object.assign(document.createElement(tag), props);
   for (const c of children.flat()) el.append(c?.nodeType ? c : document.createTextNode(c ?? ""));
   return el;
 }
 
-// --- Control helpers --------------------------------------------------------
-function setSelectOptions(sel, options = [], placeholder = "Select...") {
+// ---------------------------------------------------------------------------
+// Select helpers (preserve selection when rebuilding options)
+// ---------------------------------------------------------------------------
+function setSelectOptions(sel, options = [], placeholder = "Select...", selectedValue = "") {
+  const keep = sel.value;                 // remember current value if no explicit selectedValue
+  const target = selectedValue || keep;   // prefer the explicit one
+
   sel.replaceChildren();
-  sel.append(h("option", { value: "", disabled: true, selected: true }, placeholder));
+  sel.append(h("option", { value: "", disabled: true, selected: !target }, placeholder));
+
   for (const opt of options) {
-    if (typeof opt === "object") sel.append(h("option", { value: opt.value }, opt.label));
-    else sel.append(h("option", { value: opt }, opt));
+    if (typeof opt === "object") {
+      const o = h("option", { value: opt.value }, opt.label);
+      if (opt.value === target) o.selected = true;
+      sel.append(o);
+    } else {
+      const o = h("option", { value: opt }, opt);
+      if (opt === target) o.selected = true;
+      sel.append(o);
+    }
   }
 }
 
-function buildControl(field) {
-  const common = { className: "form-control", name: field.key, id: `fld-${field.key}` };
+const unique = (arr) => [...new Set(arr)];
+const fmtPN = (p) => `${p.PN} — ${p.Description}`;
 
-  if (field.type === "select") {
-    const sel = h("select", { ...common, disabled: !!field.disabled });
-    setSelectOptions(sel, field.options, field.placeholder ?? "Select...");
-    return sel;
-  }
-  if (field.type === "date")   return h("input", { ...common, type: "date" });
-  if (field.type === "number") return h("input", { ...common, type: "number", step: "0.01", placeholder: field.placeholder ?? "0" });
-  return h("input", { ...common, type: "text", placeholder: field.placeholder ?? "" });
-}
-
-// --- Public API -------------------------------------------------------------
+// ---------------------------------------------------------------------------
+// Public API
+// ---------------------------------------------------------------------------
 export async function renderCreateForm(container) {
   if (!container) return;
 
-  // Build static rows first
+  // 1) Render static form (labels + empty controls based on schema)
   const rows = SCHEMA.map(f => [
     h("label", { className: "form-label", htmlFor: `fld-${f.key}` }, f.label),
     buildControl(f)
@@ -120,7 +128,7 @@ export async function renderCreateForm(container) {
     })
   );
 
-  // --- References for dynamic behavior -------------------------------------
+  // 2) Grab references we will operate on
   const geoSel      = container.querySelector('#fld-geo');
   const verticalSel = container.querySelector('#fld-vertical');
   const custSel     = container.querySelector('#fld-customer');
@@ -130,16 +138,16 @@ export async function renderCreateForm(container) {
   const ramSel      = container.querySelector('#fld-ram');
   const romSel      = container.querySelector('#fld-rom');
 
-  // --- Load data ------------------------------------------------------------
+  // 3) Load data
   const [customers, products] = await Promise.all([
     loadCustomerSet(),
     loadProductSet()
   ]);
 
-  // ---- Customer filtering (Geo + optional Vertical) -----------------------
+  // ------------------ Customers: Geo + optional Vertical --------------------
   const refreshCustomers = () => {
-    const g  = geoSel.value;
-    const v  = verticalSel.value;
+    const g = geoSel.value;
+    const v = verticalSel.value;
 
     if (!g) {
       custSel.disabled = true;
@@ -165,34 +173,25 @@ export async function renderCreateForm(container) {
   verticalSel.addEventListener('change', refreshCustomers);
   refreshCustomers();
 
-  // ---- Product/PN dual selection ------------------------------------------
-  // Helpers to build unique sets filtered
-  const unique = (arr) => [...new Set(arr)];
-  const fmtPN = (p) => `${p.PN} — ${p.Description}`; // shows PN and Description
-
-  // Populate base options
-  const initProductOptions = () => {
-    const prods = unique(products.map(p => p.Program)).map(v => ({ value: v, label: v }));
-    setSelectOptions(productSel, prods, "Select a product");
-  };
-
-  const initPNOptions = (list = products) => {
-    const opts = list.map(p => ({ value: p.PN, label: fmtPN(p) }));
-    setSelectOptions(pnSel, opts, "Select PN or filter by Product/RAM/ROM");
-  };
-
-  const setRamOptions = (list) => {
+  // ------------------ Product/PN dual selection -----------------------------
+  // Helpers to fill dependent selects
+  function setRamOptions(list, selected = "") {
     const rams = unique(list.map(p => p.RAM)).map(v => ({ value: v, label: v }));
-    setSelectOptions(ramSel, rams, "Choose RAM");
-  };
+    setSelectOptions(ramSel, rams, "Choose RAM", selected);
+  }
 
-  const setRomOptions = (list) => {
+  function setRomOptions(list, selected = "") {
     const roms = unique(list.map(p => p.ROM)).map(v => ({ value: v, label: v }));
-    setSelectOptions(romSel, roms, "Choose ROM");
-  };
+    setSelectOptions(romSel, roms, "Choose ROM", selected);
+  }
 
-  // Filter products based on current selections
-  const filteredProducts = () => {
+  function setPnOptions(list, selected = "") {
+    const opts = list.map(p => ({ value: p.PN, label: fmtPN(p) }));
+    setSelectOptions(pnSel, opts, "Select PN or filter by Product/RAM/ROM", selected);
+  }
+
+  // Current filtered set based on Product/RAM/ROM selections
+  function filteredProducts() {
     const selProduct = productSel.value;
     const selRam = ramSel.value;
     const selRom = romSel.value;
@@ -202,66 +201,82 @@ export async function renderCreateForm(container) {
       (!selRam || p.RAM === selRam) &&
       (!selRom || p.ROM === selRom)
     );
-  };
+  }
 
-  // When the user changes PN: sync Product/RAM/ROM to match that SKU
-  const onPNChange = () => {
+  // PN → sync Product/RAM/ROM to that exact SKU
+  function onPNChange() {
     const pn = pnSel.value;
     if (!pn) return;
-
     const p = products.find(x => x.PN === pn);
     if (!p) return;
 
-    // First update dependent selects with filtered options containing this product
-    // so the values are guaranteed to exist.
-    const listByProduct = products.filter(x => x.Program === p.Program);
-    setRamOptions(listByProduct);
-    setRomOptions(listByProduct);
-
-    // Set values
+    // Set Product first to limit the option space of RAM/ROM
     productSel.value = p.Program;
-    ramSel.value = p.RAM;
-    romSel.value = p.ROM;
 
-    // Finally, narrow PN to the coherent subset (optional, but keeps list short)
+    // Rebuild RAM/ROM with options for the selected product and select exact values
+    const listByProduct = products.filter(x => x.Program === p.Program);
+    setRamOptions(listByProduct, p.RAM);
+    setRomOptions(listByProduct, p.ROM);
+
+    // Rebuild PN to the coherent subset
     const list = filteredProducts();
-    initPNOptions(list);
-    pnSel.value = pn; // keep the current PN selected
-  };
+    setPnOptions(list, pn);  // keep PN selected
+  }
 
-  // When the user changes Product/RAM/ROM: update the PN list and also narrow RAM/ROM
-  const onPRRChange = () => {
-    const list = filteredProducts();
-
-    // Narrow PN list to the current filter
-    initPNOptions(list);
-
-    // Narrow RAM/ROM options to what exists for the selected product
+  // Product/RAM/ROM → narrow PN, preserve current selections if valid
+  function onPRRChange() {
+    // Base option space for RAM/ROM depends on selected Product (if any)
     const baseForOptions = productSel.value
       ? products.filter(p => p.Program === productSel.value)
       : products;
 
-    setRamOptions(baseForOptions);
-    setRomOptions(baseForOptions);
+    // Preserve current values if they still exist
+    const currentRAM = ramSel.value;
+    const currentROM = romSel.value;
 
-    // If current RAM/ROM are now invalid, clear them
+    setRamOptions(baseForOptions, currentRAM);
+    setRomOptions(baseForOptions, currentROM);
+
+    // If current RAM/ROM became invalid, clear them
     if (ramSel.value && !baseForOptions.some(p => p.RAM === ramSel.value)) ramSel.value = "";
     if (romSel.value && !baseForOptions.some(p => p.ROM === romSel.value)) romSel.value = "";
 
-    // If exactly one PN matches, auto-select it; otherwise leave placeholder
+    // Now compute filtered list and rebuild PN accordingly
+    const list = filteredProducts();
+    setPnOptions(list, list.length === 1 ? list[0].PN : "");
+
+    // If exactly one PN matches, auto-select it
     if (list.length === 1) pnSel.value = list[0].PN;
-    else pnSel.value = "";
-  };
+  }
 
   // Initial fill
-  initProductOptions();
-  setRamOptions(products);
-  setRomOptions(products);
-  initPNOptions(products);
+  (function initProductArea() {
+    const programs = unique(products.map(p => p.Program)).map(v => ({ value: v, label: v }));
+    setSelectOptions(productSel, programs, "Select a product");
+    setRamOptions(products);
+    setRomOptions(products);
+    setPnOptions(products);
+  })();
 
   // Wire events
   pnSel.addEventListener('change', onPNChange);
   productSel.addEventListener('change', onPRRChange);
   ramSel.addEventListener('change', onPRRChange);
   romSel.addEventListener('change', onPRRChange);
+}
+
+// ---------------------------------------------------------------------------
+// Control factory – builds each control based on the schema field
+// ---------------------------------------------------------------------------
+function buildControl(field) {
+  const common = { className: "form-control", name: field.key, id: `fld-${field.key}` };
+
+  if (field.type === "select") {
+    const sel = h("select", { ...common, disabled: !!field.disabled });
+    setSelectOptions(sel, field.options, field.placeholder ?? "Select...");
+    return sel;
+  }
+  if (field.type === "date")   return h("input", { ...common, type: "date" });
+  if (field.type === "number") return h("input", { ...common, type: "number", step: "0.01", placeholder: field.placeholder ?? "0" });
+  return h("input", { ...common, type: "text", placeholder: field.placeholder ?? "" });
 }
