@@ -36,7 +36,26 @@ const SCHEMA = [
       { value: "UKI",          label: "UKI (United Kingdom & Ireland)" }
     ]
   },
-  { label: "Customer", key: "customer", type: "select", placeholder: "Select a customer (choose Geo first)", options: [], disabled: true },
+  {
+    label: "Vertical",
+    key: "vertical",
+    type: "select",
+    placeholder: "Select a vertical (optional)",
+    options: [
+      { value: "B2B",    label: "B2B" },
+      { value: "Retail", label: "Retail" },
+      { value: "Telco",  label: "Telco" }
+    ]
+  },
+  // Customer becomes dynamic and stays disabled until we have results
+  {
+    label: "Customer",
+    key: "customer",
+    type: "select",
+    placeholder: "Select a customer (choose Geo first)",
+    options: [],
+    disabled: true
+  },
 
   { label: "Activity",  key: "activity",  type: "text",   placeholder: "Describe the activity" },
   { label: "Start Day", key: "startDay",  type: "date" },
@@ -103,26 +122,45 @@ export async function renderCreateForm(container) {
   );
 
   // Refs for dynamic behavior
-  const geoSel  = container.querySelector('#fld-geo');
-  const custSel = container.querySelector('#fld-customer');
+  const geoSel      = container.querySelector('#fld-geo');
+  const verticalSel = container.querySelector('#fld-vertical');
+  const custSel     = container.querySelector('#fld-customer');
 
   // Load customers once
   const customers = await loadCustomerSet();
 
+  // Build the filter and update the Customer select
   const refreshCustomers = () => {
-    const g = geoSel.value;
+    const g  = geoSel.value;
+    const v  = verticalSel.value;
+
     if (!g) {
       custSel.disabled = true;
       setSelectOptions(custSel, [], "Select a customer (choose Geo first)");
       return;
     }
-    const list = customers
-      .filter(c => c.geo === g)
-      .map(c => ({ value: c.crmNumber, label: c.customerName }));
-    custSel.disabled = list.length === 0;
-    setSelectOptions(custSel, list, list.length ? "Select a customer" : "No customers for this geo");
+
+    // Filter by Geo and (optionally) Vertical
+    let list = customers.filter(c => c.geo === g);
+    if (v) list = list.filter(c => c.vertical === v);
+
+    // Prepare options: value=CRM number, label=customer name (UPPERCASE already in dataset)
+    const opts = list.map(c => ({ value: c.crmNumber, label: c.customerName }));
+
+    custSel.disabled = opts.length === 0;
+    setSelectOptions(
+      custSel,
+      opts,
+      opts.length
+        ? (v ? `Select a customer (${g} · ${v})` : `Select a customer (${g})`)
+        : "No customers match the selected filters"
+    );
   };
 
+  // Wire up events
   geoSel.addEventListener('change', refreshCustomers);
+  verticalSel.addEventListener('change', refreshCustomers);
+
+  // Initial state
   refreshCustomers();
 }
