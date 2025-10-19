@@ -4,6 +4,9 @@
 // All code modular; no side effects on import.
 
 import { loadCustomerSet, loadProductSet } from "/shared/scripts/data.js";
+import { loadCustomerSet, loadProductSet } from "/shared/scripts/data.js";
+const GEOCOUNTRY_URL = "/data/geocountryset.json";
+
 
 // ---------------------------------------------------------------------------
 // Schema (header + product area fields)
@@ -91,6 +94,23 @@ function buildProgramNumber(code, geo, startDateISO) {
   const year = new Date(startDateISO || Date.now()).getFullYear();
   return `${code}${geo.toUpperCase()}${year}${nextSequence(code, geo, year)}`;
 }
+// ---------------------------------------------------------------------------
+// Load countries by GEO from geocountryset.json
+// ---------------------------------------------------------------------------
+async function loadCountriesByGeo(geo) {
+  if (!geo) return [];
+  try {
+    const res = await fetch(GEOCOUNTRY_URL, { cache: "no-store" });
+    if (!res.ok) throw new Error("Failed to load geocountryset.json");
+    const data = await res.json();
+    const entry = data.find(e => e.geo === geo);
+    return entry ? entry.countries : [];
+  } catch (err) {
+    console.error("Error loading geocountryset.json:", err);
+    return [];
+  }
+}
+
 
 // ---------------------------------------------------------------------------
 // Public API
@@ -185,6 +205,25 @@ export async function renderCreateForm(container) {
   // ----- References -----
   const programTypeSel = byId("fld-programType");
   const geoSel         = byId("fld-geo");
+  const countrySel = buildSelect("country", [], "Select a country");
+        geoSel.closest(".form-row").after(
+        (() => {
+           const row = document.createElement("div");
+            row.className = "form-row";
+            row.append(
+            h("label", { className: "form-label", htmlFor: "fld-country" }, "Country"),
+            countrySel
+            );
+            return row;
+        })()
+    );
+
+// Update countries when Geo changes
+geoSel.addEventListener("change", async () => {
+  const countries = await loadCountriesByGeo(geoSel.value);
+  setSelectOptions(countrySel, countries.map(c => ({ value: c, label: c })), "Select a country");
+});
+
   const verticalSel    = byId("fld-vertical");
   const customerSel    = byId("fld-customer");
   const startDayInp    = byId("fld-startDay");
