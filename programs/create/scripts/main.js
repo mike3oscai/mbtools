@@ -194,7 +194,7 @@ export async function renderCreateForm(container) {
       h("table", { id: "productsTable", style: "width:100%; border-collapse:collapse" },
         h("thead", {},
           trHead([
-            "PN", "Description", "RRP", "Promo RRP", "Calculated RRP - VAT (Yes/No)", "Rebate", "Max Quantity", "Total Program Rebate", "Program Number", "Actions"
+            "PN", "Description", "RRP", "Promo RRP", "Calculated RRP - VAT (Yes/No)", "FE - Rebate", "Max Quantity", "Total Program Rebate", "Program Number", "Actions"
           ])
         ),
         h("tbody", { id: "productsTbody" })
@@ -250,6 +250,10 @@ function getFrontendForCustomer(crmNumber) {
   const c = customers.find(x => x.crmNumber === crmNumber);
   return parsePercentToDecimal(c?.frontend);
 }
+function formatPercent(dec) {
+  return Number.isFinite(dec) ? `${(dec * 100).toFixed(0)}%` : "0%";
+}
+
 
 
   // Header constraints/behavior
@@ -484,7 +488,7 @@ function getFrontendForCustomer(crmNumber) {
       tdInputNumber("rrp", 0, onAnyChange),
       tdInputNumber("promoRrp", 0, onAnyChange),
       tdSelect("vat", ["Yes", "No"], "No", onAnyChange),
-      tdInputNumber("rebate", 0, onAnyChange), // auto-filled & disabled when VAT=Yes
+      tdRebateCell(onAnyChange),
       tdInputNumber("maxQty", 0, onAnyChange),
       tdReadOnly("total", "0.00"),
       tdInputText("lineProgramNumber", programNumber),
@@ -506,6 +510,9 @@ function getFrontendForCustomer(crmNumber) {
     const rebateInput = getCell("input", tr, "rebate");
     const qtyInput    = getCell("input", tr, "maxQty");
     const totalSpan   = getCell("span", tr, "total");
+    const rebateTd   = tr.querySelector('[data-col="rebate"]');
+    const feBadge    = rebateTd ? rebateTd.querySelector('.fe-badge') : null;
+
 
     // If structure is incomplete, bail out gracefully
     if (!rrpInput || !promoInput || !vatSelect || !rebateInput || !qtyInput || !totalSpan) return;
@@ -522,9 +529,14 @@ function getFrontendForCustomer(crmNumber) {
       } else {
         // Spec: Rebate = (RRP - Promo RRP) / VAT
         const vatDec = vatRate / 100;
-        const rebate = (rrp - promo) / (1 + vatDec);
-        rebateInput.value = rebate.toFixed(2);
-        rebateInput.disabled = true;
+const rebate = (rrp - promo) / (1 + vatDec);
+rebateInput.value = rebate.toFixed(2);
+rebateInput.disabled = true;
+
+// NEW: paint FE badge
+const feDecYes = getFrontendForCustomer(customerSel.value); // decimal
+if (feBadge) feBadge.textContent = `FE ${formatPercent(feDecYes)} –`;
+
       }
 } else {
   // VAT = No  -> Rebate = ((RRP/(1+VAT))*(1-frontend)) - ((Promo RRP/(1+VAT))*(1-frontend))
@@ -540,6 +552,7 @@ function getFrontendForCustomer(crmNumber) {
   const rebate = (baseRRP * factor) - (basePromo * factor);
   rebateInput.value = (Number.isFinite(rebate) ? rebate : 0).toFixed(2);
   rebateInput.disabled = true;  // now auto-calculated when VAT = No
+  if (feBadge) feBadge.textContent = `FE ${formatPercent(feDec)} –`;
 }
 
 
@@ -572,6 +585,16 @@ function getFrontendForCustomer(crmNumber) {
     if (onInput) inp.addEventListener("input", onInput);
     return cell;
   }
+  function tdRebateCell(onInput) {
+  const fe = h("span", { className: "fe-badge", style: "margin-right:.5rem;white-space:nowrap" }, "FE 0% –");
+  const inp = h("input", { type: "number", step: "0.01", value: 0, className: "form-control", style: "min-width:120px;display:inline-block;width:auto" });
+  const wrap = h("div", { style: "display:flex;align-items:center;justify-content:center;gap:.5rem" }, fe, inp);
+  const cell = h("td", { style: tdStyle() }, wrap);
+  cell.dataset.col = "rebate";
+  if (onInput) inp.addEventListener("input", onInput);
+  return cell;
+}
+
 
   function tdInputText(col, val = "") {
     const inp = h("input", { type: "text", value: val, className: "form-control", style: "min-width:160px" });
