@@ -232,6 +232,26 @@ export async function renderCreateForm(container) {
     return entry && typeof entry.vat === "number" ? entry.vat : null;
   }
 
+  /** Parse "10%" -> 0.10 or numeric like 10 -> 0.10; default 0 */
+function parsePercentToDecimal(v) {
+  if (v == null) return 0;
+  if (typeof v === "string") {
+    const s = v.trim().replace(",", ".").replace("%", "");
+    const n = parseFloat(s);
+    return Number.isFinite(n) ? (n / 100) : 0;
+  }
+  if (typeof v === "number") return v > 1 ? v / 100 : v;
+  return 0;
+}
+
+/** Get customer's frontend (decimal) from loaded customers by CRM number. */
+function getFrontendForCustomer(crmNumber) {
+  if (!crmNumber) return 0;
+  const c = customers.find(x => x.crmNumber === crmNumber);
+  return parsePercentToDecimal(c?.frontend);
+}
+
+
   // Header constraints/behavior
   const todayISO = new Date().toISOString().slice(0, 10);
   startDayInp.min = todayISO;
@@ -260,6 +280,11 @@ export async function renderCreateForm(container) {
     setSelectOptions(customerSel, opts, opts.length ? `Select a customer (${g}${v ? " · " + v : ""})` : "No customers for this filter");
   }
   verticalSel.addEventListener("change", refreshCustomers);
+  customerSel.addEventListener("change", () => {
+  // Frontend depends on the selected customer
+  recalcAllRows(tbody, countrySel);
+    });
+
 
   // Initial load for countries if Geo preset (optional)
   if (geoSel.value) {
@@ -501,10 +526,22 @@ export async function renderCreateForm(container) {
         rebateInput.value = rebate.toFixed(2);
         rebateInput.disabled = true;
       }
-    } else {
-      // Manual rebate when VAT = No
-      rebateInput.disabled = false;
-    }
+} else {
+  // VAT = No  -> Rebate = ((RRP/(1+VAT))*(1-frontend)) - ((Promo RRP/(1+VAT))*(1-frontend))
+  // Uses customer's frontend from customerset.json
+  const vatRate = getVatForCountry(countrySelRef?.value);
+  const vatDec  = (vatRate && vatRate > 0) ? (vatRate / 100) : 0;
+  const baseRRP   = vatDec > 0 ? (rrp / (1 + vatDec))   : rrp;
+  const basePromo = vatDec > 0 ? (promo / (1 + vatDec)) : promo;
+
+  const fe = getFrontendForCustomer(customerSel.value);      // decimal (e.g., 0.10)
+  const factor = 1 - (fe || 0);
+
+  const rebate = (baseRRP * factor) - (basePromo * factor);
+  rebateInput.value = (Number.isFinite(rebate) ? rebate : 0).toFixed(2);
+  rebateInput.disabled = true;  // now auto-calculated when VAT = No
+}
+
 
     const rebateVal = parseFloat(rebateInput.value || "0") || 0;
     totalSpan.textContent = (rebateVal * qty).toFixed(2);
