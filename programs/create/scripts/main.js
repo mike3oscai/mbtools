@@ -534,3 +534,6 @@ export async function renderCreateForm(container) {
     return tr.querySelector(`[data-col="${col}"]`)?.querySelector("*") || tr.querySelector(`[data-col="${col}"]`);
   }
 }
+// Compatibilidad: algunos HTML antiguos importan este nombre.
+// No hace nada, sólo evita el error de importación.
+export function wireSelectedProducts() {}
