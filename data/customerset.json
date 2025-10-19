@@ -1,0 +1,802 @@
+[
+  {
+    "crmNumber": "GV136205",
+    "customerName": "TOKYO",
+    "customerCluster": "",
+    "vertical": "Retail",
+    "geo": "Benelux",
+    "type": "Distributor T1"
+  },
+  {
+    "crmNumber": "PVDRFXH4",
+    "customerName": "DELHI",
+    "customerCluster": "",
+    "vertical": "Telco",
+    "geo": "Benelux",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "WJQNPDED",
+    "customerName": "SHANGHAI",
+    "customerCluster": "",
+    "vertical": "Telco",
+    "geo": "Benelux",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "UFXSH3K4",
+    "customerName": "SAO PAULO",
+    "customerCluster": "",
+    "vertical": "Telco",
+    "geo": "Benelux",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "10LQL7V8",
+    "customerName": "MEXICO CITY",
+    "customerCluster": "",
+    "vertical": "B2B",
+    "geo": "Benelux",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "KH3Y8NHB",
+    "customerName": "CAIRO",
+    "customerCluster": "",
+    "vertical": "B2B",
+    "geo": "Benelux",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "N2F6CICV",
+    "customerName": "DHAKA",
+    "customerCluster": "",
+    "vertical": "Retail",
+    "geo": "Benelux",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "89DQX5GU",
+    "customerName": "BEIJING",
+    "customerCluster": "",
+    "vertical": "Retail",
+    "geo": "Benelux",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "N434LVFP",
+    "customerName": "MUMBAI",
+    "customerCluster": "",
+    "vertical": "Retail",
+    "geo": "Central Asia",
+    "type": "Distributor T1"
+  },
+  {
+    "crmNumber": "5PAFDX8V",
+    "customerName": "OSAKA",
+    "customerCluster": "",
+    "vertical": "Telco",
+    "geo": "Central Asia",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "5GBXW0HS",
+    "customerName": "NEW YORK",
+    "customerCluster": "",
+    "vertical": "Telco",
+    "geo": "Central Asia",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "ECRJJE8I",
+    "customerName": "KARACHI",
+    "customerCluster": "",
+    "vertical": "Telco",
+    "geo": "Central Asia",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "MHOW52HD",
+    "customerName": "BUENOS AIRES",
+    "customerCluster": "",
+    "vertical": "B2B",
+    "geo": "Central Asia",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "LSBH3227",
+    "customerName": "CHONGQING",
+    "customerCluster": "",
+    "vertical": "B2B",
+    "geo": "Central Asia",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "ZT60JBE0",
+    "customerName": "ISTANBUL",
+    "customerCluster": "",
+    "vertical": "Retail",
+    "geo": "Central Asia",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "FUIVDRZS",
+    "customerName": "KOLKATA",
+    "customerCluster": "",
+    "vertical": "Retail",
+    "geo": "Central Asia",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "L8R0QTQL",
+    "customerName": "MANILA",
+    "customerCluster": "",
+    "vertical": "Retail",
+    "geo": "DACH",
+    "type": "Distributor T1"
+  },
+  {
+    "crmNumber": "DZVMUYRC",
+    "customerName": "LAGOS",
+    "customerCluster": "",
+    "vertical": "Telco",
+    "geo": "DACH",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "KEJI94SL",
+    "customerName": "RIO DE JANEIRO",
+    "customerCluster": "",
+    "vertical": "Telco",
+    "geo": "DACH",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "434NONY2",
+    "customerName": "TIANJIN",
+    "customerCluster": "",
+    "vertical": "Telco",
+    "geo": "DACH",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "X8VRGKJF",
+    "customerName": "KINSHASA",
+    "customerCluster": "",
+    "vertical": "B2B",
+    "geo": "DACH",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "3M6ORJSP",
+    "customerName": "GUANGZHOU",
+    "customerCluster": "",
+    "vertical": "B2B",
+    "geo": "DACH",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "YL0C2UZ6",
+    "customerName": "LOS ANGELES",
+    "customerCluster": "",
+    "vertical": "Retail",
+    "geo": "DACH",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "0SPUH9RH",
+    "customerName": "MOSCOW",
+    "customerCluster": "",
+    "vertical": "Retail",
+    "geo": "DACH",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "B0VTYIUB",
+    "customerName": "SHENZHEN",
+    "customerCluster": "",
+    "vertical": "Retail",
+    "geo": "France",
+    "type": "Distributor T1"
+  },
+  {
+    "crmNumber": "Q721XKCB",
+    "customerName": "LAHORE",
+    "customerCluster": "",
+    "vertical": "Telco",
+    "geo": "France",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "1MEJWO6L",
+    "customerName": "BANGALORE",
+    "customerCluster": "",
+    "vertical": "Telco",
+    "geo": "France",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "37BGIRSG",
+    "customerName": "PARIS",
+    "customerCluster": "",
+    "vertical": "Telco",
+    "geo": "France",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "0ET3PHYW",
+    "customerName": "BOGOTA",
+    "customerCluster": "",
+    "vertical": "B2B",
+    "geo": "France",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "A7IB1ZBI",
+    "customerName": "JAKARTA",
+    "customerCluster": "",
+    "vertical": "B2B",
+    "geo": "France",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "J4YYDLPG",
+    "customerName": "CHENNAI",
+    "customerCluster": "",
+    "vertical": "Retail",
+    "geo": "France",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "4FCCYBZQ",
+    "customerName": "LIMA",
+    "customerCluster": "",
+    "vertical": "Retail",
+    "geo": "France",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "9L9B4GF6",
+    "customerName": "BANGKOK",
+    "customerCluster": "",
+    "vertical": "Retail",
+    "geo": "Iberia",
+    "type": "Distributor T1"
+  },
+  {
+    "crmNumber": "82PYOSO5",
+    "customerName": "SEOUL",
+    "customerCluster": "",
+    "vertical": "Telco",
+    "geo": "Iberia",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "5FF5ZFI5",
+    "customerName": "NAGOYA",
+    "customerCluster": "",
+    "vertical": "Telco",
+    "geo": "Iberia",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "AH5Y2Y7L",
+    "customerName": "HYDERABAD",
+    "customerCluster": "",
+    "vertical": "Telco",
+    "geo": "Iberia",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "FUWAQCAL",
+    "customerName": "LONDON",
+    "customerCluster": "",
+    "vertical": "B2B",
+    "geo": "Iberia",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "EOGF10XJ",
+    "customerName": "TEHRAN",
+    "customerCluster": "",
+    "vertical": "B2B",
+    "geo": "Iberia",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "89MNOV5R",
+    "customerName": "CHICAGO",
+    "customerCluster": "",
+    "vertical": "Retail",
+    "geo": "Iberia",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "1G1X9WE5",
+    "customerName": "CHENGDU",
+    "customerCluster": "",
+    "vertical": "Retail",
+    "geo": "Iberia",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "0VQ1UNG4",
+    "customerName": "NANJING",
+    "customerCluster": "",
+    "vertical": "Retail",
+    "geo": "Italy",
+    "type": "Distributor T1"
+  },
+  {
+    "crmNumber": "GGPOKUW9",
+    "customerName": "WUHAN",
+    "customerCluster": "",
+    "vertical": "Telco",
+    "geo": "Italy",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "MOU4PFXZ",
+    "customerName": "HO CHI MINH CITY",
+    "customerCluster": "",
+    "vertical": "Telco",
+    "geo": "Italy",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "M8WF26M5",
+    "customerName": "LUANDA",
+    "customerCluster": "",
+    "vertical": "Telco",
+    "geo": "Italy",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "3LT9YINS",
+    "customerName": "AHMEDABAD",
+    "customerCluster": "",
+    "vertical": "B2B",
+    "geo": "Italy",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "QT9GJZEK",
+    "customerName": "KUALA LUMPUR",
+    "customerCluster": "",
+    "vertical": "B2B",
+    "geo": "Italy",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "9W43OM5O",
+    "customerName": "HONG KONG",
+    "customerCluster": "",
+    "vertical": "Retail",
+    "geo": "Italy",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "48DEGJ0A",
+    "customerName": "DONGGUAN",
+    "customerCluster": "",
+    "vertical": "Retail",
+    "geo": "Italy",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "LAZHXMBC",
+    "customerName": "HANGZHOU",
+    "customerCluster": "",
+    "vertical": "Retail",
+    "geo": "MEA",
+    "type": "Distributor T1"
+  },
+  {
+    "crmNumber": "ZS0A7D79",
+    "customerName": "FOSHAN",
+    "customerCluster": "",
+    "vertical": "Telco",
+    "geo": "MEA",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "9HZS0EJC",
+    "customerName": "SHENYANG",
+    "customerCluster": "",
+    "vertical": "Telco",
+    "geo": "MEA",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "JXDY02Z9",
+    "customerName": "RIYADH",
+    "customerCluster": "",
+    "vertical": "Telco",
+    "geo": "MEA",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "FZ3J56VQ",
+    "customerName": "BAGHDAD",
+    "customerCluster": "",
+    "vertical": "B2B",
+    "geo": "MEA",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "895VIIJB",
+    "customerName": "SANTIAGO",
+    "customerCluster": "",
+    "vertical": "B2B",
+    "geo": "MEA",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "JHIJH44O",
+    "customerName": "MADRID",
+    "customerCluster": "",
+    "vertical": "Retail",
+    "geo": "MEA",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "GBTQZTR6",
+    "customerName": "TORONTO",
+    "customerCluster": "",
+    "vertical": "Retail",
+    "geo": "MEA",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "AH6D31L1",
+    "customerName": "DALLAS",
+    "customerCluster": "",
+    "vertical": "Retail",
+    "geo": "Nordics",
+    "type": "Distributor T1"
+  },
+  {
+    "crmNumber": "54TP6A2H",
+    "customerName": "MIAMI",
+    "customerCluster": "",
+    "vertical": "Telco",
+    "geo": "Nordics",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "HGX899UF",
+    "customerName": "BERLIN",
+    "customerCluster": "",
+    "vertical": "Telco",
+    "geo": "Nordics",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "0FQBHCTU",
+    "customerName": "BARCELONA",
+    "customerCluster": "",
+    "vertical": "Telco",
+    "geo": "Nordics",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "KGGEFVL2",
+    "customerName": "JOHANNESBURG",
+    "customerCluster": "",
+    "vertical": "B2B",
+    "geo": "Nordics",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "Z7T7CYBD",
+    "customerName": "ALEXANDRIA",
+    "customerCluster": "",
+    "vertical": "B2B",
+    "geo": "Nordics",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "P4U9XYAF",
+    "customerName": "RIYADH",
+    "customerCluster": "",
+    "vertical": "Retail",
+    "geo": "Nordics",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "2VPOIPSZ",
+    "customerName": "SINGAPORE",
+    "customerCluster": "",
+    "vertical": "Retail",
+    "geo": "Nordics",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "QNDWPD72",
+    "customerName": "ROME",
+    "customerCluster": "",
+    "vertical": "Retail",
+    "geo": "Poland",
+    "type": "Distributor T1"
+  },
+  {
+    "crmNumber": "0OH631W4",
+    "customerName": "BUCHAREST",
+    "customerCluster": "",
+    "vertical": "Telco",
+    "geo": "Poland",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "K8M7QGGO",
+    "customerName": "HANOI",
+    "customerCluster": "",
+    "vertical": "Telco",
+    "geo": "Poland",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "JQNC85JL",
+    "customerName": "CAPE TOWN",
+    "customerCluster": "",
+    "vertical": "Telco",
+    "geo": "Poland",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "H8G71Z3R",
+    "customerName": "RABAT",
+    "customerCluster": "",
+    "vertical": "B2B",
+    "geo": "Poland",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "0SHBVJA5",
+    "customerName": "CASABLANCA",
+    "customerCluster": "",
+    "vertical": "B2B",
+    "geo": "Poland",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "OBGDV0AV",
+    "customerName": "LISBON",
+    "customerCluster": "",
+    "vertical": "Retail",
+    "geo": "Poland",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "8Z47SSD5",
+    "customerName": "PORTO",
+    "customerCluster": "",
+    "vertical": "Retail",
+    "geo": "Poland",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "H960676P",
+    "customerName": "VALENCIA",
+    "customerCluster": "",
+    "vertical": "Retail",
+    "geo": "SEE",
+    "type": "Distributor T1"
+  },
+  {
+    "crmNumber": "0Z26GRR7",
+    "customerName": "SEVILLE",
+    "customerCluster": "",
+    "vertical": "Telco",
+    "geo": "SEE",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "8YDRVP04",
+    "customerName": "ZARAGOZA",
+    "customerCluster": "",
+    "vertical": "Telco",
+    "geo": "SEE",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "7R0ULZGM",
+    "customerName": "MILAN",
+    "customerCluster": "",
+    "vertical": "Telco",
+    "geo": "SEE",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "BXXIFWTP",
+    "customerName": "TURIN",
+    "customerCluster": "",
+    "vertical": "B2B",
+    "geo": "SEE",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "ALXU0AI4",
+    "customerName": "NAPLES",
+    "customerCluster": "",
+    "vertical": "B2B",
+    "geo": "SEE",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "DH369K7S",
+    "customerName": "MUNICH",
+    "customerCluster": "",
+    "vertical": "Retail",
+    "geo": "SEE",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "9W83LISL",
+    "customerName": "FRANKFURT",
+    "customerCluster": "",
+    "vertical": "Retail",
+    "geo": "SEE",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "YPC1MEBV",
+    "customerName": "HAMBURG",
+    "customerCluster": "",
+    "vertical": "Retail",
+    "geo": "UKI",
+    "type": "Distributor T1"
+  },
+  {
+    "crmNumber": "YFUOFDB4",
+    "customerName": "COLOGNE",
+    "customerCluster": "",
+    "vertical": "Telco",
+    "geo": "UKI",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "L2PGLFF2",
+    "customerName": "STUTTGART",
+    "customerCluster": "",
+    "vertical": "Telco",
+    "geo": "UKI",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "OKIDUN39",
+    "customerName": "DUSSELDORF",
+    "customerCluster": "",
+    "vertical": "Telco",
+    "geo": "UKI",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "QVS2EP9U",
+    "customerName": "BREMEN",
+    "customerCluster": "",
+    "vertical": "B2B",
+    "geo": "UKI",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "5L3J7FSG",
+    "customerName": "LEIPZIG",
+    "customerCluster": "",
+    "vertical": "B2B",
+    "geo": "UKI",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "TRHXGYHG",
+    "customerName": "VIENNA",
+    "customerCluster": "",
+    "vertical": "Retail",
+    "geo": "UKI",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "UDXB0783",
+    "customerName": "ZURICH",
+    "customerCluster": "",
+    "vertical": "Retail",
+    "geo": "UKI",
+    "type": "Direct T1"
+  },
+  {
+    "crmNumber": "G7BI5OL6",
+    "customerName": "GENEVA",
+    "customerCluster": "",
+    "vertical": "Retail",
+    "geo": "Benelux",
+    "type": "Indirect T2"
+  },
+  {
+    "crmNumber": "MZJP36C2",
+    "customerName": "BRUSSELS",
+    "customerCluster": "",
+    "vertical": "Retail",
+    "geo": "Central Asia",
+    "type": "Indirect T2"
+  },
+  {
+    "crmNumber": "8QRHWW2Q",
+    "customerName": "AMSTERDAM",
+    "customerCluster": "",
+    "vertical": "Retail",
+    "geo": "DACH",
+    "type": "Indirect T2"
+  },
+  {
+    "crmNumber": "17LEZVFK",
+    "customerName": "ROTTERDAM",
+    "customerCluster": "",
+    "vertical": "Retail",
+    "geo": "France",
+    "type": "Indirect T2"
+  },
+  {
+    "crmNumber": "KS10OVAX",
+    "customerName": "THE HAGUE",
+    "customerCluster": "",
+    "vertical": "Retail",
+    "geo": "Iberia",
+    "type": "Indirect T2"
+  },
+  {
+    "crmNumber": "P99JFBYB",
+    "customerName": "COPENHAGEN",
+    "customerCluster": "",
+    "vertical": "Retail",
+    "geo": "Italy",
+    "type": "Indirect T2"
+  },
+  {
+    "crmNumber": "7EOCW6HZ",
+    "customerName": "STOCKHOLM",
+    "customerCluster": "",
+    "vertical": "Retail",
+    "geo": "MEA",
+    "type": "Indirect T2"
+  },
+  {
+    "crmNumber": "2K4QO6BV",
+    "customerName": "OSLO",
+    "customerCluster": "",
+    "vertical": "Telco",
+    "geo": "Nordics",
+    "type": "Indirect T2"
+  },
+  {
+    "crmNumber": "3HEYPB8R",
+    "customerName": "HELSINKI",
+    "customerCluster": "",
+    "vertical": "Telco",
+    "geo": "Poland",
+    "type": "Indirect T2"
+  },
+  {
+    "crmNumber": "GPZVM99A",
+    "customerName": "REYKJAVIK",
+    "customerCluster": "",
+    "vertical": "Telco",
+    "geo": "SEE",
+    "type": "Indirect T2"
+  },
+  {
+    "crmNumber": "MGKLCP43",
+    "customerName": "DUBLIN",
+    "customerCluster": "",
+    "vertical": "Telco",
+    "geo": "UKI",
+    "type": "Indirect T2"
+  },
+  {
+    "crmNumber": "6PVANGS6",
+    "customerName": "BIRMINGHAM",
+    "customerCluster": "",
+    "vertical": "B2B",
+    "geo": "Benelux",
+    "type": "Indirect T2"
+  }
+]
