@@ -540,19 +540,22 @@ if (feBadge) feBadge.textContent = `FE ${formatPercent(feDecYes)} –`;
       }
 } else {
   // VAT = No  -> Rebate = ((RRP/(1+VAT))*(1-frontend)) - ((Promo RRP/(1+VAT))*(1-frontend))
-  // Uses customer's frontend from customerset.json
-  const vatRate = getVatForCountry(countrySelRef?.value);
-  const vatDec  = (vatRate && vatRate > 0) ? (vatRate / 100) : 0;
-  const baseRRP   = vatDec > 0 ? (rrp / (1 + vatDec))   : rrp;
-  const basePromo = vatDec > 0 ? (promo / (1 + vatDec)) : promo;
+  // Uses customer's frontend from customerset.json// VAT = No  -> Rebate = ((RRP/(1+VAT))*(1-frontend)) - ((Promo RRP/(1+VAT))*(1-frontend))
+const vatRate = getVatForCountry(countrySelRef?.value);
+const vatDec  = (vatRate && vatRate > 0) ? (vatRate / 100) : 0;
+const baseRRP   = vatDec > 0 ? (rrp / (1 + vatDec))   : rrp;
+const basePromo = vatDec > 0 ? (promo / (1 + vatDec)) : promo;
 
-  const fe = getFrontendForCustomer(customerSel.value);      // decimal (e.g., 0.10)
-  const factor = 1 - (fe || 0);
+const feDec = getFrontendForCustomer(customerSel.value); // decimal (e.g. 0.10)
+const factor = 1 - (feDec || 0);
 
-  const rebate = (baseRRP * factor) - (basePromo * factor);
-  rebateInput.value = (Number.isFinite(rebate) ? rebate : 0).toFixed(2);
-  rebateInput.disabled = true;  // now auto-calculated when VAT = No
-  if (feBadge) feBadge.textContent = `FE ${formatPercent(feDec)} –`;
+const rebate = (baseRRP * factor) - (basePromo * factor);
+rebateInput.value = (Number.isFinite(rebate) ? rebate : 0).toFixed(2);
+rebateInput.disabled = true;
+
+// NEW: paint FE badge
+if (feBadge) feBadge.textContent = `FE ${formatPercent(feDec)} –`;
+
 }
 
 
