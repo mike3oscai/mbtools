@@ -316,3 +316,65 @@ select.form-control[multiple] {
 main .container > .card + .card {
   margin-top: 28px;
 }
+/* --- Selected products: sin solapes y centrada -------------------------- */
+.card { position: relative; z-index: 0; }        /* base */
+#selectedProductsCard { 
+  z-index: 2;                                     /* por encima del resto */
+  max-width: 1280px;
+  width: min(1280px, 96vw);
+  margin: 28px auto;                              /* separada y centrada */
+  padding-bottom: 16px;
+}
+
+/* Anula el antiguo “truco” de translate que causaba el overlay */
+.card:has(#productsTable) {
+  left: auto !important;
+  transform: none !important;
+  width: auto !important;
+  margin: 0 auto !important;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+/* --- Tabla fluida, sin barra horizontal --------------------------------- */
+#selectedProductsCard .scroll {
+  overflow-x: hidden;   /* no más scroll horizontal */
+}
+
+#productsTable {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;  /* reparte el ancho entre columnas */
+}
+
+#productsTable th,
+#productsTable td {
+  padding: .6rem .5rem;
+  border-top: 1px solid var(--card-border);
+  text-align: center;
+  white-space: normal;          /* permitir salto de línea */
+  word-break: break-word;       /* romper textos largos si hace falta */
+}
+
+/* La descripción puede ocupar dos líneas cómodas */
+#productsTable td[data-col="desc"] { min-width: 180px; text-align: left; }
+
+/* Inputs/selects dentro de la tabla: ocupan su celda sin forzar ancho */
+#productsTable input.form-control,
+#productsTable select.form-control {
+  min-width: 0;   /* anula mínimos que obligaban scroll */
+  width: 100%;
+  max-width: 140px;
+  text-align: center;
+}
+
+/* FE pill pequeño y sin estirar la celda */
+.fe-badge { white-space: nowrap; display: inline-block; }
+
+/* --- Multiselect de PN alto y cómodo (por si no estaba al final) --------- */
+#fld-pn.form-control[multiple] {
+  height: auto;
+  min-height: 360px;      /* súbelo a 400px si quieres aún más alto */
+  padding: .5rem;
+  line-height: 1.2;
+}
