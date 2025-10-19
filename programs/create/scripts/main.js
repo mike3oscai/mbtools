@@ -94,7 +94,7 @@ async function loadCountriesByGeo(geo) {
 export async function renderCreateForm(container) {
   if (!container) return;
 
-      // ----- Header controls -----
+  // ----- Header controls -----
   const programTypeSel = buildSelect("programType", PROGRAM_TYPE_OPTIONS, "Select a program type");
   const geoSel         = buildSelect("geo", GEO_OPTIONS, "Select a geo");
   const countrySel     = buildSelect("country", [], "Select a country");
@@ -130,8 +130,6 @@ export async function renderCreateForm(container) {
   );
 
   container.replaceChildren(grid, actions);
-
-;
 
   /* ---------- Sección Products (oculta hasta Confirm) ---------- */
   const productsSection = h("section", { id: "productsSection", className: "card", style: "display:none" },
@@ -388,7 +386,8 @@ export async function renderCreateForm(container) {
     btnSaveProgram.disabled = tbody.children.length === 0;
   });
 
-  btnSaveProgram.addEventListener("click", () => {
+  /* ---------- SAVE PROGRAM (POST /api/programs) ---------- */
+  btnSaveProgram.addEventListener("click", async () => {
     const header = {
       programType: programTypeSel.value,
       geo: geoSel.value,
@@ -410,9 +409,38 @@ export async function renderCreateForm(container) {
       totalProgramRebate: numVal(getCell("span", tr, "total")),
       programNumber: (getCell("input", tr, "lineProgramNumber")?.value) || header.programNumber
     }));
-    if (!lines.length) return alert("No products added.");
-    console.log({ header, lines });
-    alert("Program ready to be saved. Check console for payload.");
+
+    if (!lines.length) {
+      alert("No products added.");
+      return;
+    }
+
+    const body = {
+      id: generateProgramId(header.programNumber, header.customer, header.startDay),
+      createdAt: new Date().toISOString(),
+      header,
+      lines
+    };
+
+    try {
+      const res = await fetch("/api/programs", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(body)
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        alert(`Error saving program: ${err.error || res.statusText}`);
+        return;
+      }
+
+      const saved = await res.json();
+      alert(`Program saved with id ${saved.id}`);
+    } catch (e) {
+      alert(`Network error saving program`);
+      // opcional: console.error(e);
+    }
   });
 
   /* ---------- Helpers de tabla + cálculo ---------- */
@@ -536,7 +564,16 @@ export async function renderCreateForm(container) {
     const tr = typeOrTr, col = maybeTr;
     return tr.querySelector(`[data-col="${col}"]`)?.querySelector("*") || tr.querySelector(`[data-col="${col}"]`);
   }
+
+  // ---- Helper ID estable para el registro (mismo algoritmo que en la API)
+  function generateProgramId(programNumber, customer, startDay) {
+    const base = `${programNumber || "NONUM"}|${customer || "NOCUST"}|${startDay || ""}`;
+    let h = 0;
+    for (let i = 0; i < base.length; i++) h = (h * 31 + base.charCodeAt(i)) >>> 0;
+    return `PRG-${h.toString(16).padStart(8, "0")}`;
+  }
 }
+
 // Compatibilidad: algunos HTML antiguos importan este nombre.
 // No hace nada, sólo evita el error de importación.
 export function wireSelectedProducts() {}
