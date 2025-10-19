@@ -11,16 +11,15 @@
   <header class="container">
     <a href="../" class="back-link">← Back</a>
     <h1>Create a Program</h1>
-    <p>Fill in the required fields to create a new program.</p>
+    <p>Fill in the fields below to create a new program.</p>
   </header>
 
   <main class="container">
-    <section class="card">
-      <h2 style="margin-bottom: .75rem;">Program header</h2>
-
-      <!-- horizontal scroll container to keep columns readable -->
-      <div class="scroll">
-        <div id="program-header-grid" class="grid-header" aria-label="Program grid header"></div>
+    <section class="card form-card">
+      <h2>Program header</h2>
+      <form id="program-form" novalidate aria-label="Create program form"></form>
+      <div class="form-actions">
+        <button type="button" id="btnSave" disabled>Save (coming soon)</button>
       </div>
     </section>
   </main>
@@ -33,13 +32,13 @@
     // Footer year
     document.getElementById('y').textContent = new Date().getFullYear();
 
-    // Theme switch
+    // Theme switch (shared)
     import { initThemeToggle } from "../../shared/scripts/theme.js";
     initThemeToggle();
 
-    // Render header grid
-    import { renderHeaderGrid } from "./scripts/main.js";
-    renderHeaderGrid();
+    // Render vertical form
+    import { renderCreateForm } from "./scripts/main.js";
+    renderCreateForm(document.getElementById("program-form"));
   </script>
 </body>
 </html>

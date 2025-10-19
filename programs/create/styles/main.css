@@ -1,34 +1,74 @@
-/* Page-specific styles for Create a Program (English comments) */
+/* Page-specific styles for Create a Program (vertical card form) */
 
 .back-link { color: var(--accent); text-decoration: none; }
 
-.scroll {
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  padding-bottom: .5rem;
+.form-card h2 {
+  margin-bottom: 1rem;
+  font-weight: 600;
 }
 
-/* 16 columns grid for the header row */
-.grid-header {
+/* Form layout: label left, input right */
+#program-form {
   display: grid;
-  grid-template-columns: repeat(16, minmax(160px, 1fr));
-  gap: 8px;
-  min-width: 2560px; /* keeps columns readable; scrolls on small screens */
-  padding: 8px;
+  grid-template-columns: 1fr 2fr;
+  gap: 12px 14px;
+}
+
+/* Each row uses the two-column grid */
+.form-row {
+  display: contents; /* let the label + control occupy the two grid columns */
+}
+
+.form-label {
+  align-self: center;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.form-control {
+  width: 100%;
+  padding: .65rem .75rem;
   border: 1px solid var(--card-border);
   border-radius: 10px;
   background: var(--bg);
+  color: var(--fg);
+  font: inherit;
+  outline: none;
+  transition: border-color .15s ease, box-shadow .15s ease;
 }
 
-/* Header cell look */
-.grid-header .cell {
-  background: var(--card-bg);
+.form-control::placeholder { color: var(--muted); opacity: .7; }
+
+.form-control:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--card-hover);
+}
+
+/* Numeric controls look aligned */
+input[type="number"] { text-align: right; }
+
+/* Actions */
+.form-actions {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: .5rem;
+}
+
+.form-actions button {
   border: 1px solid var(--card-border);
-  border-radius: 8px;
-  padding: .6rem .7rem;
+  background: var(--bg);
+  color: var(--fg);
+  border-radius: 10px;
+  padding: .6rem 1rem;
   font-weight: 600;
-  text-align: center;
-  white-space: nowrap;
+  cursor: not-allowed;
 }
 
-/* Optional: when we add rows later, reuse similar grid with lighter cells */
+/* Responsive: stack on small screens */
+@media (max-width: 720px) {
+  #program-form {
+    grid-template-columns: 1fr;
+  }
+  .form-label { margin-top: .5rem; }
+}
