@@ -26,15 +26,15 @@ const SCHEMA = [
     options: [
         {value:"Benelux", label: "Benelux"},
         {value: "Central Asia", label: "Central Asia"},
-        {value: "DACH", label: "DE, AT, CH"},
+        {value: "DACH", label: "DACH (Germany, Austria, Switzerland)"},
         {value: "France", label: "France"},
-        {value: "Iberia", label: "Spain & Portugal"},
+        {value: "Iberia", label: "Iberia (Spain & Portugal)"},
         {value: "Italy", label: "Italy"},
-        {value: "MEA", label: "Middle East & Africa"},
+        {value: "MEA", label: "MEA (Middle East & Africa)"},
         {value: "Nordics", label:"Nordics"},
         {value: "Poland", label: "Poland"},
-        {value: "SEE", label: "South East Europe"},
-        {value: "UKI", label: "United Kingdom & ireland"}
+        {value: "SEE", label: "SEE (South East Europe)"},
+        {value: "UKI", label: "UKI (United Kingdom & ireland)"}
     ]
     },
   { label: "Customer", key: "customer", type: "text", placeholder: "Enter customer name" },
