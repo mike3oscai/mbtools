@@ -214,3 +214,14 @@ button + button,
 /* Asegura que las cards no se pisen por hover */
 .card{ position: relative; z-index: 0; }
 .card:hover{ z-index: 1; }
+
+/* === Override ancho global de página para vistas con tablas anchas === */
+:root{
+  /* súbelo si quieres aún más ancho (p.ej., 1760px) */
+  --page-max: 1600px;
+}
+
+.container{
+  /* deja que el contenedor aproveche casi toda la ventana */
+  max-width: min(var(--page-max), 98vw);
+}

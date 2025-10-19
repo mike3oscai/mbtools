@@ -500,3 +500,76 @@ section.card + section.card { margin-top: 1.25rem; }
   justify-content: flex-end;
   margin-top: 1rem;
 }
+/* === Selected products: ancho cómodo y sin scroll horizontal === */
+
+/* Asegúrate de usar este id en la card que envuelve la tabla */
+#selectedProductsCard{
+  /* que mande su propio ancho, por encima de otros estilos previos */
+  max-width: var(--page-max) !important;
+  width: min(var(--page-max), 98vw) !important;
+  margin-inline: auto !important;
+  overflow: visible;                /* deja ver sombras/bordes */
+  padding-bottom: 16px;             /* que el botón no pise el borde */
+  z-index: 3;                       /* por encima de otras cards */
+}
+
+/* Nada de desplazamiento horizontal dentro de la tarjeta */
+#selectedProductsCard .scroll{
+  overflow-x: hidden !important;
+  overflow-y: visible;
+}
+
+/* Si en algún punto se aplicó un translate/left para centrar, lo anulamos */
+.card:has(#productsTable){
+  left: auto !important;
+  transform: none !important;
+  width: auto !important;
+  margin: 0 auto !important;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+/* === Tabla: columnas previsibles y textos que rompen línea === */
+#productsTable{
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;              /* reparte el ancho entre columnas */
+}
+
+#productsTable th,
+#productsTable td{
+  padding: .6rem .55rem;
+  border-top: 1px solid var(--card-border);
+  text-align: center;
+  white-space: normal;              /* permite saltos de línea */
+  word-break: break-word;           /* rompe textos largos */
+}
+
+/* Descripción un poco más ancha y alineada a la izquierda */
+#productsTable td[data-col="desc"]{
+  min-width: 200px;
+  text-align: left;
+}
+
+/* Inputs/selects: que no fuercen ancho mínimo (clave para no scrollear) */
+#productsTable input.form-control,
+#productsTable select.form-control{
+  min-width: 0;
+  width: 100%;
+  max-width: 140px;                 /* no hace falta más para números */
+  text-align: center;
+}
+
+/* Distribución de columnas pensada para ~1600px; ajusta si lo ves estrecho */
+#productsTable th:nth-child(1),  #productsTable td:nth-child(1){  width: 8%;  }  /* PN */
+#productsTable th:nth-child(2),  #productsTable td:nth-child(2){  width: 20%; }  /* Description */
+#productsTable th:nth-child(3),  #productsTable td:nth-child(3){  width: 10%; }  /* RRP */
+#productsTable th:nth-child(4),  #productsTable td:nth-child(4){  width: 11%; }  /* Promo RRP */
+#productsTable th:nth-child(5),  #productsTable td:nth-child(5){  width: 14%; }  /* Calc RRP - VAT */
+#productsTable th:nth-child(6),  #productsTable td:nth-child(6){  width: 12%; }  /* FE - Rebate */
+#productsTable th:nth-child(7),  #productsTable td:nth-child(7){  width: 9%;  }  /* Max Qty */
+#productsTable th:nth-child(8),  #productsTable td:nth-child(8){  width: 10%; }  /* Total Rebate */
+#productsTable th:nth-child(9),  #productsTable td:nth-child(9){  width: 14%; }  /* Program Number */
+#productsTable th:nth-child(10), #productsTable td:nth-child(10){ width: 8%;  }  /* Actions */
+
+/* Pill FE compacto*
