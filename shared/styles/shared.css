@@ -134,3 +134,9 @@ footer {
 .theme-switch .labels .dark  { color: var(--muted); }
 [data-theme="dark"] .theme-switch .labels .light { color: var(--muted); }
 [data-theme="dark"] .theme-switch .labels .dark  { color: var(--fg); opacity: .9; }
+
+/* Disabled form controls look muted */
+.form-control:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+}
