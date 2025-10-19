@@ -72,3 +72,29 @@ input[type="number"] { text-align: right; }
   }
   .form-label { margin-top: .5rem; }
 }
+/* --- FE badge (appears when VAT = No) --- */
+.fe-badge {
+  display: inline-block;          /* el JS ya la oculta/muestra */
+  padding: 0.2rem 0.55rem;
+  border-radius: 9999px;          /* pill */
+  font-size: 0.85rem;
+  font-weight: 600;
+  line-height: 1;
+  background: #eef6ff;            /* suave azul */
+  color: #0b5cab;                 /* azul texto */
+  border: 1px solid #dbe7ff;
+  white-space: nowrap;
+}
+
+/* Alineación agradable del contenido en la celda de Rebate */
+td[data-col="rebate"] > div {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+}
+
+/* Input numéricos más compactos dentro de la tabla */
+td input[type="number"] {
+  max-width: 140px;
+  text-align: center;
+}
