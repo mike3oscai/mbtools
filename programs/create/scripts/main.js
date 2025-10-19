@@ -1,9 +1,23 @@
 // Vertical card form renderer for "Create a Program".
 // Pure modular code – no side effects on import.
 
+// Vertical card form renderer for "Create a Program".
+// Pure modular code – no side effects on import.
+
 const SCHEMA = [
-  // label, key, type, placeholder, options?
-  { label: "Program Type", key: "programType", type: "select", placeholder: "Select a program type", options: ["Launch", "Promo", "Bundle", "Other"] },
+  {
+    label: "Program Type",
+    key: "programType",
+    type: "select",
+    placeholder: "Select a program type",
+    // Each option has both code and description
+    options: [
+      { value: "PR", label: "PR – Price reduction in T1" },
+      { value: "SO", label: "SO – Sell Out Promotion in T2" },
+      { value: "PP", label: "PP – Price Protection in T1 or T2" },
+      { value: "CO", label: "CO – Co-op non contractual" }
+    ]
+  },
   { label: "Customer", key: "customer", type: "text", placeholder: "Enter customer name" },
   { label: "Activity", key: "activity", type: "text", placeholder: "Describe the activity" },
   { label: "Start Day", key: "startDay", type: "date" },
@@ -21,35 +35,36 @@ const SCHEMA = [
   { label: "Program Number", key: "programNumber", type: "text", placeholder: "Auto/Manual code" }
 ];
 
-/** Tiny DOM helper (keeps us dependency-free) */
-function h(tag, props = {}, ...children) {
-  const el = Object.assign(document.createElement(tag), props);
-  for (const c of children.flat()) el.append(c?.nodeType ? c : document.createTextNode(c ?? ""));
-  return el;
-}
-
-/** Builds a control from a field definition */
+/** Helper to build an input/select based on the schema definition */
 function buildControl(field) {
   const common = { className: "form-control", name: field.key, id: `fld-${field.key}` };
 
   if (field.type === "select") {
     const sel = h("select", common);
-    // Placeholder option (disabled + selected)
+    // Placeholder (disabled + selected)
     sel.append(h("option", { value: "", disabled: true, selected: true }, field.placeholder ?? "Select..."));
-    for (const opt of field.options ?? []) sel.append(h("option", { value: opt }, opt));
+
+    // Handle both simple arrays and objects with value/label
+    for (const opt of field.options ?? []) {
+      if (typeof opt === "object")
+        sel.append(h("option", { value: opt.value }, opt.label));
+      else
+        sel.append(h("option", { value: opt }, opt));
+    }
     return sel;
   }
 
-  if (field.type === "date") {
-    return h("input", { ...common, type: "date" });
-  }
-
-  if (field.type === "number") {
-    return h("input", { ...common, type: "number", step: "0.01", placeholder: field.placeholder ?? "0" });
-  }
-
-  // default: text
+  if (field.type === "date") return h("input", { ...common, type: "date" });
+  if (field.type === "number") return h("input", { ...common, type: "number", step: "0.01", placeholder: field.placeholder ?? "0" });
   return h("input", { ...common, type: "text", placeholder: field.placeholder ?? "" });
+}
+
+
+/** Tiny DOM helper (keeps us dependency-free) */
+function h(tag, props = {}, ...children) {
+  const el = Object.assign(document.createElement(tag), props);
+  for (const c of children.flat()) el.append(c?.nodeType ? c : document.createTextNode(c ?? ""));
+  return el;
 }
 
 /** Public API: render the vertical form inside a container element */
