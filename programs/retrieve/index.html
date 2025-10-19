@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Retrieve Programs · MBTools</title>
+  <link rel="stylesheet" href="../../shared/styles/shared.css">
+  <link rel="stylesheet" href="../styles/main.css">
+</head>
+<body>
+  <header class="container">
+    <a href="../" class="back-link">← Back</a>
+    <h1>Retrieve Programs</h1>
+    <p>View every saved program with all its lines (Selected products).</p>
+  </header>
+
+  <main class="container">
+    <section class="card" aria-label="Filters">
+      <div class="grid" style="grid-template-columns: 1fr auto auto; gap: 12px;">
+        <input id="q" class="form-control" placeholder="Search by Program Number / Customer / Geo / Country…" />
+        <button id="btnRefresh" class="action-cta" type="button">Refresh</button>
+        <button id="btnExpandAll" class="action-cta" type="button">Expand all</button>
+      </div>
+    </section>
+
+    <section class="card" aria-label="Programs list" id="listCard">
+      <h2>Programs</h2>
+      <div class="scroll">
+        <table id="tblPrograms" class="w-full">
+          <thead>
+            <tr>
+              <th>Program Number</th>
+              <th>Type</th>
+              <th>Geo</th>
+              <th>Country</th>
+              <th>Vertical</th>
+              <th>Customer</th>
+              <th>Start</th>
+              <th>End</th>
+              <th>Created</th>
+              <th>ID</th>
+              <th>Lines</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="tbodyPrograms"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer class="container">
+    <small>© <span id="y"></span> MBTools.app</small>
+  </footer>
+
+  <script type="module">
+    // Footer year + theme
+    document.getElementById('y').textContent = new Date().getFullYear();
+    const { initThemeToggle } = await import("../../shared/scripts/theme.js");
+    initThemeToggle();
+
+    // Render list
+    const { renderRetrieve } = await import("./scripts/main.js");
+    renderRetrieve();
+  </script>
+</body>
+</html>

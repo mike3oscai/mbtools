@@ -22,6 +22,14 @@ const ACTIONS = [
     desc: "Finalize and archive a completed or cancelled program.",
     href: "./close/",
     icon: "✓"
+  },
+  // 👉 NUEVA tarjeta
+  {
+    id: "retrieve",
+    title: "Retrieve Programs",
+    desc: "Browse and inspect all saved programs & their lines.",
+    href: "./retrieve/",
+    icon: "🔎"
   }
 ];
 
