@@ -18,6 +18,25 @@ const SCHEMA = [
       { value: "CO", label: "CO – Co-op non contractual" }
     ]
   },
+  { 
+    label: "GEO",
+    key:"geo",
+    type: "select",
+    placeholder: "Select a Geo",
+    options: [
+        {value:"Benelux", label: "Benelux"},
+        {value: "Central Asia", label: "Central Asia"},
+        {value: "DACH", label: "DE, AT, CH"},
+        {value: "France", label: "France"},
+        {value: "Iberia", label: "Spain & Portugal"},
+        {value: "Italy", label: "Italy"},
+        {value: "MEA", label: "Middle East & Africa"},
+        {value: "Nordics", label:"Nordics"},
+        {value: "Poland", label: "Poland"},
+        {value: "SEE", label: "South East Europe"},
+        {value: "UKI", label: "United Kingdom & ireland"}
+    ]
+    },
   { label: "Customer", key: "customer", type: "text", placeholder: "Enter customer name" },
   { label: "Activity", key: "activity", type: "text", placeholder: "Describe the activity" },
   { label: "Start Day", key: "startDay", type: "date" },
