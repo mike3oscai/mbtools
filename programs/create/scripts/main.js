@@ -515,7 +515,44 @@ export async function renderCreateForm(container) {
 
   // ---------------- small HTML helpers for table ----------------------------
   function trHead(cols) { return h("tr", {}, ...cols.map(c => h("th", { style: thStyle() }, c))); }
-  function td(txt, data = {}) { return h("td", { style: tdStyle(), ...data }, txt); }
+  function td(txt, data = {}) {
+  const el = h("td", { style: tdStyle() }, txt);
+  if (data && data["data-col"]) el.dataset.col = data["data-col"];
+  return el;
+}
+
+function tdInputNumber(col, initial = 0, onInput) {
+  const inp = h("input", { type: "number", step: "0.01", value: initial, className: "form-control", style: "min-width:120px" });
+  const cell = h("td", { style: tdStyle() }, inp);
+  cell.dataset.col = col;                 // <-- clave del fix
+  if (onInput) inp.addEventListener("input", onInput);
+  return cell;
+}
+
+function tdInputText(col, val = "") {
+  const inp = h("input", { type: "text", value: val, className: "form-control", style: "min-width:160px" });
+  const cell = h("td", { style: tdStyle() }, inp);
+  cell.dataset.col = col;                 // <-- clave del fix
+  return cell;
+}
+
+function tdReadOnly(col, val = "") {
+  const span = h("span", {}, val);
+  const cell = h("td", { style: tdStyle() }, span);
+  cell.dataset.col = col;                 // <-- clave del fix
+  return cell;
+}
+
+function tdSelect(col, opts, def, onChange) {
+  const sel = h("select", { className: "form-control" },
+    ...opts.map(o => h("option", { value: o, selected: o === def }, o))
+  );
+  if (onChange) sel.addEventListener("change", onChange);
+  const cell = h("td", { style: tdStyle() }, sel);
+  cell.dataset.col = col;                 // <-- clave del fix
+  return cell;
+}
+
   function tdActionRemove() {
     const btn = h("button", { type: "button", className: "action-cta" }, "Remove");
     const cell = h("td", { style: tdStyle() }, btn);
@@ -525,27 +562,7 @@ export async function renderCreateForm(container) {
     });
     return cell;
   }
-  function tdInputNumber(col, initial = 0, onInput) {
-    const inp = h("input", { type: "number", step: "0.01", value: initial, className: "form-control", style: "min-width:120px" });
-    const cell = h("td", { style: tdStyle(), "data-col": col }, inp);
-    if (onInput) inp.addEventListener("input", onInput);
-    return cell;
-  }
-  function tdInputText(col, val = "") {
-    const inp = h("input", { type: "text", value: val, className: "form-control", style: "min-width:160px" });
-    return h("td", { style: tdStyle(), "data-col": col }, inp);
-  }
-  function tdReadOnly(col, val = "") {
-    const span = h("span", {}, val);
-    return h("td", { style: tdStyle(), "data-col": col }, span);
-  }
-  function tdSelect(col, opts, def, onChange) {
-    const sel = h("select", { className: "form-control" },
-      ...opts.map(o => h("option", { value: o, selected: o === def }, o))
-    );
-    if (onChange) sel.addEventListener("change", onChange);
-    return h("td", { style: tdStyle(), "data-col": col }, sel);
-  }
+  
   function tdStyle() { return "padding:.5rem;border-top:1px solid var(--card-border);text-align:center"; }
   function thStyle() { return "padding:.5rem;border-bottom:1px solid var(--card-border);text-align:center;font-weight:600"; }
   function byId(id) { return document.getElementById(id); }
