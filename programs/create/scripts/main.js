@@ -1,10 +1,9 @@
 // Vertical card form renderer for "Create a Program".
 // Pure modular code – no side effects on import.
 
-import { loadCustomerSet } from "../../shared/scripts/data.js";
+import { loadCustomerSet } from "/shared/scripts/data.js";
 
 // --- Form schema ------------------------------------------------------------
-// "Customer" is now a dynamic <select> populated based on the selected Geo.
 const SCHEMA = [
   {
     label: "Program Type",
@@ -37,7 +36,6 @@ const SCHEMA = [
       { value: "UKI",          label: "UKI (United Kingdom & Ireland)" }
     ]
   },
-  // Customer is dynamic; starts disabled until Geo is selected.
   { label: "Customer", key: "customer", type: "select", placeholder: "Select a customer (choose Geo first)", options: [], disabled: true },
 
   { label: "Activity",  key: "activity",  type: "text",   placeholder: "Describe the activity" },
@@ -65,7 +63,7 @@ function h(tag, props = {}, ...children) {
 
 // --- Control factory --------------------------------------------------------
 function setSelectOptions(sel, options = [], placeholder = "Select...") {
-  sel.replaceChildren(); // clear
+  sel.replaceChildren();
   sel.append(h("option", { value: "", disabled: true, selected: true }, placeholder));
   for (const opt of options) {
     if (typeof opt === "object") sel.append(h("option", { value: opt.value }, opt.label));
@@ -104,14 +102,13 @@ export async function renderCreateForm(container) {
     })
   );
 
-  // Grab references we need for dynamic behavior
-  const geoSel = container.querySelector('#fld-geo');
+  // Refs for dynamic behavior
+  const geoSel  = container.querySelector('#fld-geo');
   const custSel = container.querySelector('#fld-customer');
 
   // Load customers once
   const customers = await loadCustomerSet();
 
-  // Helper to refresh Customer options based on Geo
   const refreshCustomers = () => {
     const g = geoSel.value;
     if (!g) {
@@ -121,14 +118,11 @@ export async function renderCreateForm(container) {
     }
     const list = customers
       .filter(c => c.geo === g)
-      .map(c => ({ value: c.crmNumber, label: c.customerName })); // show NAME, value=CRM
+      .map(c => ({ value: c.crmNumber, label: c.customerName }));
     custSel.disabled = list.length === 0;
     setSelectOptions(custSel, list, list.length ? "Select a customer" : "No customers for this geo");
   };
 
-  // Wire up events
   geoSel.addEventListener('change', refreshCustomers);
-
-  // Initial state
   refreshCustomers();
 }
