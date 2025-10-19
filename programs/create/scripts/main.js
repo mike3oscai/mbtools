@@ -318,6 +318,33 @@ export async function renderCreateForm(container) {
     setPnOptions(products);
   })();
 
+  /* ---------- Reset reutilizable ---------- */
+  function resetProgramForm() {
+    // 1) Rehabilitar y vaciar cabecera
+    [programTypeSel, geoSel, countrySel, verticalSel, customerSel, startDayInp, endDayInp]
+      .forEach(el => { el.disabled = false; el.value = ""; });
+    programNumInp.value = "";
+    refreshCustomers();
+
+    // 2) Ocultar secciones de productos/tabla y limpiar filas
+    productsSection.style.display = "none";
+    tableCard.style.display = "none";
+    tbody.replaceChildren();
+    btnSaveProgram.disabled = true;
+
+    // 3) Reset de filtros de productos y checkbox
+    productSel.value = "";
+    ramSel.value = "";
+    romSel.value = "";
+    chkSelectAll.checked = false;
+    setRamOptions(products);
+    setRomOptions(products);
+    setPnOptions(products);
+
+    // 4) Vuelve al inicio
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
   /* ---------- Paso 1: Confirm / Delete ---------- */
   const today = todayISO;
   byId("btnConfirm").addEventListener("click", () => {
@@ -334,24 +361,7 @@ export async function renderCreateForm(container) {
     tableCard.style.display = "";
   });
 
-  byId("btnDelete").addEventListener("click", () => {
-    [programTypeSel, geoSel, countrySel, verticalSel, customerSel, startDayInp, endDayInp].forEach(el => {
-      el.disabled = false; el.value = "";
-    });
-    programNumInp.value = "";
-    refreshCustomers();
-
-    productsSection.style.display = "none";
-    tableCard.style.display = "none";
-    tbody.replaceChildren();
-    btnSaveProgram.disabled = true;
-
-    productSel.value = "";
-    ramSel.value = "";
-    romSel.value = "";
-    chkSelectAll.checked = false;
-    setRamOptions(products); setRomOptions(products); setPnOptions(products);
-  });
+  byId("btnDelete").addEventListener("click", resetProgramForm);
 
   function validateHeader() {
     if (!PROGRAM_TYPE_OPTIONS.some(o => o.value === programTypeSel.value)) return "Program Type is required.";
@@ -437,9 +447,12 @@ export async function renderCreateForm(container) {
 
       const saved = await res.json();
       alert(`Program saved with id ${saved.id}`);
+
+      // 👉 reset automático para crear otro programa
+      resetProgramForm();
     } catch (e) {
       alert(`Network error saving program`);
-      // opcional: console.error(e);
+      // console.error(e);
     }
   });
 
