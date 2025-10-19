@@ -193,7 +193,7 @@ export async function renderCreateForm(container) {
         h("thead", {},
           trHead([
             "PN", "Description", "RRP", "Promo RRP",
-            "Calculated RRP - VAT (Yes/No)", "FE  Rebate",
+            "Calculated RRP - VAT (Yes/No)", "FE - Rebate",
             "Max Quantity", "Total Program Rebate", "Program Number", "Actions"
           ])
         ),
@@ -544,7 +544,7 @@ export async function renderCreateForm(container) {
 
       // Show FE badge only when VAT = No
       if (feBadge) {
-        feBadge.textContent = `FE ${formatPercent(feDec)} –`;
+        feBadge.textContent = `FE ${formatPercent(feDec)}`;
         feBadge.style.display = "inline-block";
       }
     }
