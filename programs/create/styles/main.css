@@ -443,3 +443,60 @@ section.card + section.card { margin-top: 1.25rem; }
   min-height: 260px;     /* sube si quieres más */
   font-size: 0.92rem;
 }
+/* --- Altura del multiselect de PN --- */
+#fld-pn{
+  min-height: 22rem;     /* suficiente para ver muchas líneas */
+}
+
+/* --- Selected products: que ocupe bien el ancho y sin solapes --- */
+.selected-products-card,
+#productsTable{
+  width: 100%;
+}
+
+.selected-products-card{
+  position: relative;
+  z-index: 3;                  /* por encima del contenedor superior */
+  overflow: visible;           /* nada de recortes arriba/abajo */
+}
+
+.selected-products-card .scroll{
+  overflow-x: hidden;          /* sin scroll horizontal */
+}
+
+/* Tabla: layout fijo, columnas predecibles y sin “reventar” celdas */
+#productsTable{
+  table-layout: fixed;
+  border-collapse: collapse;
+}
+
+/* Inputs dentro de la tabla: que se adapten a su celda */
+#productsTable input.form-control,
+#productsTable select.form-control{
+  width: 100%;
+  min-width: 0;                /* clave para que no generen scroll */
+}
+
+/* Distribución de columnas (ajústalo si quieres) */
+#productsTable th:nth-child(1),  #productsTable td:nth-child(1){  width: 10%; } /* PN */
+#productsTable th:nth-child(2),  #productsTable td:nth-child(2){  width: 20%; } /* Description */
+#productsTable th:nth-child(3),  #productsTable td:nth-child(3){  width: 9%;  } /* RRP */
+#productsTable th:nth-child(4),  #productsTable td:nth-child(4){  width: 10%; } /* Promo RRP */
+#productsTable th:nth-child(5),  #productsTable td:nth-child(5){  width: 13%; } /* VAT Yes/No */
+#productsTable th:nth-child(6),  #productsTable td:nth-child(6){  width: 10%; } /* FE - Rebate */
+#productsTable th:nth-child(7),  #productsTable td:nth-child(7){  width: 10%; } /* Max Qty */
+#productsTable th:nth-child(8),  #productsTable td:nth-child(8){  width: 10%; } /* Total Rebate */
+#productsTable th:nth-child(9),  #productsTable td:nth-child(9){  width: 16%; } /* Program Number */
+#productsTable th:nth-child(10), #productsTable td:nth-child(10){ width: 8%;  } /* Actions */
+
+/* Mejor legibilidad: ligeramente más altos */
+#productsTable th, #productsTable td{
+  padding: .65rem .6rem;
+}
+
+/* Botón Save alineado y dentro de la tarjeta */
+.selected-products-card .actions-row{
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
