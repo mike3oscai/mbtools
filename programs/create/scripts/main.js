@@ -152,7 +152,7 @@ export async function renderCreateForm(container) {
   );
 
   // Product area (hidden until Confirm)
-  const productsSection = h("section", { className: "card", style: "margin-top:1rem; display:none" },
+  const productsSection = h("section", { id: "productsSection", className: "card", style: "margin-top:1rem; display:none" },
     h("h2", {}, "Products"),
     h("div", { className: "form-row" },
       h("label", { className: "form-label", htmlFor: "fld-pn" }, "PN (multi-select)"),
@@ -186,7 +186,7 @@ export async function renderCreateForm(container) {
   container.parentElement.appendChild(productsSection);
 
   // Selected products table
-  const tableWrap = h("section", { className: "card", style: "margin-top:1rem; display:none" },
+  const tableWrap = h("section", { id: "selectedProductsCard", className: "card", style: "margin-top:1rem; display:none" },
     h("h2", {}, "Selected products"),
     h("div", { className: "scroll" },
       h("table", { id: "productsTable", style: "width:100%; border-collapse:collapse" },

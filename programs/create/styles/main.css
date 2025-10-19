@@ -257,3 +257,62 @@ select.form-control[multiple] {
 #fld-pn.form-control[multiple] {
   min-height: 360px;     /* opcional: un poco más alto aún */
 }
+/* ---- Layout cards: evitar solapes y mantener separación ---- */
+.card {
+  position: relative;           /* crea contexto de apilado */
+  z-index: 0;
+  margin-block: 24px;           /* separa verticalmente todas las cards */
+}
+
+/* Products (filtro/selección PN): centrado normal */
+#productsSection {
+  max-width: 1000px;            /* mismo ancho que el header */
+  width: min(1000px, 94vw);
+  margin-inline: auto;
+}
+
+/* Selected products: más ancho que el resto, centrado y sin solapes */
+#selectedProductsCard {
+  max-width: 1280px;            /* tabla amplia */
+  width: min(1280px, 96vw);
+  margin-inline: auto;
+  overflow: visible;            /* deja ver sombras y bordes */
+  padding-bottom: 16px;         /* evita que el botón pise el borde */
+}
+
+/* Contenedor con scroll horizontal solo dentro de la tabla, no en la card */
+#selectedProductsCard .scroll {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 6px;          /* deja hueco para la barra de scroll */
+}
+
+/* Cabeceras y celdas: no permitir que desborden verticalmente al colapsar */
+#selectedProductsCard table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* Botón "Save Program" pegado a la derecha sin salir de la tarjeta */
+#selectedProductsCard .action-cta {
+  white-space: nowrap;
+}
+
+/* PN multiselect alto y usable (si aún no lo añadiste) */
+#fld-pn.form-control[multiple] {
+  height: auto;
+  min-height: 360px;
+  padding: .5rem;
+  line-height: 1.2;
+}
+
+/* Asegura que inputs dentro de la tabla no rompan el layout */
+#selectedProductsCard input.form-control,
+#selectedProductsCard select.form-control {
+  min-width: 110px;
+}
+
+/* Pequeña rejilla para los bloques dentro de la página (más separación) */
+main .container > .card + .card {
+  margin-top: 28px;
+}
