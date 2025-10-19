@@ -51,7 +51,8 @@ const SCHEMA = [
   },
   // Customer is dynamic; filtered by Geo (and optionally Vertical)
   { label: "Customer", key: "customer", type: "select", placeholder: "Select a customer (choose Geo first)", options: [], disabled: true },
-
+  { label: "Start Day", key: "startDay",  type: "date" },
+  { label: "End Day",   key: "endDay",    type: "date" },
   // --- Product & SKU selection (dual path) ---------------------------------
   // PN shows "PN — Description" and syncs with Product/RAM/ROM
   { label: "PN",      key: "pn",      type: "select", placeholder: "Select PN or filter by Product/RAM/ROM", options: [], disabled: false },
@@ -62,8 +63,7 @@ const SCHEMA = [
 
   // --- Rest of the form -----------------------------------------------------
   { label: "Activity",  key: "activity",  type: "text",   placeholder: "Describe the activity" },
-  { label: "Start Day", key: "startDay",  type: "date" },
-  { label: "End Day",   key: "endDay",    type: "date" },
+
   { label: "RRP",       key: "rrp",       type: "number", placeholder: "0.00" },
   { label: "Promo RRP", key: "promoRrp",  type: "number", placeholder: "0.00" },
   { label: "Calculated on RRP - VAT (Yes/No)", key: "calcOnRrpVat", type: "select", placeholder: "Select one", options: ["Yes","No"] },
