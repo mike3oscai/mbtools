@@ -144,3 +144,37 @@ input[type="number"]{ text-align: right; }
   max-width: var(--page-max);
   margin-inline: auto;
 }
+
+/* ====== Program header en 2 columnas ====== */
+.form-card .form-columns{
+  display: grid;
+  grid-template-columns: 1fr 1fr;   /* 2 columnas */
+  gap: 24px;
+}
+
+/* Cada columna contiene sus filas (label + control) */
+.form-card .field-grid{
+  display: grid;
+  grid-template-columns: 200px 1fr; /* label | control */
+  gap: 12px 16px;
+}
+
+/* Estilo de la etiqueta */
+.form-card .form-label{
+  align-self: center;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+/* Botones al final ocupando las 2 columnas */
+.form-card .actions-row{
+  grid-column: 1 / -1;
+  display: flex;
+  gap: .75rem;
+  margin-top: .5rem;
+}
+
+/* Responsive: apilar columnas en pantallas estrechas */
+@media (max-width: 1024px){
+  .form-card .form-columns{ grid-template-columns: 1fr; }
+}
