@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="es">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -9,23 +9,31 @@
 </head>
 <body>
   <header class="container">
-    <a href="../" style="color:var(--accent)">← Volver</a>
+    <a href="../" class="back-link">← Back</a>
     <h1>Programs</h1>
-    <p>Primera mini-app de MBTools.</p>
+    <p>Manage program lifecycle across MBTools.</p>
   </header>
 
   <main class="container">
-    <section id="programs-list" class="grid"></section>
+    <section id="programs-actions" class="grid" aria-label="Programs actions"></section>
   </main>
 
-  <script type="module">
-    import { renderPrograms } from "./scripts/main.js";
-    renderPrograms();
-  </script>
-  <script type="module">
-  import { initThemeToggle } from "../shared/scripts/theme.js";
-  initThemeToggle();
-</script>
+  <footer class="container">
+    <small>© <span id="y"></span> MBTools.app</small>
+  </footer>
 
+  <!-- Init year + theme + page render -->
+  <script type="module">
+    // Footer year
+    document.getElementById('y').textContent = new Date().getFullYear();
+
+    // Theme switch (shared)
+    import { initThemeToggle } from "../shared/scripts/theme.js";
+    initThemeToggle();
+
+    // Render action cards
+    import { renderProgramsActions } from "./scripts/main.js";
+    renderProgramsActions();
+  </script>
 </body>
 </html>

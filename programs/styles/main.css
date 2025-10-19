@@ -1,3 +1,38 @@
-.program-card h3{margin:.25rem 0}
-.program-card p{color:var(--muted);margin:0}
-.badge{display:inline-block;padding:.15rem .5rem;border:1px solid #2a323a;border-radius:999px;color:var(--muted);font-size:.8rem}
+/* Page-specific styles for Programs (keeps shared card look) */
+
+.back-link {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.action-card h3 {
+  margin: .25rem 0 .35rem;
+  font-weight: 600;
+}
+
+.action-card p {
+  color: var(--muted);
+  margin: 0 0 .75rem;
+}
+
+/* Subtle icon circle */
+.action-icon {
+  width: 40px; height: 40px; border-radius: 999px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border: 1px solid var(--card-border); background: var(--bg);
+  margin-bottom: .75rem; font-size: 18px;
+}
+
+/* CTA button look */
+.action-cta {
+  display: inline-block;
+  padding: .55rem .9rem;
+  border-radius: 10px;
+  border: 1px solid var(--card-border);
+  background: var(--bg);
+  color: var(--fg);
+  text-decoration: none;
+  font-weight: 600;
+  transition: border-color .2s ease, transform .2s ease;
+}
+.card:hover .action-cta { border-color: var(--accent); transform: translateY(-1px); }
