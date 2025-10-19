@@ -142,7 +142,7 @@ input[type="number"]{ text-align: right; }
 
 /* La tarjeta usa el mismo ancho que la de Selected products */
 .form-card{
-  width: min(var(--page-max), 98vw);
+  width: min(var(--page-max), 73.4vw);
   max-width: var(--page-max);
   margin-inline: auto;
 }
