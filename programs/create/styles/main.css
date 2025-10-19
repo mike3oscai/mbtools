@@ -378,3 +378,68 @@ main .container > .card + .card {
   padding: .5rem;
   line-height: 1.2;
 }
+/* ==== Create Program – layout y tabla sin scroll ==== */
+
+/* Separa visualmente las tarjetas para que no “pisen” el hover entre sí */
+section.card + section.card { margin-top: 1.25rem; }
+
+/* El wrapper que envolvía la tabla ya no hace falta que recorte en X */
+#productsTable { width: 100%; table-layout: fixed; border-collapse: collapse; }
+
+/* Anchos de columna pensados para 1280px; ajustan sin scroll horizontal */
+#productsTable th:nth-child(1),
+#productsTable td:nth-child(1){ width: 8%; }   /* PN */
+
+#productsTable th:nth-child(2),
+#productsTable td:nth-child(2){ width: 20%; }  /* Description */
+
+#productsTable th:nth-child(3),
+#productsTable td:nth-child(3){ width: 10%; }  /* RRP */
+
+#productsTable th:nth-child(4),
+#productsTable td:nth-child(4){ width: 11%; }  /* Promo RRP */
+
+#productsTable th:nth-child(5),
+#productsTable td:nth-child(5){ width: 14%; }  /* Calculated RRP - VAT */
+
+#productsTable th:nth-child(6),
+#productsTable td:nth-child(6){ width: 12%; }  /* FE - Rebate (badge + input) */
+
+#productsTable th:nth-child(7),
+#productsTable td:nth-child(7){ width: 9%; }   /* Max Qty */
+
+#productsTable th:nth-child(8),
+#productsTable td:nth-child(8){ width: 10%; }  /* Total Program Rebate */
+
+#productsTable th:nth-child(9),
+#productsTable td:nth-child(9){ width: 16%; }  /* Program Number */
+
+#productsTable th:nth-child(10),
+#productsTable td:nth-child(10){ width: 8%; }  /* Actions */
+
+/* Inputs de la tabla más compactos para que no se amontonen */
+#productsTable td input.form-control{ min-width: 0; width: 100%; }
+#productsTable td select.form-control{ width: 100%; }
+
+/* El badge FE no debe empujar demasiado: */
+#productsTable td[data-col="rebate"] .fe-badge{
+  flex-shrink: 0;
+}
+#productsTable td[data-col="rebate"] > div{ gap: .4rem; }
+
+/* Si la pantalla es estrecha, reducimos un poco la densidad */
+@media (max-width: 1200px){
+  #productsTable th, #productsTable td { padding: .4rem; }
+  #productsTable th:nth-child(2),
+  #productsTable td:nth-child(2){ width: 18%; }
+  #productsTable th:nth-child(9),
+  #productsTable td:nth-child(9){ width: 14%; }
+}
+/* Evita solapes de sombras/hover entre tarjetas contiguas */
+.card{ position: relative; z-index: 0; }
+.card:hover{ z-index: 1; }
+/* Listado PN (multi-select) con altura cómoda */
+#fld-pn{
+  min-height: 260px;     /* sube si quieres más */
+  font-size: 0.92rem;
+}
