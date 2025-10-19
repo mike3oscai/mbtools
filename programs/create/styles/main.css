@@ -573,3 +573,12 @@ section.card + section.card { margin-top: 1.25rem; }
 #productsTable th:nth-child(10), #productsTable td:nth-child(10){ width: 8%;  }  /* Actions */
 
 /* Pill FE compacto*
+.fe-badge{ white-space: nowrap; display: inline-block; }
+
+/* Multiselect de PN alto y cómodo (por si no estaba aplicado) */
+#fld-pn.form-control[multiple]{
+  height: auto;
+  min-height: 360px;
+  padding: .5rem;
+  line-height: 1.2;
+}
