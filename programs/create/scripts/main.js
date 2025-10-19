@@ -496,7 +496,8 @@ export async function renderCreateForm(container) {
         rebateInput.disabled = true;
       } else {
         // Spec: Rebate = (RRP - Promo RRP) / VAT
-        const rebate = (rrp - promo) / vatRate;
+        const vatDec = vatRate / 100;
+        const rebate = (rrp - promo) / (1 + vatDec);
         rebateInput.value = rebate.toFixed(2);
         rebateInput.disabled = true;
       }
