@@ -4,7 +4,6 @@
 // All code modular; no side effects on import.
 
 import { loadCustomerSet, loadProductSet } from "/shared/scripts/data.js";
-import { loadCustomerSet, loadProductSet } from "/shared/scripts/data.js";
 const GEOCOUNTRY_URL = "/data/geocountryset.json";
 
 
