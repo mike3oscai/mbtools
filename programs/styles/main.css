@@ -36,3 +36,59 @@
   transition: border-color .2s ease, transform .2s ease;
 }
 .card:hover .action-cta { border-color: var(--accent); transform: translateY(-1px); }
+
+/* ===== Retrieve Programs table ===== */
+.retrieve-table {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+  font-size: 0.94rem;
+}
+
+.retrieve-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--card);
+  color: var(--fg);
+  text-align: left;
+  font-weight: 700;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.retrieve-table tbody td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--card-border);
+  vertical-align: middle;
+}
+
+.retrieve-table .num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Alterna color por PROGRAMA (grupo) */
+.retrieve-table tbody tr.row-group-a td {
+  background: color-mix(in oklab, var(--card) 85%, var(--accent) 5%);
+}
+.retrieve-table tbody tr.row-group-b td {
+  background: color-mix(in oklab, var(--card) 90%, var(--accent) 10%);
+}
+
+/* Línea superior un poco más marcada al inicio de un grupo */
+.retrieve-table tbody tr.row-group-start td {
+  border-top: 2px solid var(--card-border);
+}
+
+/* Hover sutil para la fila */
+.retrieve-table tbody tr:hover td {
+  filter: brightness(0.98);
+}
+
+/* Scroll suave dentro de la tarjeta */
+#listCard .scroll {
+  overflow: auto;
+  max-height: 70vh; /* opcional: cabecera sticky tiene sentido con altura */
+  border-radius: 12px;
+}

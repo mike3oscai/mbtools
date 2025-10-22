@@ -45,7 +45,7 @@ export async function renderRetrieve() {
   let customers = [];
 
   // construye <table> + <thead> de una vez
-  const table = h("table", { className: "w-full", id: "tblPrograms" });
+  const table = h("table", { className: "retrieve-table w-full", id: "tblPrograms" });
   const thead = h("thead");
   const headRow = h("tr", {}, ...COLS.map(c => h("th", {}, c)));
   thead.append(headRow);
@@ -72,14 +72,22 @@ export async function renderRetrieve() {
       const customerName = customers.find(c => c.crmNumber === p.customer)?.customerName || p.customer;
       const lines = Array.isArray(p.lines) && p.lines.length ? p.lines : [ {} ];
 
-      for (const ln of lines) {
+      // Determinar si este programa aportará alguna fila (tras filtro) para alternar color
+      const preFiltered = lines.filter(ln => {
         const matchString = [
           p.programNumber, p.geo, p.country, p.vertical, customerName,
-          ln.pn, ln.description
+          ln?.pn, ln?.description
         ].join(" ").toLowerCase();
-        if (term && !matchString.includes(term)) continue;
+        return !term || matchString.includes(term);
+      });
+      if (preFiltered.length === 0) continue;
 
-        rows.push(h("tr", {},
+      // Alterna el color por programa (grupo)
+      const groupClass = (rows._toggle = !rows._toggle) ? "row-group-a" : "row-group-b";
+      let firstOfGroup = true;
+
+      for (const ln of preFiltered) {
+        rows.push(h("tr", { className: `${groupClass} ${firstOfGroup ? "row-group-start" : ""}` },
           h("td", {}, p.programNumber || ""),
           h("td", {}, p.programType || ""),
           h("td", {}, p.geo || ""),
@@ -88,14 +96,15 @@ export async function renderRetrieve() {
           h("td", {}, customerName || ""),
           h("td", {}, fmtDate(p.startDay)),
           h("td", {}, fmtDate(p.endDay)),
-          h("td", {}, ln.pn ?? ""),
-          h("td", {}, ln.description ?? ""),
-          h("td", { style: "text-align:right" }, fmtNum(ln.rrp)),
-          h("td", { style: "text-align:right" }, fmtNum(ln.promoRrp)),
-          h("td", { style: "text-align:right" }, fmtNum(ln.rebate)),
-          h("td", { style: "text-align:right" }, fmtNum(ln.maxQty)),
-          h("td", { style: "text-align:right" }, fmtNum(ln.totalProgramRebate))
+          h("td", {}, ln?.pn ?? ""),
+          h("td", {}, ln?.description ?? ""),
+          h("td", { className: "num" }, fmtNum(ln?.rrp)),
+          h("td", { className: "num" }, fmtNum(ln?.promoRrp)),
+          h("td", { className: "num" }, fmtNum(ln?.rebate)),
+          h("td", { className: "num" }, fmtNum(ln?.maxQty)),
+          h("td", { className: "num" }, fmtNum(ln?.totalProgramRebate))
         ));
+        firstOfGroup = false;
       }
     }
 
