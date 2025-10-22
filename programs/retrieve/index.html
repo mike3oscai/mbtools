@@ -14,38 +14,18 @@
     <p>View every saved program with all its lines (Selected products).</p>
   </header>
 
-  <main class="container">
+  <main class="container" id="retrieve-root">
     <section class="card" aria-label="Filters">
-      <div class="grid" style="grid-template-columns: 1fr auto auto; gap: 12px;">
-        <input id="q" class="form-control" placeholder="Search by Program Number / Customer / Geo / Country…" />
+      <div class="grid" style="grid-template-columns: 1fr auto; gap: 12px;">
+        <input id="q" class="form-control" placeholder="Search by Program Number / Customer / Geo / Country / PN / Description…" />
         <button id="btnRefresh" class="action-cta" type="button">Refresh</button>
-        <button id="btnExpandAll" class="action-cta" type="button">Expand all</button>
       </div>
     </section>
 
+    <!-- Aquí montaremos TODO desde JS -->
     <section class="card" aria-label="Programs list" id="listCard">
       <h2>Programs</h2>
-      <div class="scroll">
-        <table id="tblPrograms" class="w-full">
-          <thead>
-            <tr>
-              <th>Program Number</th>
-              <th>Type</th>
-              <th>Geo</th>
-              <th>Country</th>
-              <th>Vertical</th>
-              <th>Customer</th>
-              <th>Start</th>
-              <th>End</th>
-              <th>Created</th>
-              <th>ID</th>
-              <th>Lines</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="tbodyPrograms"></tbody>
-        </table>
-      </div>
+      <div class="scroll" id="mount"></div>
     </section>
   </main>
 
@@ -54,12 +34,7 @@
   </footer>
 
   <script type="module">
-    // Footer year + theme
     document.getElementById('y').textContent = new Date().getFullYear();
-    const { initThemeToggle } = await import("../../shared/scripts/theme.js");
-    initThemeToggle();
-
-    // Render list
     const { renderRetrieve } = await import("./scripts/main.js");
     renderRetrieve();
   </script>

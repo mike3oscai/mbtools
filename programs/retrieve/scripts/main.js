@@ -1,10 +1,15 @@
-// Retrieve Programs - flat view (each line = program + line info)
+// Retrieve Programs — build the whole table dynamically (no table HTML in index)
 
 function h(tag, props = {}, ...children) {
   const el = Object.assign(document.createElement(tag), props);
   for (const c of children.flat()) el.append(c?.nodeType ? c : document.createTextNode(c ?? ""));
   return el;
 }
+
+const COLS = [
+  "Program Number","Type","Geo","Country","Vertical","Customer",
+  "Start","End","PN","Description","RRP","Promo RRP","Rebate","Max Qty","Total Program Rebate"
+];
 
 function fmtDate(d) {
   if (!d) return "";
@@ -15,7 +20,6 @@ function fmtNum(n) {
   return Number.isFinite(x) ? x.toFixed(2) : "";
 }
 
-// Preferimos el endpoint con include=lines
 async function fetchPrograms() {
   const res = await fetch("/api/programs?include=lines");
   if (!res.ok) throw new Error("Failed to load programs");
@@ -23,7 +27,6 @@ async function fetchPrograms() {
   return Array.isArray(arr) ? arr : [];
 }
 
-// Carga customer set (para traducir crm → nombre)
 async function loadCustomerSet() {
   const res = await fetch("/data/customerset.json", { cache: "no-store" });
   if (!res.ok) return [];
@@ -31,30 +34,41 @@ async function loadCustomerSet() {
 }
 
 export async function renderRetrieve() {
-  const tbody = document.getElementById("tbodyPrograms");
+  // ancho al 90% para esta página
+  document.querySelector("main.container")?.style.setProperty("max-width", "90vw");
+
+  const mount = document.getElementById("mount");
   const q = document.getElementById("q");
   const btnRefresh = document.getElementById("btnRefresh");
 
-  let data = [];
+  let programs = [];
   let customers = [];
 
+  // construye <table> + <thead> de una vez
+  const table = h("table", { className: "w-full", id: "tblPrograms" });
+  const thead = h("thead");
+  const headRow = h("tr", {}, ...COLS.map(c => h("th", {}, c)));
+  thead.append(headRow);
+  const tbody = h("tbody", { id: "tbodyPrograms" });
+  table.append(thead, tbody);
+  mount.replaceChildren(table);
+
   async function load() {
-    tbody.replaceChildren(h("tr", {}, h("td", { colSpan: 12 }, "Loading…")));
+    tbody.replaceChildren(h("tr", {}, h("td", { colSpan: COLS.length }, "Loading…")));
     try {
-      [data, customers] = await Promise.all([fetchPrograms(), loadCustomerSet()]);
-      renderTable();
+      [programs, customers] = await Promise.all([fetchPrograms(), loadCustomerSet()]);
+      renderRows();
     } catch (e) {
       console.error(e);
-      tbody.replaceChildren(h("tr", {}, h("td", { colSpan: 12 }, "Failed to load.")));
+      tbody.replaceChildren(h("tr", {}, h("td", { colSpan: COLS.length }, "Failed to load")));
     }
   }
 
-  function renderTable() {
+  function renderRows() {
     const term = q.value.trim().toLowerCase();
     const rows = [];
 
-    // Expand header + lines: una fila por cada PN
-    for (const p of data) {
+    for (const p of programs) {
       const customerName = customers.find(c => c.crmNumber === p.customer)?.customerName || p.customer;
       const lines = Array.isArray(p.lines) && p.lines.length ? p.lines : [ {} ];
 
@@ -86,19 +100,16 @@ export async function renderRetrieve() {
     }
 
     if (rows.length === 0) {
-      tbody.replaceChildren(h("tr", {}, h("td", { colSpan: 15 }, "No matching programs.")));
+      tbody.replaceChildren(h("tr", {}, h("td", { colSpan: COLS.length }, "No matching programs.")));
       return;
     }
 
     tbody.replaceChildren(...rows);
   }
 
-  // Filtros
-  q.addEventListener("input", renderTable);
+  // Wire events
+  q.addEventListener("input", renderRows);
   btnRefresh.addEventListener("click", load);
-
-  // Ancho al 90%
-  document.querySelector("main.container")?.style.setProperty("max-width", "90vw");
 
   // go!
   await load();
