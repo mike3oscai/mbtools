@@ -1,4 +1,4 @@
-// Retrieve Programs — dynamic table + native .xlsx export (no warnings)
+// Retrieve Programs — KPIs + subtotales + pie sticky + export .xlsx nativo
 
 function h(tag, props = {}, ...children) {
   const el = Object.assign(document.createElement(tag), props);
@@ -10,6 +10,15 @@ const COLS = [
   "Program Number","Type","Geo","Country","Vertical","Customer",
   "Start","End","PN","Description","RRP","Promo RRP","Rebate","Max Qty","Total Program Rebate"
 ];
+
+// indices útiles
+const IDX_PN       = 8;
+const IDX_DESC     = 9;
+const IDX_RRP      = 10;
+const IDX_PROMO    = 11;
+const IDX_REBATE   = 12;
+const IDX_MAXQTY   = 13;
+const IDX_TOTAL    = 14;
 
 function fmtDate(d) {
   if (!d) return "";
@@ -23,9 +32,24 @@ function rawNum(n) {               // PARA EXPORTAR: número crudo
   const x = Number(n);
   return Number.isFinite(x) ? x : "";
 }
-
 function getPn(ln){                // PN robusto (pn o PN)
   return (ln && (ln.pn ?? ln.PN)) ?? "";
+}
+
+function nfmtInt(n) {
+  const x = Number(n);
+  if (!Number.isFinite(x)) return "—";
+  return x.toLocaleString();
+}
+function nfmtMoney(n) {
+  const x = Number(n);
+  if (!Number.isFinite(x)) return "—";
+  return x.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+function nfmtAvg(total, qty) {
+  const t = Number(total), q = Number(qty);
+  if (!(Number.isFinite(t) && Number.isFinite(q) && q > 0)) return "—";
+  return (t / q).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
 async function fetchPrograms() {
@@ -48,12 +72,22 @@ export async function renderRetrieve() {
   const btnRefresh    = document.getElementById("btnRefresh");
   const btnExportXLSX = document.getElementById("btnExportXLSX");
 
+  // KPIs refs
+  const kpiQty   = document.getElementById("kpiQty");
+  const kpiTotal = document.getElementById("kpiTotal");
+  const kpiAvg   = document.getElementById("kpiAvg");
+  // Sticky refs
+  const totLines = document.getElementById("totLines");
+  const totQty   = document.getElementById("totQty");
+  const totTotal = document.getElementById("totTotal");
+  const totAvg   = document.getElementById("totAvg");
+
   let programs  = [];
   let customers = [];
-  // filas planas actuales (para exportación)
+  // filas planas actuales (para exportación y totales)
   let currentFlatRows = [];
 
-  // Construir tabla
+  // Construir tabla base
   const table = h("table", { className: "retrieve-table w-full", id: "tblPrograms" });
   const thead = h("thead");
   thead.append(h("tr", {}, ...COLS.map(c => h("th", {}, c))));
@@ -69,7 +103,21 @@ export async function renderRetrieve() {
     } catch (e) {
       console.error(e);
       tbody.replaceChildren(h("tr", {}, h("td", { colSpan: COLS.length }, "Failed to load")));
+      updateKpisAndFooter({ qty: 0, total: 0, avg: NaN, count: 0 });
     }
+  }
+
+  function computeTotals(rows) {
+    let qty = 0, total = 0;
+    let count = 0;
+    for (const r of rows) {
+      const qv = Number(r[IDX_MAXQTY]);
+      const tv = Number(r[IDX_TOTAL]);
+      if (Number.isFinite(qv)) qty += qv;
+      if (Number.isFinite(tv)) total += tv;
+      count++;
+    }
+    return { qty, total, avg: qty > 0 ? (total / qty) : NaN, count };
   }
 
   function renderRows() {
@@ -77,6 +125,7 @@ export async function renderRetrieve() {
     const rows = [];
     currentFlatRows = [];
 
+    // agrupación por programa para poder añadir subtotales
     for (const p of programs) {
       const customerName = customers.find(c => c.crmNumber === p.customer)?.customerName || p.customer;
       const lines = Array.isArray(p.lines) && p.lines.length ? p.lines : [ {} ];
@@ -93,8 +142,11 @@ export async function renderRetrieve() {
       const groupClass = (rows._toggle = !rows._toggle) ? "row-group-a" : "row-group-b";
       let first = true;
 
+      // acumuladores de subtotales
+      let gQty = 0, gTotal = 0;
+
       for (const ln of filtered) {
-        // 1) fila cruda para export (números sin formato)
+        // 1) fila cruda para export/totales
         const flatRaw = [
           p.programNumber || "",
           p.programType   || "",
@@ -114,7 +166,11 @@ export async function renderRetrieve() {
         ];
         currentFlatRows.push(flatRaw);
 
-        // 2) fila visual (números bonitos)
+        // acumula subtotales
+        if (Number.isFinite(flatRaw[IDX_MAXQTY])) gQty += flatRaw[IDX_MAXQTY];
+        if (Number.isFinite(flatRaw[IDX_TOTAL]))  gTotal += flatRaw[IDX_TOTAL];
+
+        // 2) fila visual
         const visual = [
           flatRaw[0], flatRaw[1], flatRaw[2], flatRaw[3], flatRaw[4], flatRaw[5],
           flatRaw[6], flatRaw[7], flatRaw[8], flatRaw[9],
@@ -127,55 +183,79 @@ export async function renderRetrieve() {
         ));
         first = false;
       }
+
+      // 3) subtotal de programa (fila al cierre del grupo)
+      const avg = gQty > 0 ? (gTotal / gQty) : NaN;
+      const subtotalTds = [];
+      for (let i = 0; i < COLS.length; i++) {
+        if (i === IDX_MAXQTY) {
+          subtotalTds.push(h("td", { className: "num" }, nfmtInt(gQty)));
+        } else if (i === IDX_TOTAL) {
+          subtotalTds.push(h("td", { className: "num" }, nfmtMoney(gTotal)));
+        } else if (i === IDX_REBATE) {
+          subtotalTds.push(h("td", { className: "num" }, nfmtAvg(gTotal, gQty)));
+        } else if (i === 0) {
+          subtotalTds.push(h("td", { className: "subtotal-label" }, "Subtotal"));
+        } else {
+          subtotalTds.push(h("td", {}, ""));
+        }
+      }
+      rows.push(h("tr", { className: `subtotal ${groupClass}` }, ...subtotalTds));
     }
 
     if (rows.length === 0) {
       tbody.replaceChildren(h("tr", {}, h("td", { colSpan: COLS.length }, "No matching programs.")));
+      updateKpisAndFooter({ qty: 0, total: 0, avg: NaN, count: 0 });
       return;
     }
+
     tbody.replaceChildren(...rows);
+
+    // Totales globales (sobre dataset filtrado)
+    const totals = computeTotals(currentFlatRows);
+    updateKpisAndFooter(totals);
   }
 
-  // ===== Export .xlsx (OpenXML) sin librerías =====
+  function updateKpisAndFooter({ qty, total, avg, count }) {
+    // KPIs (arriba)
+    kpiQty.textContent   = nfmtInt(qty);
+    kpiTotal.textContent = nfmtMoney(total);
+    kpiAvg.textContent   = nfmtAvg(total, qty);
 
-  // Texto → XML seguro
+    // Pie sticky
+    totLines.textContent = count.toLocaleString();
+    totQty.textContent   = nfmtInt(qty);
+    totTotal.textContent = nfmtMoney(total);
+    totAvg.textContent   = nfmtAvg(total, qty);
+  }
+
+  // ===== Export .xlsx (OpenXML) nativo sin librerías =====
+
   function escXml(s) {
     return String(s ?? "")
       .replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;")
       .replaceAll('"', "&quot;").replaceAll("'", "&apos;");
   }
-
-  // Mapea índice de columna (0-based) a coordenada Excel (A, B, ..., AA, AB...)
-  function colLetter(idx) {
-    let s = "";
-    idx += 1;
-    while (idx > 0) {
-      const m = (idx - 1) % 26;
-      s = String.fromCharCode(65 + m) + s;
-      idx = Math.floor((idx - 1) / 26);
-    }
+  function colLetter(idx) { // 0->A, 25->Z, 26->AA...
+    let s = ""; idx += 1;
+    while (idx > 0) { const m = (idx - 1) % 26; s = String.fromCharCode(65 + m) + s; idx = Math.floor((idx - 1) / 26); }
     return s;
   }
 
-  // Construye sheet1.xml con inline strings (no sharedStrings)
   function buildSheetXML() {
     let rowsXml = "";
-
-    // Header
     rowsXml += `<row r="1">` + COLS.map((v, i) =>
       `<c r="${colLetter(i)}1" t="inlineStr"><is><t>${escXml(v)}</t></is></c>`
     ).join("") + `</row>`;
 
-    // Data
     for (let r = 0; r < currentFlatRows.length; r++) {
-      const rowIndex = r + 2; // empieza en 2
+      const rowIndex = r + 2;
       const row = currentFlatRows[r];
       let cells = "";
       for (let c = 0; c < row.length; c++) {
         const coord = `${colLetter(c)}${rowIndex}`;
         const val = row[c];
-        // columnas 10..14 (0-based) son numéricas
-        if (c >= 10 && typeof val === "number") {
+        if (c >= IDX_RRP && typeof val === "number") {
           cells += `<c r="${coord}"><v>${val}</v></c>`;
         } else {
           cells += `<c r="${coord}" t="inlineStr"><is><t>${escXml(val)}</t></is></c>`;
@@ -190,7 +270,6 @@ export async function renderRetrieve() {
 </worksheet>`;
   }
 
-  // Archivos XML base del paquete XLSX (mínimos)
   function contentTypesXml() {
     return `<?xml version="1.0" encoding="UTF-8"?>
 <Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
@@ -222,11 +301,8 @@ export async function renderRetrieve() {
 </Relationships>`;
   }
 
-  // ====== ZIP writer (STORE, sin compresión) + CRC32 ======
-  function strToU8(str) {
-    return new TextEncoder().encode(str);
-  }
-  // CRC32
+  // ZIP writer (STORE) + CRC32
+  function strToU8(str) { return new TextEncoder().encode(str); }
   const CRC_TABLE = (() => {
     let t = new Uint32Array(256);
     for (let n = 0; n < 256; n++) {
@@ -241,84 +317,35 @@ export async function renderRetrieve() {
     for (let i = 0; i < u8.length; i++) c = (c >>> 8) ^ CRC_TABLE[(c ^ u8[i]) & 0xFF];
     return (c ^ (-1)) >>> 0;
   }
-
   function u32(n) { const b = new Uint8Array(4); new DataView(b.buffer).setUint32(0, n, true); return b; }
   function u16(n) { const b = new Uint8Array(2); new DataView(b.buffer).setUint16(0, n, true); return b; }
-
-  function concat(chunks) {
-    let len = chunks.reduce((a,c)=>a+c.length,0);
-    let out = new Uint8Array(len);
-    let o = 0;
-    for (const c of chunks) { out.set(c, o); o += c.length; }
-    return out;
-  }
-
-  function fileHeader(nameU8, dataU8, crc, offset) {
-    const LFH = [
-      // Local file header signature
-      u32(0x04034b50),
-      u16(20),        // version needed
-      u16(0),         // flags
-      u16(0),         // method = store
-      u16(0), u16(0), // time/date
-      u32(crc),
-      u32(dataU8.length),
-      u32(dataU8.length),
-      u16(nameU8.length),
-      u16(0)          // extra len
-    ];
-    return concat([...LFH, nameU8, dataU8]);
-  }
-
-  function centralHeader(nameU8, dataU8, crc, lfhOff) {
-    const CH = [
-      u32(0x02014b50), // central file header signature
-      u16(20), u16(20), // version made by / needed
-      u16(0), u16(0),   // flags / method
-      u16(0), u16(0),   // time/date
-      u32(crc),
-      u32(dataU8.length),
-      u32(dataU8.length),
-      u16(nameU8.length),
-      u16(0), u16(0),   // extra/comment
-      u16(0), u16(0),   // disk/start
-      u32(0),           // external attrs
-      u32(lfhOff)       // local header rel offset
-    ];
-    return concat([...CH, nameU8]);
-  }
+  function concat(chunks) { let len = chunks.reduce((a,c)=>a+c.length,0), out=new Uint8Array(len), o=0; for(const c of chunks){out.set(c,o);o+=c.length;} return out; }
 
   function buildZip(files) {
-    // files: [{name, data(Uint8Array)}]
     let offset = 0;
-    const fileParts = [];
-    const centralParts = [];
+    const fileParts = [], centralParts = [];
 
     for (const f of files) {
       const nameU8 = strToU8(f.name);
       const dataU8 = f.data;
       const crc = crc32(dataU8);
 
-      const lfh = [
-        u32(0x04034b50),
-        u16(20), u16(0), u16(0), u16(0), u16(0),
+      const lfh = concat([
+        u32(0x04034b50), u16(20), u16(0), u16(0), u16(0), u16(0),
         u32(crc), u32(dataU8.length), u32(dataU8.length),
-        u16(nameU8.length), u16(0)
-      ];
-      const lfhBin = concat([...lfh, nameU8, dataU8]);
-      fileParts.push(lfhBin);
+        u16(nameU8.length), u16(0), nameU8, dataU8
+      ]);
+      fileParts.push(lfh);
 
-      const cfh = [
-        u32(0x02014b50),
-        u16(20), u16(20), u16(0), u16(0), u16(0), u16(0),
+      const cfh = concat([
+        u32(0x02014b50), u16(20), u16(20), u16(0), u16(0), u16(0), u16(0),
         u32(crc), u32(dataU8.length), u32(dataU8.length),
         u16(nameU8.length), u16(0), u16(0), u16(0), u16(0),
-        u32(0), u32(offset)
-      ];
-      const cfhBin = concat([...cfh, nameU8]);
-      centralParts.push(cfhBin);
+        u32(0), u32(offset), nameU8
+      ]);
+      centralParts.push(cfh);
 
-      offset += lfhBin.length;
+      offset += lfh.length;
     }
 
     const centralOffset = offset;
@@ -362,37 +389,6 @@ export async function renderRetrieve() {
   btnRefresh.addEventListener("click", load);
   btnExportXLSX.addEventListener("click", exportXLSX);
 
+  // go!
   await load();
-
-  // ===== XML helpers (mantenidos aquí para cierre sobre currentFlatRows) =====
-  function contentTypesXml() {
-    return `<?xml version="1.0" encoding="UTF-8"?>
-<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
-  <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
-  <Default Extension="xml"  ContentType="application/xml"/>
-  <Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>
-  <Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>
-</Types>`;
-  }
-  function relsRels() {
-    return `<?xml version="1.0" encoding="UTF-8"?>
-<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
-  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/>
-</Relationships>`;
-  }
-  function workbookXml() {
-    return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"
-          xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
-  <sheets>
-    <sheet name="Programs" sheetId="1" r:id="rId1"/>
-  </sheets>
-</workbook>`;
-  }
-  function workbookRels() {
-    return `<?xml version="1.0" encoding="UTF-8"?>
-<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
-  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/>
-</Relationships>`;
-  }
 }

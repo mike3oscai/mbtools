@@ -92,3 +92,103 @@
   max-height: 70vh; /* opcional: cabecera sticky tiene sentido con altura */
   border-radius: 12px;
 }
+
+/* ===== Retrieve Programs — KPIs + Subtotales + Totales sticky ===== */
+
+/* KPIs */
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+@media (max-width: 900px){
+  .kpis { grid-template-columns: 1fr; }
+}
+.kpi {
+  background: color-mix(in oklab, var(--card) 90%, var(--accent) 10%);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+.kpi-title {
+  font-size: .86rem;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+.kpi-value {
+  font-weight: 700;
+  font-size: 1.15rem;
+}
+
+/* Subtotal de grupo */
+.retrieve-table tr.subtotal td {
+  font-weight: 600;
+  background: color-mix(in oklab, var(--card) 85%, var(--accent) 15%);
+  border-top: 2px solid var(--card-border);
+}
+.retrieve-table tr.subtotal td.subtotal-label {
+  color: var(--muted);
+}
+
+/* Pie sticky dentro del área con scroll */
+#listCard .scroll {
+  position: relative;
+  overflow: auto;
+  max-height: 70vh; /* para que tenga sentido el sticky */
+  border-radius: 12px;
+}
+.totals-sticky {
+  position: sticky;
+  bottom: 0;
+  display: grid;
+  grid-template-columns: repeat(4, auto);
+  gap: 18px;
+  align-items: center;
+  padding: 10px 12px;
+  background: var(--card);
+  border-top: 1px solid var(--card-border);
+  box-shadow: 0 -8px 16px rgba(0,0,0,.03);
+}
+@media (max-width: 700px){
+  .totals-sticky { grid-template-columns: 1fr 1fr; }
+}
+
+/* (ya existentes) estilos de tabla */
+.retrieve-table {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+  font-size: 0.94rem;
+}
+.retrieve-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--card);
+  color: var(--fg);
+  text-align: left;
+  font-weight: 700;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--card-border);
+}
+.retrieve-table tbody td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--card-border);
+  vertical-align: middle;
+}
+.retrieve-table .num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* colores alternos por programa (grupo) */
+.retrieve-table tbody tr.row-group-a td {
+  background: color-mix(in oklab, var(--card) 85%, var(--accent) 5%);
+}
+.retrieve-table tbody tr.row-group-b td {
+  background: color-mix(in oklab, var(--card) 90%, var(--accent) 10%);
+}
+.retrieve-table tbody tr.row-group-start td {
+  border-top: 2px solid var(--card-border);
+}
+.retrieve-table tbody tr:hover td { filter: brightness(0.98); }

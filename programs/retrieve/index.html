@@ -15,19 +15,48 @@
   </header>
 
   <main class="container" id="retrieve-root">
+    <!-- Filtros + acciones -->
     <section class="card" aria-label="Filters">
       <div class="grid" style="grid-template-columns: 1fr auto auto; gap: 12px;">
         <input id="q" class="form-control" placeholder="Search by Program Number / Customer / Geo / Country / PN / Description…" />
-        <button id="btnRefresh" class="action-cta" type="button">Refresh</button>
-        <!-- Exportación a .xlsx nativo -->
-        <button id="btnExportXLSX" class="action-cta" type="button">Export Excel (.xlsx)</button>
+        <button id="btnRefresh"   class="action-cta" type="button">Refresh</button>
+        <button id="btnExportXLSX" className="action-cta" class="action-cta" type="button">Export Excel (.xlsx)</button>
       </div>
     </section>
 
-    <!-- La tabla se monta desde JS -->
+    <!-- KPIs (fila superior) -->
+    <section class="card" aria-label="KPIs">
+      <div id="kpis" class="kpis">
+        <div class="kpi">
+          <div class="kpi-title">Max Quantity</div>
+          <div class="kpi-value" id="kpiQty">—</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-title">Total Program Rebate</div>
+          <div class="kpi-value" id="kpiTotal">—</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-title">Rebate medio</div>
+          <div class="kpi-value" id="kpiAvg">—</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tabla -->
     <section class="card" aria-label="Programs list" id="listCard">
       <h2>Programs</h2>
-      <div class="scroll" id="mount"></div>
+      <div class="scroll" id="scrollArea">
+        <!-- La tabla se monta desde JS -->
+        <div id="mount"></div>
+
+        <!-- Pie sticky con totales globales -->
+        <div class="totals-sticky" id="totalsSticky" aria-live="polite">
+          <div><strong>Lines:</strong> <span id="totLines">0</span></div>
+          <div><strong>Max Qty:</strong> <span id="totQty">—</span></div>
+          <div><strong>Total:</strong> <span id="totTotal">—</span></div>
+          <div><strong>Avg:</strong> <span id="totAvg">—</span></div>
+        </div>
+      </div>
     </section>
   </main>
 
