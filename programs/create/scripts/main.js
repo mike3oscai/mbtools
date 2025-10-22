@@ -409,7 +409,7 @@ export async function renderCreateForm(container) {
       programNumber: programNumInp.value
     };
     const lines = Array.from(tbody.querySelectorAll("tr")).map(tr => ({
-      pn: tr.dataset.pn,
+      pn: tr.dataset.pn || (getCell(tr, "pn")?.textContent ?? ""),
       description: getCell(tr, "desc")?.textContent ?? "",
       rrp: numVal(getCell("input", tr, "rrp")),
       promoRrp: numVal(getCell("input", tr, "promoRrp")),
@@ -457,9 +457,9 @@ export async function renderCreateForm(container) {
   });
 
   /* ---------- Helpers de tabla + cálculo ---------- */
-  function rowForProduct(p, programNumber) {
-    const tr = h("tr", { "data-pn": p.PN, style: "border-top:1px solid var(--card-border)" },
-      td(p.PN),
+function rowForProduct(p, programNumber) {
+  const tr = h("tr", { "data-pn": p.PN, style: "border-top:1px solid var(--card-border)" },
+     td(p.PN, { "data-col": "pn" }),
       td(p.Description, { "data-col": "desc" }),
       tdInputNumber("rrp", 0, onAnyChange),
       tdInputNumber("promoRrp", 0, onAnyChange),
@@ -469,10 +469,11 @@ export async function renderCreateForm(container) {
       tdReadOnly("total", "0.00"),
       tdInputText("lineProgramNumber", programNumber),
       tdActionRemove()
-    );
-    return tr;
-    function onAnyChange(){ recalcRow(tr, countrySel); }
-  }
+  );
+  return tr;
+  function onAnyChange(){ recalcRow(tr, countrySel); }
+}
+
 
   function recalcRow(tr, countrySelRef) {
     const rrpInput    = getCell("input", tr, "rrp");
