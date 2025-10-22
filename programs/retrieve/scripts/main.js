@@ -1,4 +1,4 @@
-// Retrieve Programs — dynamic table + Excel-safe CSV export (no warning)
+// Retrieve Programs — dynamic table + Excel (SpreadsheetML XML) export
 
 function h(tag, props = {}, ...children) {
   const el = Object.assign(document.createElement(tag), props);
@@ -15,13 +15,13 @@ function fmtDate(d) {
   if (!d) return "";
   try { return new Date(d).toISOString().slice(0,10); } catch { return d; }
 }
-function fmtNum2(n) {             // SOLO para pintar en pantalla
+function fmtNum2(n) {             // SOLO para la vista (2 decimales)
   const x = Number(n);
   return Number.isFinite(x) ? x.toFixed(2) : "";
 }
 function rawNum(n) {               // PARA EXPORTAR: número crudo
   const x = Number(n);
-  return Number.isFinite(x) ? x : "";   // deja vacío si no es número
+  return Number.isFinite(x) ? x : "";
 }
 function getPn(ln){                // PN robusto (pn o PN)
   return (ln && (ln.pn ?? ln.PN)) ?? "";
@@ -45,13 +45,14 @@ export async function renderRetrieve() {
   const mount        = document.getElementById("mount");
   const q            = document.getElementById("q");
   const btnRefresh   = document.getElementById("btnRefresh");
-  const btnExportCSV = document.getElementById("btnExportCSV");
+  const btnExportXLS = document.getElementById("btnExportXLS");
 
   let programs  = [];
   let customers = [];
-  let currentFlatRows = []; // <- lo que se exporta (sin formato)
+  // Cache de filas planas actuales (para export)
+  let currentFlatRows = [];
 
-  // tabla
+  // Construir tabla
   const table = h("table", { className: "retrieve-table w-full", id: "tblPrograms" });
   const thead = h("thead");
   thead.append(h("tr", {}, ...COLS.map(c => h("th", {}, c))));
@@ -92,7 +93,7 @@ export async function renderRetrieve() {
       let first = true;
 
       for (const ln of filtered) {
-        // 1) fila "cruda" (sin formato) para export
+        // 1) fila cruda p/export
         const flatRaw = [
           p.programNumber || "",
           p.programType   || "",
@@ -100,7 +101,7 @@ export async function renderRetrieve() {
           p.country       || "",
           p.vertical      || "",
           customerName    || "",
-          fmtDate(p.startDay),                 // fechas como texto ISO (Excel las reconoce)
+          fmtDate(p.startDay),
           fmtDate(p.endDay),
           getPn(ln),
           ln?.description ?? "",
@@ -112,7 +113,7 @@ export async function renderRetrieve() {
         ];
         currentFlatRows.push(flatRaw);
 
-        // 2) fila con formato SOLO visual (números a 2 decimales)
+        // 2) fila visual (números bonitos)
         const visual = [
           flatRaw[0], flatRaw[1], flatRaw[2], flatRaw[3], flatRaw[4], flatRaw[5],
           flatRaw[6], flatRaw[7], flatRaw[8], flatRaw[9],
@@ -134,7 +135,7 @@ export async function renderRetrieve() {
     tbody.replaceChildren(...rows);
   }
 
-  // -------- Export: CSV sin formato --------
+  // ----- Export: Excel 2003 XML (SpreadsheetML, sin avisos y con números sumables) -----
   function downloadBlob(blob, filename) {
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
@@ -147,30 +148,64 @@ export async function renderRetrieve() {
     }, 0);
   }
 
-  function exportCSV() {
+  function escapeXml(s) {
+    return String(s ?? "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&apos;");
+  }
+
+  // Índices de columnas numéricas (RRP..Total)
+  const NUM_COL_START = 10; // 0-based: columnas 10..14
+
+  function exportExcelXML() {
     if (!currentFlatRows.length) return alert("Nothing to export.");
 
-    // separador coma; Excel lo abre sin warning
-    const esc = (v) => {
-      // deja números tal cual; texto escapado
-      if (typeof v === "number") return String(v);
-      const s = String(v ?? "");
-      return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
-    };
+    // Cabecera
+    const headerRowXml = `<Row>` + COLS.map(c =>
+      `<Cell><Data ss:Type="String">${escapeXml(c)}</Data></Cell>`
+    ).join("") + `</Row>`;
 
-    const lines = [
-      "\uFEFF" + COLS.join(","),                             // BOM + cabecera
-      ...currentFlatRows.map(r => r.map(esc).join(","))      // filas sin formato
-    ];
+    // Filas
+    const bodyRowsXml = currentFlatRows.map(r => {
+      const cells = r.map((v, i) => {
+        if (i >= NUM_COL_START && typeof v === "number") {
+          // Número puro
+          return `<Cell><Data ss:Type="Number">${v}</Data></Cell>`;
+        }
+        // Texto (fechas, PN, description, etc.)
+        return `<Cell><Data ss:Type="String">${escapeXml(v)}</Data></Cell>`;
+      }).join("");
+      return `<Row>${cells}</Row>`;
+    }).join("");
 
-    const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8" });
-    downloadBlob(blob, `programs_${new Date().toISOString().slice(0,10)}.csv`);
+    const worksheetXml =
+`<?xml version="1.0"?>
+<?mso-application progid="Excel.Sheet"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+          xmlns:o="urn:schemas-microsoft-com:office:office"
+          xmlns:x="urn:schemas-microsoft-com:office:excel"
+          xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
+          xmlns:html="http://www.w3.org/TR/REC-html40">
+  <Worksheet ss:Name="Programs">
+    <Table>
+      ${headerRowXml}
+      ${bodyRowsXml}
+    </Table>
+  </Worksheet>
+</Workbook>`;
+
+    const blob = new Blob([worksheetXml], { type: "application/vnd.ms-excel;charset=utf-8" });
+    const fname = `programs_${new Date().toISOString().slice(0,10)}.xml`; // Excel lo abre directo
+    downloadBlob(blob, fname);
   }
 
   // events
   q.addEventListener("input", renderRows);
   btnRefresh.addEventListener("click", load);
-  btnExportCSV.addEventListener("click", exportCSV);
+  btnExportXLS.addEventListener("click", exportExcelXML);
 
   await load();
 }

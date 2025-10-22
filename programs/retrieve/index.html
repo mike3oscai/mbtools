@@ -14,22 +14,21 @@
     <p>View every saved program with all its lines (Selected products).</p>
   </header>
 
-<main class="container" id="retrieve-root">
-  <section class="card" aria-label="Filters">
-    <div class="grid" style="grid-template-columns: 1fr auto auto; gap: 12px;">
-      <input id="q" class="form-control" placeholder="Search by Program Number / Customer / Geo / Country / PN / Description…" />
-      <button id="btnRefresh"   class="action-cta" type="button">Refresh</button>
-      <!-- Renombrado: Excel (CSV) sin warning -->
-      <button id="btnExportCSV" class="action-cta" type="button">Export Excel (CSV)</button>
-    </div>
-  </section>
+  <main class="container" id="retrieve-root">
+    <section class="card" aria-label="Filters">
+      <div class="grid" style="grid-template-columns: 1fr auto auto; gap: 12px;">
+        <input id="q" class="form-control" placeholder="Search by Program Number / Customer / Geo / Country / PN / Description…" />
+        <button id="btnRefresh" class="action-cta" type="button">Refresh</button>
+        <button id="btnExportXLS" class="action-cta" type="button">Export Excel</button>
+      </div>
+    </section>
 
-  <section class="card" aria-label="Programs list" id="listCard">
-    <h2>Programs</h2>
-    <div class="scroll" id="mount"></div>
-  </section>
-</main>
-
+    <!-- La tabla se monta desde JS -->
+    <section class="card" aria-label="Programs list" id="listCard">
+      <h2>Programs</h2>
+      <div class="scroll" id="mount"></div>
+    </section>
+  </main>
 
   <footer class="container">
     <small>© <span id="y"></span> MBTools.app</small>
