@@ -192,3 +192,23 @@
   border-top: 2px solid var(--card-border);
 }
 .retrieve-table tbody tr:hover td { filter: brightness(0.98); }
+
+/* --- Sticky header totalmente opaco y por encima del contenido --- */
+#listCard .scroll {
+  /* asegura que el área de scroll tiene fondo sólido */
+  background: var(--card);
+}
+
+/* los <th> ya son sticky; les damos fondo sólido, z-index alto y sombra */
+.retrieve-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 5;                       /* por encima de filas y subtotales */
+  background: var(--card);          /* fondo opaco, no translucido */
+  box-shadow: 0 1px 0 var(--card-border),
+              0 6px 14px rgba(0,0,0,.04); /* separación visual del contenido */
+}
+
+/* si usas un tema con transparencias en --card, fuerza un color opaco aquí:
+   .retrieve-table thead th { background-color: #fff; }  (o el que toque en dark)
+*/
