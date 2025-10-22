@@ -42,7 +42,7 @@
   border-collapse: separate;
   border-spacing: 0;
   width: 100%;
-  font-size: 0.94rem;
+  font-size: 0.74rem;
 }
 
 .retrieve-table thead th {
@@ -52,7 +52,7 @@
   background: var(--card);
   color: var(--fg);
   text-align: left;
-  font-weight: 400;
+  font-weight: 600;
   padding: 10px 12px;
   border-bottom: 1px solid var(--card-border);
 }
