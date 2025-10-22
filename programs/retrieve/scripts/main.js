@@ -1,4 +1,4 @@
-// Retrieve Programs - full listing with all lines (Selected products)
+// Retrieve Programs - flat view (each line = program + line info)
 
 function h(tag, props = {}, ...children) {
   const el = Object.assign(document.createElement(tag), props);
@@ -15,7 +15,7 @@ function fmtNum(n) {
   return Number.isFinite(x) ? x.toFixed(2) : "";
 }
 
-// Preferimos el endpoint con include=lines; si no trae lines, hacemos fallback por id
+// Preferimos el endpoint con include=lines
 async function fetchPrograms() {
   const res = await fetch("/api/programs?include=lines");
   if (!res.ok) throw new Error("Failed to load programs");
@@ -23,140 +23,82 @@ async function fetchPrograms() {
   return Array.isArray(arr) ? arr : [];
 }
 
-async function fetchProgramById(id) {
-  const r = await fetch(`/api/programs/${encodeURIComponent(id)}`);
-  if (!r.ok) return null;
-  return await r.json();
+// Carga customer set (para traducir crm → nombre)
+async function loadCustomerSet() {
+  const res = await fetch("/data/customerset.json", { cache: "no-store" });
+  if (!res.ok) return [];
+  return await res.json();
 }
 
 export async function renderRetrieve() {
   const tbody = document.getElementById("tbodyPrograms");
   const q = document.getElementById("q");
   const btnRefresh = document.getElementById("btnRefresh");
-  const btnExpandAll = document.getElementById("btnExpandAll");
 
   let data = [];
+  let customers = [];
 
   async function load() {
     tbody.replaceChildren(h("tr", {}, h("td", { colSpan: 12 }, "Loading…")));
     try {
-      data = await fetchPrograms();
-      // Fallback per-id si el backend aún no devuelve lines
-      const anyWithoutLines = data.some(p => !Array.isArray(p.lines));
-      if (anyWithoutLines) {
-        for (const p of data) {
-          if (!Array.isArray(p.lines)) {
-            const full = await fetchProgramById(p.id);
-            if (full && Array.isArray(full.lines)) p.lines = full.lines;
-          }
-        }
-      }
+      [data, customers] = await Promise.all([fetchPrograms(), loadCustomerSet()]);
       renderTable();
     } catch (e) {
+      console.error(e);
       tbody.replaceChildren(h("tr", {}, h("td", { colSpan: 12 }, "Failed to load.")));
     }
   }
 
   function renderTable() {
     const term = q.value.trim().toLowerCase();
-    const list = !term ? data : data.filter(p => {
-      const hay = [
-        p.programNumber, p.customer, p.geo, p.country, p.vertical, p.programType, p.id
-      ].join(" ").toLowerCase();
-      return hay.includes(term);
-    });
+    const rows = [];
 
-    if (list.length === 0) {
-      tbody.replaceChildren(h("tr", {}, h("td", { colSpan: 12 }, "No programs found.")));
+    // Expand header + lines: una fila por cada PN
+    for (const p of data) {
+      const customerName = customers.find(c => c.crmNumber === p.customer)?.customerName || p.customer;
+      const lines = Array.isArray(p.lines) && p.lines.length ? p.lines : [ {} ];
+
+      for (const ln of lines) {
+        const matchString = [
+          p.programNumber, p.geo, p.country, p.vertical, customerName,
+          ln.pn, ln.description
+        ].join(" ").toLowerCase();
+        if (term && !matchString.includes(term)) continue;
+
+        rows.push(h("tr", {},
+          h("td", {}, p.programNumber || ""),
+          h("td", {}, p.programType || ""),
+          h("td", {}, p.geo || ""),
+          h("td", {}, p.country || ""),
+          h("td", {}, p.vertical || ""),
+          h("td", {}, customerName || ""),
+          h("td", {}, fmtDate(p.startDay)),
+          h("td", {}, fmtDate(p.endDay)),
+          h("td", {}, ln.pn ?? ""),
+          h("td", {}, ln.description ?? ""),
+          h("td", { style: "text-align:right" }, fmtNum(ln.rrp)),
+          h("td", { style: "text-align:right" }, fmtNum(ln.promoRrp)),
+          h("td", { style: "text-align:right" }, fmtNum(ln.rebate)),
+          h("td", { style: "text-align:right" }, fmtNum(ln.maxQty)),
+          h("td", { style: "text-align:right" }, fmtNum(ln.totalProgramRebate))
+        ));
+      }
+    }
+
+    if (rows.length === 0) {
+      tbody.replaceChildren(h("tr", {}, h("td", { colSpan: 15 }, "No matching programs.")));
       return;
     }
 
-    const rows = [];
-    for (const p of list) {
-      const lineCount = Array.isArray(p.lines) ? p.lines.length : 0;
-      const tr = h("tr", { "data-id": p.id },
-        h("td", {}, p.programNumber || ""),
-        h("td", {}, p.programType || ""),
-        h("td", {}, p.geo || ""),
-        h("td", {}, p.country || ""),
-        h("td", {}, p.vertical || ""),
-        h("td", {}, p.customer || ""),
-        h("td", {}, fmtDate(p.startDay)),
-        h("td", {}, fmtDate(p.endDay)),
-        h("td", {}, fmtDate(p.createdAt)),
-        h("td", {}, p.id),
-        h("td", {}, String(lineCount)),
-        h("td", {},
-          h("button", { className: "action-cta btn-expand", type: "button" }, "Details")
-        )
-      );
-
-      // Fila de detalle (oculta por defecto)
-      const detail = h("tr", { className: "row-detail", style: "display:none" },
-        h("td", { colSpan: 12 },
-          renderLinesTable(p.lines || [])
-        )
-      );
-
-      rows.push(tr, detail);
-    }
-
     tbody.replaceChildren(...rows);
-
-    // Wire expand buttons
-    tbody.querySelectorAll(".btn-expand").forEach(btn => {
-      btn.addEventListener("click", (ev) => {
-        const r = ev.currentTarget.closest("tr");
-        const next = r.nextElementSibling;
-        if (!next || !next.classList.contains("row-detail")) return;
-        next.style.display = (next.style.display === "none") ? "" : "none";
-      });
-    });
   }
 
-  function renderLinesTable(lines) {
-    if (!Array.isArray(lines) || lines.length === 0) {
-      return h("div", {}, "No lines for this program.");
-    }
-    const tbl = h("table", { className: "w-full" },
-      h("thead", {},
-        h("tr", {},
-          h("th", {}, "PN"),
-          h("th", {}, "Description"),
-          h("th", {}, "RRP"),
-          h("th", {}, "Promo RRP"),
-          h("th", {}, "VAT (Yes/No)"),
-          h("th", {}, "FE - Rebate"),
-          h("th", {}, "Max Qty"),
-          h("th", {}, "Total Program Rebate"),
-          h("th", {}, "Line Program Number")
-        )
-      ),
-      h("tbody", {},
-        ...lines.map(ln =>
-          h("tr", {},
-            h("td", {}, ln.pn ?? ""),
-            h("td", {}, ln.description ?? ""),
-            h("td", {}, fmtNum(ln.rrp)),
-            h("td", {}, fmtNum(ln.promoRrp)),
-            h("td", {}, ln.vatOnRrp ?? ""),
-            h("td", {}, fmtNum(ln.rebate)),
-            h("td", {}, fmtNum(ln.maxQty)),
-            h("td", {}, fmtNum(ln.totalProgramRebate)),
-            h("td", {}, ln.lineProgramNumber ?? "")
-          )
-        )
-      )
-    );
-    return tbl;
-  }
-
-  // events
+  // Filtros
   q.addEventListener("input", renderTable);
   btnRefresh.addEventListener("click", load);
-  btnExpandAll.addEventListener("click", () => {
-    tbody.querySelectorAll(".row-detail").forEach(r => r.style.display = "");
-  });
+
+  // Ancho al 90%
+  document.querySelector("main.container")?.style.setProperty("max-width", "90vw");
 
   // go!
   await load();
