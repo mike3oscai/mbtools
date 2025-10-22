@@ -247,3 +247,25 @@ html[data-theme="dark"] .retrieve-table thead th {
   background: inherit;
   z-index: -1;
 }
+/* --- Encabezado plano, sin sombras ni relieves --- */
+.retrieve-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 11;
+  background-color: var(--card); /* mantiene coherencia con el tema */
+  border-bottom: 2px solid var(--card-border); /* línea clara de separación */
+  box-shadow: none !important; /* elimina sombras */
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  background-image: none;
+}
+html[data-theme="dark"] .retrieve-table thead th {
+  background-color: #0f1115; /* o tu color base oscuro */
+  border-bottom-color: rgba(255,255,255,0.1);
+}
+
+/* elimina sombras del área de scroll */
+#listCard .scroll {
+  background: var(--card);
+  box-shadow: none;
+}
