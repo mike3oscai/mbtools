@@ -1,4 +1,4 @@
-// Retrieve Programs — build the whole table dynamically (no table HTML in index)
+// Retrieve Programs — dynamic table + CSV/XLS export
 
 function h(tag, props = {}, ...children) {
   const el = Object.assign(document.createElement(tag), props);
@@ -37,14 +37,18 @@ export async function renderRetrieve() {
   // ancho al 90% para esta página
   document.querySelector("main.container")?.style.setProperty("max-width", "90vw");
 
-  const mount = document.getElementById("mount");
-  const q = document.getElementById("q");
-  const btnRefresh = document.getElementById("btnRefresh");
+  const mount        = document.getElementById("mount");
+  const q            = document.getElementById("q");
+  const btnRefresh   = document.getElementById("btnRefresh");
+  const btnExportCSV = document.getElementById("btnExportCSV");
+  const btnExportXLS = document.getElementById("btnExportXLS");
 
-  let programs = [];
+  let programs  = [];
   let customers = [];
+  // cache de las filas planas actualmente mostradas (para exportación)
+  let currentFlatRows = [];
 
-  // construye <table> + <thead> de una vez
+  // construye <table> + <thead>
   const table = h("table", { className: "retrieve-table w-full", id: "tblPrograms" });
   const thead = h("thead");
   const headRow = h("tr", {}, ...COLS.map(c => h("th", {}, c)));
@@ -67,12 +71,13 @@ export async function renderRetrieve() {
   function renderRows() {
     const term = q.value.trim().toLowerCase();
     const rows = [];
+    currentFlatRows = []; // reset export cache
 
     for (const p of programs) {
       const customerName = customers.find(c => c.crmNumber === p.customer)?.customerName || p.customer;
       const lines = Array.isArray(p.lines) && p.lines.length ? p.lines : [ {} ];
 
-      // Determinar si este programa aportará alguna fila (tras filtro) para alternar color
+      // prefiltra por término
       const preFiltered = lines.filter(ln => {
         const matchString = [
           p.programNumber, p.geo, p.country, p.vertical, customerName,
@@ -82,27 +87,35 @@ export async function renderRetrieve() {
       });
       if (preFiltered.length === 0) continue;
 
-      // Alterna el color por programa (grupo)
+      // alterna color por programa
       const groupClass = (rows._toggle = !rows._toggle) ? "row-group-a" : "row-group-b";
       let firstOfGroup = true;
 
       for (const ln of preFiltered) {
+        const flat = [
+          p.programNumber || "",
+          p.programType   || "",
+          p.geo           || "",
+          p.country       || "",
+          p.vertical      || "",
+          customerName    || "",
+          fmtDate(p.startDay),
+          fmtDate(p.endDay),
+          ln?.pn ?? "",
+          ln?.description ?? "",
+          fmtNum(ln?.rrp),
+          fmtNum(ln?.promoRrp),
+          fmtNum(ln?.rebate),
+          fmtNum(ln?.maxQty),
+          fmtNum(ln?.totalProgramRebate),
+        ];
+        currentFlatRows.push(flat);
+
         rows.push(h("tr", { className: `${groupClass} ${firstOfGroup ? "row-group-start" : ""}` },
-          h("td", {}, p.programNumber || ""),
-          h("td", {}, p.programType || ""),
-          h("td", {}, p.geo || ""),
-          h("td", {}, p.country || ""),
-          h("td", {}, p.vertical || ""),
-          h("td", {}, customerName || ""),
-          h("td", {}, fmtDate(p.startDay)),
-          h("td", {}, fmtDate(p.endDay)),
-          h("td", {}, ln?.pn ?? ""),
-          h("td", {}, ln?.description ?? ""),
-          h("td", { className: "num" }, fmtNum(ln?.rrp)),
-          h("td", { className: "num" }, fmtNum(ln?.promoRrp)),
-          h("td", { className: "num" }, fmtNum(ln?.rebate)),
-          h("td", { className: "num" }, fmtNum(ln?.maxQty)),
-          h("td", { className: "num" }, fmtNum(ln?.totalProgramRebate))
+          ...flat.map((val, idx) => {
+            const isNum = idx >= 10; // RRP en adelante
+            return h("td", { className: isNum ? "num" : "" }, val);
+          })
         ));
         firstOfGroup = false;
       }
@@ -112,13 +125,67 @@ export async function renderRetrieve() {
       tbody.replaceChildren(h("tr", {}, h("td", { colSpan: COLS.length }, "No matching programs.")));
       return;
     }
-
     tbody.replaceChildren(...rows);
+  }
+
+  // ---------- Export helpers ----------
+  function downloadBlob(blob, filename) {
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+      URL.revokeObjectURL(a.href);
+      a.remove();
+    }, 0);
+  }
+
+  function exportCSV() {
+    if (!currentFlatRows.length) return alert("Nothing to export.");
+    const esc = (v) => {
+      const s = String(v ?? "");
+      // envolver si contiene comillas, coma, salto de línea o punto y coma
+      if (/[",\n;]/.test(s)) return `"${s.replace(/"/g, '""')}"`;
+      return s;
+    };
+    const lines = [
+      "\uFEFF" + COLS.join(","), // BOM + cabecera
+      ...currentFlatRows.map(r => r.map(esc).join(","))
+    ];
+    const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8" });
+    downloadBlob(blob, `programs_${new Date().toISOString().slice(0,10)}.csv`);
+  }
+
+  function exportExcel() {
+    if (!currentFlatRows.length) return alert("Nothing to export.");
+    // tabla HTML simple compatible con Excel
+    const th = COLS.map(c => `<th>${escapeHtml(c)}</th>`).join("");
+    const trs = currentFlatRows.map(r =>
+      `<tr>${r.map((v,i) => `<td${i>=10?' style="mso-number-format:\'0.00\';text-align:right"':''}>${escapeHtml(v)}</td>`).join("")}</tr>`
+    ).join("");
+    const html =
+      `<html><head><meta charset="UTF-8"></head><body>
+         <table border="1"><thead><tr>${th}</tr></thead><tbody>${trs}</tbody></table>
+       </body></html>`;
+    const blob = new Blob([html], { type: "application/vnd.ms-excel;charset=utf-8" });
+    downloadBlob(blob, `programs_${new Date().toISOString().slice(0,10)}.xls`);
+  }
+
+  function escapeHtml(s) {
+    return String(s ?? "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#39;");
   }
 
   // Wire events
   q.addEventListener("input", renderRows);
   btnRefresh.addEventListener("click", load);
+  btnExportCSV.addEventListener("click", exportCSV);
+  btnExportXLS.addEventListener("click", exportExcel);
 
   // go!
   await load();
