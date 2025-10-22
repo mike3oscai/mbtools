@@ -52,7 +52,7 @@
   background: var(--card);
   color: var(--fg);
   text-align: left;
-  font-weight: 700;
+  font-weight: 400;
   padding: 10px 12px;
   border-bottom: 1px solid var(--card-border);
 }
