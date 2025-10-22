@@ -212,3 +212,38 @@
 /* si usas un tema con transparencias en --card, fuerza un color opaco aquí:
    .retrieve-table thead th { background-color: #fff; }  (o el que toque en dark)
 */
+
+/* --- Encabezado sticky totalmente opaco y por encima del contenido --- */
+
+/* el área con scroll debe tener base sólida */
+#listCard .scroll { background: var(--card); }
+
+/* encabezado por encima del body */
+.retrieve-table thead { position: sticky; top: 0; z-index: 10; }
+
+/* cada <th> con fondo OPACO (sin transparencias) y sin ver huecos */
+.retrieve-table thead th {
+  position: sticky;           /* ya lo teníamos, lo reafirmamos */
+  top: 0;
+  z-index: 11;
+  background-color: #ffffff;  /* opaco en light */
+  background-image: none;     /* por si el tema aporta degradados/transparencias */
+  background-clip: padding-box;
+  box-shadow:
+    0 1px 0 var(--card-border),           /* línea inferior */
+    0 8px 14px rgba(0, 0, 0, 0.06);       /* separa del contenido al hacer scroll */
+}
+
+/* en modo oscuro, fondo opaco equivalente */
+html[data-theme="dark"] .retrieve-table thead th {
+  background-color: #0f1115;  /* ajusta si tu dark usa otro tono base */
+}
+
+/* si tu tema usa celdas con bordes redondeados/sombras, este pseudo rellena cualquier hueco */
+.retrieve-table thead th::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: inherit;
+  z-index: -1;
+}
