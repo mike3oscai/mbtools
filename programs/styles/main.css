@@ -123,9 +123,15 @@ html[data-theme="dark"] .retrieve-table thead th{
   gap: 18px;
   align-items: center;
   padding: 10px 12px;
-  background: var(--card);
+  background: var(--header-bg-light);
   border-top: 1px solid var(--card-border);
 }
+
+html[data-theme="dark"] .totals-sticky{
+  background-color: var(--header-bg-dark);          /* ajusta si usas otro base en dark */
+  border-bottom-color: rgba(255,255,255,.12);
+}
+
 @media (max-width: 700px){
   .totals-sticky{ grid-template-columns: 1fr 1fr; }
 }
