@@ -5,6 +5,11 @@
    - KPIs superiores, subtotales por programa y pie sticky
    =================================================================== */
 
+:root {
+  --header-bg-light: #ffffff;
+  --header-bg-dark: #0f1115;
+}
+
 /* -------- Utilidades suaves de la vista -------- */
 .back-link { color: var(--accent); text-decoration: none; }
 
@@ -45,7 +50,7 @@
   position: sticky;
   top: 0;
   z-index: 20;                        /* por encima de filas/subtotales */
-  background-color: var(--card);      /* opaco, coherente con el tema */
+  background-color: var(--header-bg-light);      /* opaco, coherente con el tema */
   color: var(--fg);
   text-align: left;
   font-weight: 600;
@@ -55,9 +60,14 @@
   background-image: none;
 }
 html[data-theme="dark"] .retrieve-table thead th{
-  background-color: #0f1115;          /* ajusta si usas otro base en dark */
+  background-color: var(--header-bg-dark);          /* ajusta si usas otro base en dark */
   border-bottom-color: rgba(255,255,255,.12);
 }
+
+.retrieve-table thead th {
+  background-clip: padding-box;
+}
+
 
 .retrieve-table tbody td{
   padding: 10px 12px;
@@ -81,7 +91,6 @@ html[data-theme="dark"] .retrieve-table thead th{
 /* Marca de inicio de grupo */
 .retrieve-table tbody tr.row-group-start td{
   border-top: 2px solid var(--card-border);
-  background-color: solid bisque;
 }
 
 /* Hover sutil */
