@@ -212,3 +212,9 @@ html[data-theme="dark"] .totals-sticky{
   width: 40px;
   text-align: center;
 }
+
+/* Desactivar el scroll interno de la tarjeta Retrieve */
+#listCard .scroll {
+  overflow: visible !important;
+  max-height: none !important;
+}
