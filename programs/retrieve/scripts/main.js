@@ -1,4 +1,4 @@
-// Retrieve Programs — KPIs + subtotales + pie sticky + export .xlsx nativo
+// Retrieve Programs — KPIs + subtotales + pie sticky + export .xlsx nativo (+ Activity + icono info)
 
 function h(tag, props = {}, ...children) {
   const el = Object.assign(document.createElement(tag), props);
@@ -6,12 +6,19 @@ function h(tag, props = {}, ...children) {
   return el;
 }
 
-const COLS = [
+// Cabeceras UI (tabla visible) -> 15 columnas + 1 para icono
+const COLS_UI = [
   "Program Number","Type","Geo","Country","Vertical","Customer",
-  "Start","End","PN","Description","RRP","Promo RRP","Rebate","Max Qty","Total Program Rebate"
+  "Start","End","PN","Description","RRP","Promo RRP","Rebate","Max Qty","Total Program Rebate",""
 ];
 
-// indices útiles
+// Cabeceras para EXCEL -> las 15 + Activity
+const COLS_EXPORT = [
+  "Program Number","Type","Geo","Country","Vertical","Customer",
+  "Start","End","PN","Description","RRP","Promo RRP","Rebate","Max Qty","Total Program Rebate","Activity"
+];
+
+// índices útiles (no cambian porque Activity va al final)
 const IDX_PN       = 8;
 const IDX_DESC     = 9;
 const IDX_RRP      = 10;
@@ -90,19 +97,19 @@ export async function renderRetrieve() {
   // Construir tabla base
   const table = h("table", { className: "retrieve-table w-full", id: "tblPrograms" });
   const thead = h("thead");
-  thead.append(h("tr", {}, ...COLS.map(c => h("th", {}, c))));
+  thead.append(h("tr", {}, ...COLS_UI.map(c => h("th", {}, c))));
   const tbody = h("tbody", { id: "tbodyPrograms" });
   table.append(thead, tbody);
   mount.replaceChildren(table);
 
   async function load() {
-    tbody.replaceChildren(h("tr", {}, h("td", { colSpan: COLS.length }, "Loading…")));
+    tbody.replaceChildren(h("tr", {}, h("td", { colSpan: COLS_UI.length }, "Loading…")));
     try {
       [programs, customers] = await Promise.all([fetchPrograms(), loadCustomerSet()]);
       renderRows();
     } catch (e) {
       console.error(e);
-      tbody.replaceChildren(h("tr", {}, h("td", { colSpan: COLS.length }, "Failed to load")));
+      tbody.replaceChildren(h("tr", {}, h("td", { colSpan: COLS_UI.length }, "Failed to load")));
       updateKpisAndFooter({ qty: 0, total: 0, avg: NaN, count: 0 });
     }
   }
@@ -127,13 +134,19 @@ export async function renderRetrieve() {
 
     // agrupación por programa para poder añadir subtotales
     for (const p of programs) {
-      const customerName = customers.find(c => c.crmNumber === p.customer)?.customerName || p.customer;
+      const customerName =
+        customers.find(c => c.crmNumber === p.customer)?.customerName ||
+        p.customer;
+
       const lines = Array.isArray(p.lines) && p.lines.length ? p.lines : [ {} ];
+
+      const activity =
+        (p.activity ?? p.header?.activity ?? "").toString().trim();
 
       const filtered = lines.filter(ln => {
         const match = [
           p.programNumber, p.geo, p.country, p.vertical, customerName,
-          getPn(ln), ln?.description
+          getPn(ln), ln?.description, activity
         ].join(" ").toLowerCase();
         return !term || match.includes(term);
       });
@@ -146,7 +159,7 @@ export async function renderRetrieve() {
       let gQty = 0, gTotal = 0;
 
       for (const ln of filtered) {
-        // 1) fila cruda para export/totales
+        // 1) fila cruda para export/totales (añadimos Activity al final)
         const flatRaw = [
           p.programNumber || "",
           p.programType   || "",
@@ -163,14 +176,15 @@ export async function renderRetrieve() {
           rawNum(ln?.rebate),
           rawNum(ln?.maxQty),
           rawNum(ln?.totalProgramRebate),
+          activity
         ];
         currentFlatRows.push(flatRaw);
 
-        // acumula subtotales
+        // acumula subtotales (sobre los valores numéricos)
         if (Number.isFinite(flatRaw[IDX_MAXQTY])) gQty += flatRaw[IDX_MAXQTY];
         if (Number.isFinite(flatRaw[IDX_TOTAL]))  gTotal += flatRaw[IDX_TOTAL];
 
-        // 2) fila visual
+        // 2) fila visual (15 columnas) + icono tooltip (columna 16)
         const visual = [
           flatRaw[0], flatRaw[1], flatRaw[2], flatRaw[3], flatRaw[4], flatRaw[5],
           flatRaw[6], flatRaw[7], flatRaw[8], flatRaw[9],
@@ -178,16 +192,31 @@ export async function renderRetrieve() {
           fmtNum2(ln?.maxQty), fmtNum2(ln?.totalProgramRebate)
         ];
 
-        rows.push(h("tr", { className: `${groupClass} ${first ? "row-group-start" : ""}` },
+        const tr = h("tr", { className: `${groupClass} ${first ? "row-group-start" : ""}` },
           ...visual.map((val, idx) => h("td", { className: idx >= 10 ? "num" : "" }, val))
-        ));
+        );
+
+        // celda del icono info
+        const tdInfo = document.createElement("td");
+        if (activity) {
+          const dot = document.createElement("span");
+          dot.className = "info-dot";
+          dot.textContent = "i";
+          dot.title = activity;               // fallback nativo
+          dot.setAttribute("data-tip", activity); // tooltip CSS
+          tdInfo.append(dot);
+        } else {
+          tdInfo.textContent = "";
+        }
+        tr.append(tdInfo);
+
+        rows.push(tr);
         first = false;
       }
 
       // 3) subtotal de programa (fila al cierre del grupo)
-      const avg = gQty > 0 ? (gTotal / gQty) : NaN;
       const subtotalTds = [];
-      for (let i = 0; i < COLS.length; i++) {
+      for (let i = 0; i < COLS_UI.length; i++) {
         if (i === IDX_MAXQTY) {
           subtotalTds.push(h("td", { className: "num" }, nfmtInt(gQty)));
         } else if (i === IDX_TOTAL) {
@@ -196,6 +225,9 @@ export async function renderRetrieve() {
           subtotalTds.push(h("td", { className: "num" }, nfmtAvg(gTotal, gQty)));
         } else if (i === 0) {
           subtotalTds.push(h("td", { className: "subtotal-label" }, "Subtotal"));
+        } else if (i === COLS_UI.length - 1) {
+          // columna del icono en el subtotal (vacía)
+          subtotalTds.push(h("td", {}, ""));
         } else {
           subtotalTds.push(h("td", {}, ""));
         }
@@ -204,7 +236,7 @@ export async function renderRetrieve() {
     }
 
     if (rows.length === 0) {
-      tbody.replaceChildren(h("tr", {}, h("td", { colSpan: COLS.length }, "No matching programs.")));
+      tbody.replaceChildren(h("tr", {}, h("td", { colSpan: COLS_UI.length }, "No matching programs.")));
       updateKpisAndFooter({ qty: 0, total: 0, avg: NaN, count: 0 });
       return;
     }
@@ -244,13 +276,15 @@ export async function renderRetrieve() {
 
   function buildSheetXML() {
     let rowsXml = "";
-    rowsXml += `<row r="1">` + COLS.map((v, i) =>
+    // cabeceras de export (con Activity)
+    rowsXml += `<row r="1">` + COLS_EXPORT.map((v, i) =>
       `<c r="${colLetter(i)}1" t="inlineStr"><is><t>${escXml(v)}</t></is></c>`
     ).join("") + `</row>`;
 
+    // datos
     for (let r = 0; r < currentFlatRows.length; r++) {
       const rowIndex = r + 2;
-      const row = currentFlatRows[r];
+      const row = currentFlatRows[r]; // incluye "Activity" en última columna
       let cells = "";
       for (let c = 0; c < row.length; c++) {
         const coord = `${colLetter(c)}${rowIndex}`;

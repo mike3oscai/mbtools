@@ -154,3 +154,55 @@ html[data-theme="dark"] .retrieve-table thead th{
   font-weight: 700;
   font-size: 1.15rem;
 }
+
+/* Icono de información al final de cada fila */
+.info-dot{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:18px; height:18px;
+  border-radius:999px;
+  border:1px solid var(--card-border);
+  font-size:11px;
+  line-height:1;
+  color: var(--muted);
+  background: var(--card);
+  cursor: default;
+  position: relative;
+}
+
+/* Tooltip bonito (soporta saltos de línea si hay párrafos largos) */
+.info-dot:hover::after{
+  content: attr(data-tip);
+  position:absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(20,22,28,.95);
+  color: #fff;
+  border-radius: 8px;
+  padding: 8px 10px;
+  max-width: 420px;
+  width: max-content;
+  white-space: pre-wrap;
+  box-shadow: 0 10px 20px rgba(0,0,0,.25);
+  z-index: 40;
+}
+
+/* pequeña “flecha” del tooltip */
+.info-dot:hover::before{
+  content: "";
+  position:absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: rgba(20,22,28,.95);
+}
+
+/* Columna del icono angosta (última columna) */
+.retrieve-table thead th:last-child,
+.retrieve-table tbody td:last-child{
+  width: 40px;
+  text-align: center;
+}
