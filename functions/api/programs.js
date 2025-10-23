@@ -4,6 +4,7 @@ export const onRequestGet = async ({ env, request }) => {
   const offset  = Number(url.searchParams.get("offset")  ?? 0);
   const include = (url.searchParams.get("include") || "").toLowerCase();
 
+  // devolvemos todas las columnas (incluida activity)
   const programsRes = await env.DB.prepare(
     `SELECT * FROM programs ORDER BY createdAt DESC LIMIT ? OFFSET ?`
   ).bind(limit, offset).all();
@@ -17,7 +18,9 @@ export const onRequestGet = async ({ env, request }) => {
   for (const p of programs) {
     const linesRes = await env.DB.prepare(
       `SELECT pn, description, rrp, promoRrp, vatOnRrp, rebate, maxQty, totalProgramRebate, lineProgramNumber
-       FROM program_lines WHERE program_id = ? ORDER BY id ASC`
+       FROM program_lines
+       WHERE program_id = ?
+       ORDER BY id ASC`
     ).bind(p.id).all();
     p.lines = linesRes.results || [];
   }
@@ -33,18 +36,30 @@ export const onRequestPost = async ({ env, request }) => {
       return json({ error: "Invalid payload (header/lines)" }, 400);
     }
 
+    // id/createdAt estables o generados
     const id = payload.id || genId(header.programNumber, header.customer, header.startDay);
     const createdAt = payload.createdAt || new Date().toISOString();
 
+    // INSERT del header — 11 columnas (activity incluida)
     const stmtHeader = env.DB.prepare(
       `INSERT INTO programs
        (id, createdAt, programNumber, programType, geo, country, vertical, customer, startDay, endDay, activity)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
     ).bind(
-      id, createdAt, header.programNumber, header.programType, header.geo, header.country,
-      header.vertical, header.customer, header.startDay, header.endDay || null
+      id,
+      createdAt,
+      header.programNumber,
+      header.programType,
+      header.geo,
+      header.country,
+      header.vertical,
+      header.customer,
+      header.startDay ?? null,
+      header.endDay ?? null,
+      header.activity ?? null
     );
 
+    // INSERT de líneas (coherente con 'lineProgramNumber' que envía el front)
     const lineStmts = lines.map((ln) =>
       env.DB.prepare(
         `INSERT INTO program_lines
@@ -60,11 +75,11 @@ export const onRequestPost = async ({ env, request }) => {
         num(ln.rebate),
         num(ln.maxQty),
         num(ln.totalProgramRebate),
-        String(ln.programNumber ?? header.programNumber)
+        String(ln.lineProgramNumber ?? header.programNumber)
       )
     );
 
-    // Importante: insertar todo en una sola operación
+    // Ejecutamos todo en batch
     await env.DB.batch([stmtHeader, ...lineStmts]);
 
     return json({ ok: true, id, createdAt, linesInserted: lines.length });
@@ -94,9 +109,14 @@ const json = (data, status = 200) =>
     }
   });
 
-function num(v) { const n = parseFloat(v); return Number.isFinite(n) ? n : 0; }
+function num(v) {
+  const n = parseFloat(v);
+  return Number.isFinite(n) ? n : 0;
+}
+
 function genId(programNumber, customer, startDay) {
   const base = `${programNumber || "NONUM"}|${customer || "NOCUST"}|${startDay || ""}`;
-  let h = 0; for (let i = 0; i < base.length; i++) h = (h * 31 + base.charCodeAt(i)) >>> 0;
+  let h = 0;
+  for (let i = 0; i < base.length; i++) h = (h * 31 + base.charCodeAt(i)) >>> 0;
   return `PRG-${h.toString(16).padStart(8, "0")}`;
 }
