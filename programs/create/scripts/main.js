@@ -1,5 +1,4 @@
-// Create a Program – vertical card form + productos y tabla dinámica
-// La tabla "Selected products" se genera SOLO desde este archivo.
+// Create a Program – header + products + table
 
 import { loadCustomerSet, loadProductSet, loadVatSet } from "/shared/scripts/data.js";
 const GEOCOUNTRY_URL = "/data/geocountryset.json";
@@ -33,14 +32,13 @@ const VERTICAL_OPTIONS = [
 /* ---------- Helpers ---------- */
 function h(tag, props = {}, ...children) {
   const el = Object.assign(document.createElement(tag), props);
-  for (const c of children.flat()) el.append(c?.nodeType ? c : document.createTextNode(c ?? ""));
+  for (const c of children.flat()) el.append(c?.nodeType ? c : document.createTextNode(c ?? "")); 
   return el;
 }
 const unique = (arr) => [...new Set(arr)];
 const fmtPN  = (p) => `${p.PN} — ${p.Description}`;
 const byId   = (id) => document.getElementById(id);
 
-/* Select genérico (single/multiple) */
 function setSelectOptions(selectEl, options = [], placeholder = "Select...", selected = "") {
   const multiple = !!selectEl.multiple;
   const current = multiple ? Array.from(selectEl.selectedOptions).map(o => o.value) : selectEl.value;
@@ -90,7 +88,7 @@ async function loadCountriesByGeo(geo) {
   }
 }
 
-/* =================== API principal =================== */
+/* =================== UI principal =================== */
 export async function renderCreateForm(container) {
   if (!container) return;
 
@@ -101,43 +99,40 @@ export async function renderCreateForm(container) {
   const verticalSel    = buildSelect("vertical", VERTICAL_OPTIONS, "Select a vertical");
 
   const customerSel    = buildSelect("customer", [], "Select a customer (choose Geo first)", true);
-  const startDayInp    = h("input", { className: "form-control", type: "date", id: "fld-startDay", name: "startDay", placeholder: "dd/mm/aaaa" });
-  const endDayInp      = h("input", { className: "form-control", type: "date", id: "fld-endDay", name: "endDay", placeholder: "dd/mm/aaaa" });
+  const startDayInp    = h("input", { className: "form-control", type: "date", id: "fld-startDay", name: "startDay" });
+  const endDayInp      = h("input", { className: "form-control", type: "date", id: "fld-endDay", name: "endDay" });
   const programNumInp  = h("input", { className: "form-control", type: "text", id: "fld-programNumber", name: "programNumber", placeholder: "Auto after Confirm (editable)" });
 
-  // NUEVO: textarea Describe this activity
-  const activityInp   = h("textarea", {
+  // 👉 NUEVO: textarea “Describe this activity”
+  const activityInp = h("textarea", {
     className: "form-control",
     id: "fld-activity",
     name: "activity",
-    rows: 4,
-    placeholder: "Briefly describe this program (context, goals, notes)…"
+    rows: 3,
+    placeholder: "Describe this activity..."
   });
 
-  // === LAYOUT: grid de 4 columnas (label|control|label|control) ===
+  // === Grid 4 cols (label|control|label|control) ===
   const grid = h("div", { className: "header-grid" });
-
   const L = (forId, text) => h("label", { className: "form-label", htmlFor: forId }, text);
+
   grid.append(
-    /* fila 1 */
+    // fila 1
     L(programTypeSel.id, "Program Type"), programTypeSel,
     L(customerSel.id,    "Customer"),      customerSel,
-    /* fila 2 */
+    // fila 2
     L(geoSel.id,         "Geo"),           geoSel,
     L(startDayInp.id,    "Start Day"),     startDayInp,
-    /* fila 3 */
+    // fila 3
     L(countrySel.id,     "Country"),       countrySel,
     L(endDayInp.id,      "End Day"),       endDayInp,
-    /* fila 4 */
+    // fila 4
     L(verticalSel.id,    "Vertical"),      verticalSel,
-    L(programNumInp.id,  "Program Number"),programNumInp
+    L(programNumInp.id,  "Program Number"),programNumInp,
+    // fila 5 (ocupa 2 columnas * 2 = 4): etiqueta + textarea
+    h("div", { className: "span-2-2" }, L(activityInp.id, "Describe this activity:")),
+    h("div", { className: "span-2-2" }, activityInp)
   );
-
-  // Fila final: Describe this activity (ocupa de la 2 a la última columna)
-  const lblActivity = L(activityInp.id, "Describe this activity");
-  lblActivity.style.gridColumn = "1 / 2";
-  activityInp.style.gridColumn = "2 / -1";
-  grid.append(lblActivity, activityInp);
 
   const actions = h("div", { className: "actions-row" },
     h("button", { id: "btnConfirm", className: "action-cta", type: "button" }, "Confirm"),
@@ -146,7 +141,7 @@ export async function renderCreateForm(container) {
 
   container.replaceChildren(grid, actions);
 
-  /* ---------- Sección Products (oculta hasta Confirm) ---------- */
+  /* ---------- Sección Products ---------- */
   const productsSection = h("section", { id: "productsSection", className: "card", style: "display:none" },
     h("h2", {}, "Products"),
     h("div", { className: "form-row" },
@@ -175,22 +170,18 @@ export async function renderCreateForm(container) {
       h("div", {}, h("button", { id: "btnAddProducts", className: "action-cta", type: "button" }, "Add Products"))
     )
   );
-  // Lo inserto después del header
   const mainContainer = container.closest("main") || container.parentElement;
   mainContainer.appendChild(productsSection);
 
-  /* ---------- Tarjeta Selected products (tabla) ---------- */
+  /* ---------- Tabla Selected products ---------- */
   const tableCard = h("section", { id: "selectedProductsCard", className: "card", style: "display:none" },
     h("h2", {}, "Selected products"),
     h("div", { className: "scroll" },
       h("table", { id: "productsTable" },
-        h("thead", {},
-          trHead([
-            "PN","Description","RRP","Promo RRP",
-            "Calculated RRP - VAT (Yes/No)","FE - Rebate",
-            "Max Quantity","Total Program Rebate","Program Number","Actions"
-          ])
-        ),
+        h("thead", {}, trHead([
+          "PN","Description","RRP","Promo RRP","Calculated RRP - VAT (Yes/No)","FE - Rebate",
+          "Max Quantity","Total Program Rebate","Program Number","Actions"
+        ])),
         h("tbody", { id: "productsTbody" })
       )
     ),
@@ -200,7 +191,7 @@ export async function renderCreateForm(container) {
   );
   mainContainer.appendChild(tableCard);
 
-  /* ---------- Refs ---------- */
+  /* ---------- Refs & data ---------- */
   const pnSel          = byId("fld-pn");
   const productSel     = byId("fld-product");
   const ramSel         = byId("fld-ram");
@@ -212,7 +203,6 @@ export async function renderCreateForm(container) {
   const btnSaveProgram = byId("btnSaveProgram");
   const tbody          = byId("productsTbody");
 
-  /* ---------- Data ---------- */
   const [customers, products, vatset] = await Promise.all([
     loadCustomerSet(), loadProductSet(), loadVatSet()
   ]);
@@ -220,13 +210,11 @@ export async function renderCreateForm(container) {
   const todayISO = new Date().toISOString().slice(0, 10);
   startDayInp.min = todayISO;
 
-  /* VAT por país */
   const getVatForCountry = (country) => {
     const entry = vatset.find(v => v.country === country);
     return entry && typeof entry.vat === "number" ? entry.vat : null;
   };
 
-  /* Frontend por cliente (decimal) */
   const parsePercentToDecimal = (v) => {
     if (v == null) return 0;
     if (typeof v === "string") {
@@ -243,17 +231,14 @@ export async function renderCreateForm(container) {
   };
   const formatPercent = (d) => `${(d * 100 || 0).toFixed(0)}%`;
 
-  /* Geo → Países */
+  // Geo -> Countries + Customers
   geoSel.addEventListener("change", async () => {
     const countries = await loadCountriesByGeo(geoSel.value);
     setSelectOptions(countrySel, countries.map(c => ({ value: c, label: c })), "Select a country");
     refreshCustomers();
   });
-
-  /* Clientes (Geo + Vertical) */
   function refreshCustomers() {
-    const g = geoSel.value;
-    const v = verticalSel.value;
+    const g = geoSel.value, v = verticalSel.value;
     if (!g) {
       customerSel.disabled = true;
       setSelectOptions(customerSel, [], "Select a customer (choose Geo first)");
@@ -268,13 +253,11 @@ export async function renderCreateForm(container) {
   verticalSel.addEventListener("change", refreshCustomers);
   customerSel.addEventListener("change", () => recalcAllRows(tbody, countrySel));
 
-  /* Precarga países si ya hay Geo (opcional) */
   if (geoSel.value) {
     const countries = await loadCountriesByGeo(geoSel.value);
     setSelectOptions(countrySel, countries.map(c => ({ value: c, label: c })), "Select a country");
   }
 
-  /* Filtros producto/PN */
   const setRamOptions = (list, selected = []) =>
     setSelectOptions(ramSel, unique(list.map(p => p.RAM)).map(v => ({ value: v, label: v })), "Choose RAM", selected);
   const setRomOptions = (list, selected = []) =>
@@ -324,7 +307,6 @@ export async function renderCreateForm(container) {
   ramSel.addEventListener("change", onPRRChange);
   romSel.addEventListener("change", onPRRChange);
 
-  // Inicialización filtros
   (function initProductArea(){
     const programs = unique(products.map(p => p.Program)).map(v => ({ value: v, label: v }));
     setSelectOptions(productSel, programs, "Select a product");
@@ -335,30 +317,20 @@ export async function renderCreateForm(container) {
 
   /* ---------- Reset reutilizable ---------- */
   function resetProgramForm() {
-    // 1) Rehabilitar y vaciar cabecera
     [programTypeSel, geoSel, countrySel, verticalSel, customerSel, startDayInp, endDayInp]
       .forEach(el => { el.disabled = false; el.value = ""; });
     programNumInp.value = "";
-    activityInp.disabled = false;
-    activityInp.value = "";
+    activityInp.value   = ""; // <— limpia el comentario
     refreshCustomers();
 
-    // 2) Ocultar secciones de productos/tabla y limpiar filas
     productsSection.style.display = "none";
     tableCard.style.display = "none";
     tbody.replaceChildren();
     btnSaveProgram.disabled = true;
 
-    // 3) Reset de filtros de productos y checkbox
-    productSel.value = "";
-    ramSel.value = "";
-    romSel.value = "";
+    productSel.value = ""; ramSel.value = ""; romSel.value = "";
     chkSelectAll.checked = false;
-    setRamOptions(products);
-    setRomOptions(products);
-    setPnOptions(products);
-
-    // 4) Vuelve al inicio
+    setRamOptions(products); setRomOptions(products); setPnOptions(products);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
@@ -368,8 +340,7 @@ export async function renderCreateForm(container) {
     const err = validateHeader();
     if (err) return alert(err);
 
-    [programTypeSel, geoSel, countrySel, verticalSel, customerSel, startDayInp, endDayInp, activityInp]
-      .forEach(el => el.disabled = true);
+    [programTypeSel, geoSel, countrySel, verticalSel, customerSel, startDayInp, endDayInp].forEach(el => el.disabled = true);
 
     if (!programNumInp.value.trim()) {
       programNumInp.value = buildProgramNumber(programTypeSel.value, geoSel.value, startDayInp.value);
@@ -387,7 +358,6 @@ export async function renderCreateForm(container) {
     if (!countrySel.value) return "Country is required.";
     if (!VERTICAL_OPTIONS.some(o => o.value === verticalSel.value)) return "Vertical is required.";
     if (!customerSel.value) return "Customer is required.";
-
     const startISO = startDayInp.value;
     const endISO   = endDayInp.value;
     if (!startISO) return "Start Day is required.";
@@ -396,7 +366,7 @@ export async function renderCreateForm(container) {
     return "";
   }
 
-  /* ---------- Paso 2: Add Products + cálculo ---------- */
+  /* ---------- Add Products + cálculo ---------- */
   btnAddProducts.addEventListener("click", () => {
     const selectedPNs = Array.from(pnSel.selectedOptions).map(o => o.value);
     const subset = selectedPNs.length ? products.filter(p => selectedPNs.includes(p.PN)) : filteredProducts();
@@ -414,7 +384,7 @@ export async function renderCreateForm(container) {
     btnSaveProgram.disabled = tbody.children.length === 0;
   });
 
-  /* ---------- SAVE PROGRAM (POST /api/programs) ---------- */
+  /* ---------- SAVE PROGRAM ---------- */
   btnSaveProgram.addEventListener("click", async () => {
     const header = {
       programType: programTypeSel.value,
@@ -425,7 +395,7 @@ export async function renderCreateForm(container) {
       startDay: startDayInp.value,
       endDay: endDayInp.value || null,
       programNumber: programNumInp.value,
-      activity: activityInp.value?.trim() || null
+      activity: activityInp.value.trim()   // <—— **AQUÍ VA EL COMENTARIO**
     };
     const lines = Array.from(tbody.querySelectorAll("tr")).map(tr => ({
       pn: tr.dataset.pn || (getCell(tr, "pn")?.textContent ?? ""),
@@ -438,11 +408,7 @@ export async function renderCreateForm(container) {
       totalProgramRebate: numVal(getCell("span", tr, "total")),
       programNumber: (getCell("input", tr, "lineProgramNumber")?.value) || header.programNumber
     }));
-
-    if (!lines.length) {
-      alert("No products added.");
-      return;
-    }
+    if (!lines.length) return alert("No products added.");
 
     const body = {
       id: generateProgramId(header.programNumber, header.customer, header.startDay),
@@ -457,24 +423,20 @@ export async function renderCreateForm(container) {
         headers: { "content-type": "application/json" },
         body: JSON.stringify(body)
       });
-
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
         alert(`Error saving program: ${err.error || res.statusText}`);
         return;
       }
-
       const saved = await res.json();
       alert(`Program saved with id ${saved.id}`);
-
-      // reset automático para crear otro programa
       resetProgramForm();
-    } catch (e) {
+    } catch {
       alert(`Network error saving program`);
     }
   });
 
-  /* ---------- Helpers de tabla + cálculo ---------- */
+  /* ---------- Tabla helpers ---------- */
   function rowForProduct(p, programNumber) {
     const tr = h("tr", { "data-pn": p.PN, style: "border-top:1px solid var(--card-border)" },
       td(p.PN, { "data-col": "pn" }),
@@ -515,7 +477,7 @@ export async function renderCreateForm(container) {
         rebateInput.disabled = true;
       } else {
         const vatDec = vatRate / 100;
-        const rebate = (rrp - promo) / (1 + vatDec);   // (RRP - Promo) sin VAT
+        const rebate = (rrp - promo) / (1 + vatDec);
         rebateInput.value = rebate.toFixed(2);
         rebateInput.disabled = true;
       }
@@ -526,9 +488,8 @@ export async function renderCreateForm(container) {
       const baseRRP   = vatDec > 0 ? (rrp / (1 + vatDec))   : rrp;
       const basePromo = vatDec > 0 ? (promo / (1 + vatDec)) : promo;
 
-      const feDec = getFrontendForCustomer(customerSel.value); // decimal
+      const feDec = getFrontendForCustomer(customerSel.value);
       const factor = 1 - (feDec || 0);
-
       const rebate = (baseRRP * factor) - (basePromo * factor);
       rebateInput.value = (Number.isFinite(rebate) ? rebate : 0).toFixed(2);
       rebateInput.disabled = true;
@@ -546,7 +507,6 @@ export async function renderCreateForm(container) {
     Array.from(tbodyEl.querySelectorAll("tr")).forEach(tr => recalcRow(tr, countrySelRef));
   }
 
-  /* ---------- Pequeños helpers de HTML ---------- */
   function trHead(cols){ return h("tr", {}, ...cols.map(c => h("th", {}, c))); }
   function td(txt, data = {}) { const el = h("td", {}, txt); if (data["data-col"]) el.dataset.col = data["data-col"]; return el; }
   function tdInputNumber(col, initial = 0, onInput){
@@ -596,15 +556,11 @@ export async function renderCreateForm(container) {
     return tr.querySelector(`[data-col="${col}"]`)?.querySelector("*") || tr.querySelector(`[data-col="${col}"]`);
   }
 
-  // ---- Helper ID estable para el registro (mismo algoritmo que en la API)
   function generateProgramId(programNumber, customer, startDay) {
     const base = `${programNumber || "NONUM"}|${customer || "NOCUST"}|${startDay || ""}`;
-    let h = 0;
-    for (let i = 0; i < base.length; i++) h = (h * 31 + base.charCodeAt(i)) >>> 0;
+    let h = 0; for (let i = 0; i < base.length; i++) h = (h * 31 + base.charCodeAt(i)) >>> 0;
     return `PRG-${h.toString(16).padStart(8, "0")}`;
   }
 }
 
-// Compatibilidad: algunos HTML antiguos importan este nombre.
-// No hace nada, sólo evita el error de importación.
 export function wireSelectedProducts() {}

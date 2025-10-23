@@ -38,7 +38,7 @@ export const onRequestPost = async ({ env, request }) => {
 
     const stmtHeader = env.DB.prepare(
       `INSERT INTO programs
-       (id, createdAt, programNumber, programType, geo, country, vertical, customer, startDay, endDay)
+       (id, createdAt, programNumber, programType, geo, country, vertical, customer, startDay, endDay, activity)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
     ).bind(
       id, createdAt, header.programNumber, header.programType, header.geo, header.country,
