@@ -81,6 +81,7 @@ html[data-theme="dark"] .retrieve-table thead th{
 /* Marca de inicio de grupo */
 .retrieve-table tbody tr.row-group-start td{
   border-top: 2px solid var(--card-border);
+  background-color: solid bisque;
 }
 
 /* Hover sutil */
