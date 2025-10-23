@@ -105,7 +105,16 @@ export async function renderCreateForm(container) {
   const endDayInp      = h("input", { className: "form-control", type: "date", id: "fld-endDay", name: "endDay", placeholder: "dd/mm/aaaa" });
   const programNumInp  = h("input", { className: "form-control", type: "text", id: "fld-programNumber", name: "programNumber", placeholder: "Auto after Confirm (editable)" });
 
-  // === NUEVO LAYOUT: grid de 4 columnas (label|control|label|control) ===
+  // NUEVO: textarea Describe this activity
+  const activityInp   = h("textarea", {
+    className: "form-control",
+    id: "fld-activity",
+    name: "activity",
+    rows: 4,
+    placeholder: "Briefly describe this program (context, goals, notes)…"
+  });
+
+  // === LAYOUT: grid de 4 columnas (label|control|label|control) ===
   const grid = h("div", { className: "header-grid" });
 
   const L = (forId, text) => h("label", { className: "form-label", htmlFor: forId }, text);
@@ -123,6 +132,12 @@ export async function renderCreateForm(container) {
     L(verticalSel.id,    "Vertical"),      verticalSel,
     L(programNumInp.id,  "Program Number"),programNumInp
   );
+
+  // Fila final: Describe this activity (ocupa de la 2 a la última columna)
+  const lblActivity = L(activityInp.id, "Describe this activity");
+  lblActivity.style.gridColumn = "1 / 2";
+  activityInp.style.gridColumn = "2 / -1";
+  grid.append(lblActivity, activityInp);
 
   const actions = h("div", { className: "actions-row" },
     h("button", { id: "btnConfirm", className: "action-cta", type: "button" }, "Confirm"),
@@ -324,6 +339,8 @@ export async function renderCreateForm(container) {
     [programTypeSel, geoSel, countrySel, verticalSel, customerSel, startDayInp, endDayInp]
       .forEach(el => { el.disabled = false; el.value = ""; });
     programNumInp.value = "";
+    activityInp.disabled = false;
+    activityInp.value = "";
     refreshCustomers();
 
     // 2) Ocultar secciones de productos/tabla y limpiar filas
@@ -351,7 +368,8 @@ export async function renderCreateForm(container) {
     const err = validateHeader();
     if (err) return alert(err);
 
-    [programTypeSel, geoSel, countrySel, verticalSel, customerSel, startDayInp, endDayInp].forEach(el => el.disabled = true);
+    [programTypeSel, geoSel, countrySel, verticalSel, customerSel, startDayInp, endDayInp, activityInp]
+      .forEach(el => el.disabled = true);
 
     if (!programNumInp.value.trim()) {
       programNumInp.value = buildProgramNumber(programTypeSel.value, geoSel.value, startDayInp.value);
@@ -406,7 +424,8 @@ export async function renderCreateForm(container) {
       customer: customerSel.value,
       startDay: startDayInp.value,
       endDay: endDayInp.value || null,
-      programNumber: programNumInp.value
+      programNumber: programNumInp.value,
+      activity: activityInp.value?.trim() || null
     };
     const lines = Array.from(tbody.querySelectorAll("tr")).map(tr => ({
       pn: tr.dataset.pn || (getCell(tr, "pn")?.textContent ?? ""),
@@ -448,18 +467,17 @@ export async function renderCreateForm(container) {
       const saved = await res.json();
       alert(`Program saved with id ${saved.id}`);
 
-      // 👉 reset automático para crear otro programa
+      // reset automático para crear otro programa
       resetProgramForm();
     } catch (e) {
       alert(`Network error saving program`);
-      // console.error(e);
     }
   });
 
   /* ---------- Helpers de tabla + cálculo ---------- */
-function rowForProduct(p, programNumber) {
-  const tr = h("tr", { "data-pn": p.PN, style: "border-top:1px solid var(--card-border)" },
-     td(p.PN, { "data-col": "pn" }),
+  function rowForProduct(p, programNumber) {
+    const tr = h("tr", { "data-pn": p.PN, style: "border-top:1px solid var(--card-border)" },
+      td(p.PN, { "data-col": "pn" }),
       td(p.Description, { "data-col": "desc" }),
       tdInputNumber("rrp", 0, onAnyChange),
       tdInputNumber("promoRrp", 0, onAnyChange),
@@ -469,11 +487,10 @@ function rowForProduct(p, programNumber) {
       tdReadOnly("total", "0.00"),
       tdInputText("lineProgramNumber", programNumber),
       tdActionRemove()
-  );
-  return tr;
-  function onAnyChange(){ recalcRow(tr, countrySel); }
-}
-
+    );
+    return tr;
+    function onAnyChange(){ recalcRow(tr, countrySel); }
+  }
 
   function recalcRow(tr, countrySelRef) {
     const rrpInput    = getCell("input", tr, "rrp");

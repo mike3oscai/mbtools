@@ -265,3 +265,9 @@ input[type="number"]{ text-align: right; }
   min-width: 0;
   height: 44px;
 }
+
+.header-grid textarea.form-control {
+  min-height: 110px;
+  resize: vertical;
+  line-height: 1.35;
+}
