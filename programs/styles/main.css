@@ -1,30 +1,25 @@
-/* Page-specific styles for Programs (keeps shared card look) */
+/* ===================================================================
+   Programs (list/retrieve)
+   - Limpio, sin duplicados
+   - Header sticky plano y opaco
+   - KPIs superiores, subtotales por programa y pie sticky
+   =================================================================== */
 
-.back-link {
-  color: var(--accent);
-  text-decoration: none;
-}
+/* -------- Utilidades suaves de la vista -------- */
+.back-link { color: var(--accent); text-decoration: none; }
 
-.action-card h3 {
-  margin: .25rem 0 .35rem;
-  font-weight: 600;
-}
+.action-card h3 { margin: .25rem 0 .35rem; font-weight: 600; }
+.action-card p  { color: var(--muted); margin: 0 0 .75rem; }
 
-.action-card p {
-  color: var(--muted);
-  margin: 0 0 .75rem;
-}
-
-/* Subtle icon circle */
-.action-icon {
+.action-icon{
   width: 40px; height: 40px; border-radius: 999px;
   display: inline-flex; align-items: center; justify-content: center;
   border: 1px solid var(--card-border); background: var(--bg);
   margin-bottom: .75rem; font-size: 18px;
 }
 
-/* CTA button look */
-.action-cta {
+/* CTA genérico */
+.action-cta{
   display: inline-block;
   padding: .55rem .9rem;
   border-radius: 10px;
@@ -35,109 +30,82 @@
   font-weight: 600;
   transition: border-color .2s ease, transform .2s ease;
 }
-.card:hover .action-cta { border-color: var(--accent); transform: translateY(-1px); }
+.card:hover .action-cta{ border-color: var(--accent); transform: translateY(-1px); }
 
-/* ===== Retrieve Programs table ===== */
-.retrieve-table {
+/* -------- Tabla Retrieve Programs -------- */
+.retrieve-table{
+  width: 100%;
   border-collapse: separate;
   border-spacing: 0;
-  width: 100%;
-  font-size: 0.74rem;
+  font-size: 0.90rem;                 /* tamaño único y legible */
 }
 
-.retrieve-table thead th {
+/* Header sticky plano (sin sombras) y opaco */
+.retrieve-table thead th{
   position: sticky;
   top: 0;
-  z-index: 1;
-  background: var(--card);
+  z-index: 20;                        /* por encima de filas/subtotales */
+  background-color: var(--card);      /* opaco, coherente con el tema */
   color: var(--fg);
   text-align: left;
   font-weight: 600;
+  letter-spacing: .02em;
   padding: 10px 12px;
-  border-bottom: 1px solid var(--card-border);
+  border-bottom: 2px solid var(--card-border);
+  background-image: none;
+}
+html[data-theme="dark"] .retrieve-table thead th{
+  background-color: #0f1115;          /* ajusta si usas otro base en dark */
+  border-bottom-color: rgba(255,255,255,.12);
 }
 
-.retrieve-table tbody td {
+.retrieve-table tbody td{
   padding: 10px 12px;
   border-bottom: 1px solid var(--card-border);
   vertical-align: middle;
 }
 
-.retrieve-table .num {
+.retrieve-table .num{
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
 /* Alterna color por PROGRAMA (grupo) */
-.retrieve-table tbody tr.row-group-a td {
-  background: color-mix(in oklab, var(--card) 85%, var(--accent) 5%);
+.retrieve-table tbody tr.row-group-a td{
+  background: color-mix(in oklab, var(--card) 88%, var(--accent) 12%);
 }
-.retrieve-table tbody tr.row-group-b td {
-  background: color-mix(in oklab, var(--card) 90%, var(--accent) 10%);
+.retrieve-table tbody tr.row-group-b td{
+  background: color-mix(in oklab, var(--card) 92%, var(--accent) 8%);
 }
 
-/* Línea superior un poco más marcada al inicio de un grupo */
-.retrieve-table tbody tr.row-group-start td {
+/* Marca de inicio de grupo */
+.retrieve-table tbody tr.row-group-start td{
   border-top: 2px solid var(--card-border);
 }
 
-/* Hover sutil para la fila */
-.retrieve-table tbody tr:hover td {
-  filter: brightness(0.98);
-}
+/* Hover sutil */
+.retrieve-table tbody tr:hover td{ filter: brightness(.985); }
 
-/* Scroll suave dentro de la tarjeta */
-#listCard .scroll {
-  overflow: auto;
-  max-height: 70vh; /* opcional: cabecera sticky tiene sentido con altura */
-  border-radius: 12px;
-}
-
-/* ===== Retrieve Programs — KPIs + Subtotales + Totales sticky ===== */
-
-/* KPIs */
-.kpis {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14px;
-}
-@media (max-width: 900px){
-  .kpis { grid-template-columns: 1fr; }
-}
-.kpi {
-  background: color-mix(in oklab, var(--card) 90%, var(--accent) 10%);
-  border: 1px solid var(--card-border);
-  border-radius: 12px;
-  padding: 14px 16px;
-}
-.kpi-title {
-  font-size: .86rem;
-  color: var(--muted);
-  margin-bottom: 4px;
-}
-.kpi-value {
-  font-weight: 700;
-  font-size: 1.15rem;
-}
-
-/* Subtotal de grupo */
-.retrieve-table tr.subtotal td {
+/* Subtotal de programa */
+.retrieve-table tr.subtotal td{
   font-weight: 600;
   background: color-mix(in oklab, var(--card) 85%, var(--accent) 15%);
   border-top: 2px solid var(--card-border);
 }
-.retrieve-table tr.subtotal td.subtotal-label {
-  color: var(--muted);
-}
+.retrieve-table tr.subtotal td.subtotal-label{ color: var(--muted); }
 
-/* Pie sticky dentro del área con scroll */
-#listCard .scroll {
+/* Área scroll de la tarjeta de lista (para sticky header/pie) */
+#listCard .scroll{
   position: relative;
   overflow: auto;
-  max-height: 70vh; /* para que tenga sentido el sticky */
+  max-height: 70vh;                   /* da sentido al sticky */
   border-radius: 12px;
+  background: var(--card);            /* base sólida */
+  box-shadow: none;                   /* sin relieves */
 }
-.totals-sticky {
+
+/* Pie de totales “sticky” */
+.totals-sticky{
   position: sticky;
   bottom: 0;
   display: grid;
@@ -147,87 +115,32 @@
   padding: 10px 12px;
   background: var(--card);
   border-top: 1px solid var(--card-border);
-  box-shadow: 0 -8px 16px rgba(0,0,0,.03);
 }
 @media (max-width: 700px){
-  .totals-sticky { grid-template-columns: 1fr 1fr; }
+  .totals-sticky{ grid-template-columns: 1fr 1fr; }
 }
 
-/* (ya existentes) estilos de tabla */
-.retrieve-table {
-  border-collapse: separate;
-  border-spacing: 0;
-  width: 100%;
-  font-size: 0.94rem;
+/* -------- KPIs superiores -------- */
+.kpis{
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
 }
-.retrieve-table thead th {
-  position: sticky;
-  top: 0;
-  z-index: 1;
-  background: var(--card);
-  color: var(--fg);
-  text-align: left;
+@media (max-width: 900px){
+  .kpis{ grid-template-columns: 1fr; }
+}
+.kpi{
+  background: color-mix(in oklab, var(--card) 92%, var(--accent) 8%);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+.kpi-title{
+  font-size: .86rem;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+.kpi-value{
   font-weight: 700;
-  padding: 10px 12px;
-  border-bottom: 1px solid var(--card-border);
-}
-.retrieve-table tbody td {
-  padding: 10px 12px;
-  border-bottom: 1px solid var(--card-border);
-  vertical-align: middle;
-}
-.retrieve-table .num {
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-}
-
-/* colores alternos por programa (grupo) */
-.retrieve-table tbody tr.row-group-a td {
-  background: color-mix(in oklab, var(--card) 85%, var(--accent) 5%);
-}
-.retrieve-table tbody tr.row-group-b td {
-  background: color-mix(in oklab, var(--card) 90%, var(--accent) 10%);
-}
-.retrieve-table tbody tr.row-group-start td {
-  border-top: 2px solid var(--card-border);
-}
-.retrieve-table tbody tr:hover td { filter: brightness(0.98); }
-
-/* --- Sticky header totalmente opaco y por encima del contenido --- */
-#listCard .scroll {
-  /* asegura que el área de scroll tiene fondo sólido */
-  background: var(--card);
-}
-
-/* los <th> ya son sticky; les damos fondo sólido, z-index alto y sombra */
-.retrieve-table thead th {
-  position: sticky;
-  top: 0;
-  z-index: 5;                       /* por encima de filas y subtotales */
-  background: var(--card);          /* fondo opaco, no translucido */
-  box-shadow: 0 1px 0 var(--card-border),
-              0 6px 14px rgba(0,0,0,.04); /* separación visual del contenido */
-}
-
-/* --- Encabezado plano, sin sombras ni relieves --- */
-.retrieve-table thead th {
-  position: sticky;
-  top: 0;
-  z-index: 11;
-  background-color: var(--card); /* mantiene coherencia con el tema */
-  border-bottom: 2px solid var(--card-border); /* línea clara de separación */
-  box-shadow: none !important; /* elimina sombras */
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  background-image: none;
-}
-html[data-theme="dark"] .retrieve-table thead th {
-  background-color: #0f1115; /* o tu color base oscuro */
-  border-bottom-color: rgba(255,255,255,0.1);
-}
-
-/* elimina sombras del área de scroll */
-#listCard .scroll {
-  background: var(--card);
-  box-shadow: none;
+  font-size: 1.15rem;
 }
