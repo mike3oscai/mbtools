@@ -197,18 +197,20 @@ export async function renderRetrieve() {
         );
 
         // celda del icono info
-        const tdInfo = document.createElement("td");
-        if (activity) {
-          const dot = document.createElement("span");
-          dot.className = "info-dot";
-          dot.textContent = "i";
-          dot.title = activity;               // fallback nativo
-          dot.setAttribute("data-tip", activity); // tooltip CSS
-          tdInfo.append(dot);
-        } else {
-          tdInfo.textContent = "";
-        }
-        tr.append(tdInfo);
+        // celda del icono info
+const tdInfo = document.createElement("td");
+if (activity) {
+  const dot = document.createElement("span");
+  dot.className = "info-dot";
+  dot.textContent = "i";
+  // IMPORTANTE: sin title para que no aparezca el tooltip nativo
+  dot.setAttribute("data-tip", activity); // nuestro tooltip CSS
+  tdInfo.append(dot);
+} else {
+  tdInfo.textContent = "";
+}
+tr.append(tdInfo);
+
 
         rows.push(tr);
         first = false;
