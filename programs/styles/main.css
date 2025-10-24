@@ -236,29 +236,33 @@ html[data-theme="dark"] .totals-sticky{
   z-index: 50; /* por encima de celdas/encabezado */
 }
 
-/* Tooltip (debajo del icono) */
-.info-dot:hover::after{
+/* Tooltip (debajo del icono, altura y ancho automáticos) */
+.info-dot:hover::after {
   content: attr(data-tip);
-  position:absolute;
-  top: calc(100% + 8px);   /* DEBAJO del icono (antes se usaba bottom) */
+  position: absolute;
+  top: calc(100% + 8px);
   left: 50%;
   transform: translateX(-50%);
   background: rgba(20,22,28,.96);
   color: #fff;
   border-radius: 8px;
-  padding: 8px 10px;
-  max-width: 420px;
-  width: max-content;
-  max-height: auto;
-  white-space: pre-wrap;   /* respeta saltos de línea */
+  padding: 10px 12px;
+  max-width: 500px;           /* límite para evitar tooltips enormes en pantallas grandes */
+  width: auto;                /* se ajusta al texto */
+  min-width: 200px;           /* tamaño mínimo cómodo */
+  height: auto;               /* altura dinámica */
+  white-space: normal;        /* permite saltos de línea normales */
+  overflow-wrap: break-word;  /* rompe palabras largas */
   box-shadow: 0 10px 20px rgba(0,0,0,.25);
-  z-index: 2000;           /* MÁS que el thead sticky */
+  z-index: 2000;              /* por encima de sticky header */
+  line-height: 1.4;
+  font-size: 0.85rem;
 }
 
 /* Flecha del tooltip, apuntando hacia el icono */
-.info-dot:hover::before{
+.info-dot:hover::before {
   content: "";
-  position:absolute;
+  position: absolute;
   top: calc(100% + 2px);
   left: 50%;
   transform: translateX(-50%);
@@ -266,7 +270,3 @@ html[data-theme="dark"] .totals-sticky{
   border-bottom-color: rgba(20,22,28,.96);
   z-index: 2001;
 }
-
-
-
-
