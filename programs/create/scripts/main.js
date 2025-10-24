@@ -409,7 +409,7 @@ grid.append(
       programNumber: programNumInp.value,
       activity: activityInp.value.trim()   // <—— **AQUÍ VA EL COMENTARIO**
     };
-    const lines = Array.from(tbody.querySelectorAll("tr")).map(tr => ({
+    const lines = Array.from(tbody.querySelectorAll('tr[data-role="fields"]')).map(tr => ({
       pn: tr.dataset.pn || (getCell(tr, "pn")?.textContent ?? ""),
       description: getCell(tr, "desc")?.textContent ?? "",
       rrp: numVal(getCell("input", tr, "rrp")),
@@ -450,21 +450,56 @@ grid.append(
 
   /* ---------- Tabla helpers ---------- */
   function rowForProduct(p, programNumber) {
-    const tr = h("tr", { "data-pn": p.PN, style: "border-top:1px solid var(--card-border)" },
-      td(p.PN, { "data-col": "pn" }),
-      td(p.Description, { "data-col": "desc" }),
-      tdInputNumber("rrp", 0, onAnyChange),
-      tdInputNumber("promoRrp", 0, onAnyChange),
-      tdSelect("vat", ["Yes", "No"], "No", onAnyChange),
-      tdRebateCell(onAnyChange),
-      tdInputNumber("maxQty", 0, onAnyChange),
-      tdReadOnly("total", "0.00"),
-      tdInputText("lineProgramNumber", programNumber),
-      tdActionRemove()
-    );
-    return tr;
-    function onAnyChange(){ recalcRow(tr, countrySel); }
-  }
+  // --- FILA 1: resumen (PN + Description + Remove) ---
+  const trSummary = h("tr", {
+    "data-pn": p.PN,
+    "data-role": "summary",
+    className: "prod-summary"
+  },
+    // PN ocupa 2 columnas (PN + Description header)
+    h("td", { colSpan: 2, className: "pn-cell" }, p.PN),
+    // Descripción ocupa las siguientes 7 columnas
+    h("td", { colSpan: 7, className: "desc-cell" }, p.Description),
+    // Acción Remove (1 col)
+    h("td", { className: "actions-cell" }, (() => {
+      const btn = h("button", { type: "button", className: "action-cta sm" }, "Remove");
+      btn.addEventListener("click", () => {
+        const pn = p.PN;
+        tbody.querySelectorAll(`tr[data-pn="${pn}"]`).forEach(r => r.remove());
+        btnSaveProgram.disabled = tbody.querySelectorAll('tr[data-role="fields"]').length === 0;
+      });
+      return btn;
+    })())
+  );
+
+  // --- FILA 2: campos (todo lo que tenías antes) ---
+  const trFields = h("tr", {
+    "data-pn": p.PN,
+    "data-role": "fields",
+    className: "prod-fields"
+  },
+    // celda vacía para alinear debajo de resumen (PN + Description)
+    h("td", { colSpan: 2 }, ""),
+
+    // el resto igual que tu fila original
+    tdInputNumber("rrp", 0, onAnyChange),
+    tdInputNumber("promoRrp", 0, onAnyChange),
+    tdSelect("vat", ["Yes", "No"], "No", onAnyChange),
+    tdRebateCell(onAnyChange),
+    tdInputNumber("maxQty", 0, onAnyChange),
+    tdReadOnly("total", "0.00"),
+    tdInputText("lineProgramNumber", programNumber),
+    tdActionRemove() // botón Remove redundante (útil si quitas el de arriba)
+  );
+
+  function onAnyChange(){ recalcRow(trFields, countrySel); }
+
+  // devolvemos ambos TR para que los añadas juntos
+  const frag = document.createDocumentFragment();
+  frag.append(trSummary, trFields);
+  return frag;
+}
+
 
   function recalcRow(tr, countrySelRef) {
     const rrpInput    = getCell("input", tr, "rrp");
@@ -538,15 +573,24 @@ grid.append(
     if (onChange) sel.addEventListener("change", onChange);
     const cell = h("td", {}, sel); cell.dataset.col = col; return cell;
   }
-  function tdActionRemove(){
-    const btn = h("button", { type: "button", className: "action-cta" }, "Remove");
-    const cell = h("td", {}, btn);
-    btn.addEventListener("click", () => {
-      btn.closest("tr")?.remove();
-      btnSaveProgram.disabled = tbody.children.length === 0;
-    });
-    return cell;
-  }
+function tdActionRemove() {
+  const btn = h("button", { type: "button", className: "action-cta" }, "Remove");
+  const cell = h("td", {}, btn);
+
+  btn.addEventListener("click", () => {
+    const pn = btn.closest("tr")?.dataset.pn;
+    if (pn) {
+      // Elimina todas las filas del mismo producto (summary + fields)
+      tbody.querySelectorAll(`tr[data-pn="${pn}"]`).forEach(r => r.remove());
+    }
+
+    // Deshabilita el botón Save si ya no quedan productos
+    btnSaveProgram.disabled = tbody.querySelectorAll('tr[data-role="fields"]').length === 0;
+  });
+
+  return cell;
+}
+
 
   function numVal(node){
     if (!node) return 0;

@@ -96,6 +96,51 @@ input[disabled], select[disabled], textarea[disabled]{
   background:#f3f4f6; cursor:not-allowed;
 }
 
+/* ===========================
+   Selected products - 2 líneas
+   =========================== */
+#selectedProductsCard table { width: 100%; }
+
+#selectedProductsCard tbody tr.prod-summary td {
+  border-bottom: 0;
+  padding-top: 14px;
+  padding-bottom: 6px;
+}
+
+#selectedProductsCard tbody tr.prod-fields td {
+  padding-top: 6px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--card-border);
+}
+
+/* PN + Description en fila 1 */
+#selectedProductsCard .pn-cell {
+  font-weight: 700;
+  color: var(--fg);
+  white-space: nowrap;
+  width: 1%;
+}
+#selectedProductsCard .desc-cell {
+  color: var(--muted);
+}
+
+/* Botón a la derecha en fila 1 */
+#selectedProductsCard .actions-cell {
+  text-align: right;
+}
+#selectedProductsCard .action-cta.sm {
+  padding: .4rem .7rem;
+  font-size: .9rem;
+}
+
+/* Inputs compactos en fila 2 */
+#selectedProductsCard .prod-fields td .form-control {
+  min-width: 90px;
+}
+
+/* Cuando hay varios productos, separador visual ya viene por el border-bottom de .prod-fields */
+
+
 /* Responsivo */
 @media (max-width: 900px){
   .header-grid{
