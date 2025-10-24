@@ -122,7 +122,7 @@ html[data-theme="dark"] .totals-sticky{
 
   /* adapta ANCHO y ALTO al contenido */
   width:max-content;      /* se ajusta al texto */
-  max-width:520px;        /* límite de lectura */
+  max-width:320px;        /* límite de lectura */
   height:auto;            /* crece en vertical */
   white-space:normal;     /* permite saltos de línea */
   overflow-wrap:anywhere; /* rompe palabras largas */
