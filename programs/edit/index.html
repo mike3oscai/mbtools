@@ -4,12 +4,14 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Edit Program · MBTools</title>
-  <link rel="stylesheet" href="../../shared/styles/shared.css">
-  <link rel="stylesheet" href="./styles/main.css">
+
+  <!-- Usa rutas absolutas para evitar que fallen dentro de /programs/edit/ -->
+  <link rel="stylesheet" href="/shared/styles/shared.css">
+  <link rel="stylesheet" href="/programs/edit/styles/main.css">
 </head>
 <body>
   <header class="container">
-    <a href="../" class="back-link">← Back</a>
+    <a href="/programs/" class="back-link">← Back</a>
     <h1>Edit a Program</h1>
     <p class="subtitle">Find a program, open it, and reduce line quantities.</p>
   </header>
@@ -74,14 +76,15 @@
 
       <footer class="modal__footer">
         <button type="button" class="btn ghost" id="btnCancel">Cancel</button>
-        <button type="submit" class="btn primary" id="btnSave">Save changes</button>
+        <button type="submit" className="btn primary" id="btnSave">Save changes</button>
       </footer>
     </form>
   </dialog>
 
-  <script type="module" src="./scripts/main.js"></script>
+  <!-- Rutas ABSOLUTAS a tus módulos -->
+  <script type="module" src="/programs/edit/scripts/main.js"></script>
   <script type="module">
-    import { initThemeToggle } from "../../shared/scripts/theme.js";
+    import { initThemeToggle } from "/shared/scripts/theme.js";
     initThemeToggle();
   </script>
 </body>
