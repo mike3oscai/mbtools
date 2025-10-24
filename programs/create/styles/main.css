@@ -1,9 +1,13 @@
 /* /programs/create/styles/main.css */
 /* ============================================================
-   Create Program — Card layout
+   Create Program — Card layout (compatible con tu DOM actual)
+   Estructura JS esperada:
+   - form#program-form > .header-grid (label.form-label + .form-control)
+   - textarea#fld-activity
+   - .actions-row con botones
    ============================================================ */
 
-:root {
+:root{
   --border: var(--card-border, #e5e7eb);
   --fg: var(--fg, #111827);
   --muted: var(--muted, #6b7280);
@@ -11,199 +15,110 @@
   --bg: var(--bg, #ffffff);
 }
 
-/* === Estructura general === */
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 16px;
+/* Layout general */
+.container{ max-width:1200px; margin:0 auto; padding:16px; }
+.title{ font-size:1.5rem; font-weight:700; margin-bottom:8px; }
+.subtitle{ color:var(--muted); margin-bottom:24px; }
+
+/* Tarjeta */
+.card{
+  background:var(--bg);
+  border:1px solid var(--border);
+  border-radius:12px;
+  box-shadow:0 2px 6px rgba(0,0,0,.05);
+  padding:24px 28px;
 }
 
-.title {
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin-bottom: 8px;
+/* === GRID principal generado por tu JS === */
+.header-grid{
+  display:grid;
+  grid-template-columns: minmax(240px, 1fr) minmax(280px, 1fr); /* 2 cols */
+  column-gap:28px;
+  row-gap:16px;
+  align-items:center;
 }
 
-.subtitle {
-  color: var(--muted);
-  margin-bottom: 24px;
+/* Etiquetas y controles (tal y como los pinta tu JS) */
+.form-label{
+  font-weight:600;
+  font-size:.9rem;
+  color:var(--fg);
+  margin:0;          /* las colocamos en la columna izquierda */
+}
+.form-control{
+  width:100%;
+  padding:8px 10px;
+  font-size:.95rem;
+  border:1px solid var(--border);
+  border-radius:8px;
+  background:var(--bg);
+  color:var(--fg);
 }
 
-/* === Tarjeta principal del formulario === */
-.card {
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-  padding: 24px 28px;
+/* Campo “Describe this activity” a 2 columnas
+   Tu JS crea label[for="fld-activity"] seguido de #fld-activity */
+.header-grid label[for="fld-activity"],
+#fld-activity{
+  grid-column: 1 / -1;   /* ocupar las 2 columnas */
+}
+#fld-activity{
+  min-height:96px;
+  resize:vertical;
 }
 
-/* === Grid de campos === */
-.form-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px 28px;
-  margin-bottom: 24px;
+/* Botonera */
+.actions-row{
+  display:flex;
+  justify-content:flex-end;
+  gap:10px;
+  padding-top:16px;
+  border-top:1px solid var(--border);
+  margin-top:20px;
 }
 
-.form-grid label {
-  display: block;
-  font-weight: 600;
-  font-size: 0.9rem;
-  color: var(--fg);
-  margin-bottom: 6px;
+.btn{
+  padding:8px 14px;
+  border-radius:8px;
+  border:1px solid var(--border);
+  background:var(--bg);
+  color:var(--fg);
+  font-weight:600;
+  cursor:pointer;
+  transition:border-color .2s ease, transform .2s ease, opacity .2s ease;
+}
+.btn:hover{ border-color:var(--accent); transform:translateY(-1px); }
+.btn.primary{ background:var(--accent); border-color:var(--accent); color:#fff; }
+.btn.danger{ background:#dc2626; border-color:#dc2626; color:#fff; }
+.btn.primary:hover{ opacity:.9; }
+
+/* Inputs deshabilitados */
+input[disabled], select[disabled], textarea[disabled]{
+  background:#f3f4f6; cursor:not-allowed;
 }
 
-.form-grid input,
-.form-grid select,
-.form-grid textarea {
-  width: 100%;
-  padding: 8px 10px;
-  font-size: 0.95rem;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background: var(--bg);
-  color: var(--fg);
-}
-
-.form-grid textarea {
-  resize: vertical;
-  min-height: 80px;
-}
-
-/* === Campo "Describe this activity" que ocupa dos columnas === */
-.form-grid .full-width {
-  grid-column: span 2;
-}
-
-/* === Botones inferiores === */
-.actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  padding-top: 16px;
-  border-top: 1px solid var(--border);
-}
-
-.btn {
-  padding: 8px 14px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  background: var(--bg);
-  color: var(--fg);
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.btn:hover {
-  border-color: var(--accent);
-  transform: translateY(-1px);
-}
-
-.btn.primary {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: #fff;
-}
-
-.btn.danger {
-  background: #dc2626;
-  border-color: #dc2626;
-  color: #fff;
-}
-
-.btn.primary:hover {
-  opacity: 0.9;
-}
-
-/* === Responsivo === */
-@media (max-width: 900px) {
-  .form-grid {
-    grid-template-columns: 1fr;
+/* Responsivo */
+@media (max-width: 900px){
+  .header-grid{
+    grid-template-columns: 1fr;  /* 1 columna en móvil */
   }
-  .form-grid .full-width {
-    grid-column: span 1;
-  }
+  .form-label{ margin-top:6px; }
+  .actions-row{ justify-content:stretch; gap:8px; }
+  .btn{ flex:1 1 auto; }
 }
 
-/* === Inputs deshabilitados === */
-input[disabled],
-select[disabled],
-textarea[disabled] {
-  background: #f3f4f6;
-  cursor: not-allowed;
+/* (Opcional) tabla de líneas si la añades debajo del form */
+.lines-table{
+  width:100%; border-collapse:collapse; font-size:.9rem; margin-top:20px;
 }
+.lines-table th, .lines-table td{
+  border-bottom:1px solid var(--border); padding:8px 10px;
+}
+.lines-table th{ text-align:left; font-weight:600; background:#f9fafb; }
+.lines-table td.num{ text-align:right; font-variant-numeric:tabular-nums; }
 
-/* === Cabeceras internas === */
-h2.section-title {
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: var(--fg);
-  margin: 24px 0 12px;
-}
-
-/* === Tooltips o mensajes de ayuda === */
-.helper {
-  color: var(--muted);
-  font-size: 0.85rem;
-  margin-top: 4px;
-}
-
-/* === Tabla de líneas del programa (si se incluye debajo del form) === */
-.lines-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.9rem;
-  margin-top: 20px;
-}
-
-.lines-table th,
-.lines-table td {
-  border-bottom: 1px solid var(--border);
-  padding: 8px 10px;
-}
-
-.lines-table th {
-  text-align: left;
-  font-weight: 600;
-  background: #f9fafb;
-}
-
-.lines-table td.num {
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-}
-
-/* === Modal overlay (reutilizable) === */
-.modal {
-  border: none;
-  border-radius: 12px;
-  padding: 0;
-  width: min(580px, 95vw);
-}
-
-.modal::backdrop {
-  background: rgba(0,0,0,0.25);
-}
-
-.modal-body {
-  display: block;
-  padding: 20px;
-}
-
-.modal .actions {
-  border-top: 1px solid var(--border);
-  margin-top: 16px;
-  padding-top: 12px;
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-}
-
-/* === Mensajes de error o validación === */
-.error {
-  color: #dc2626;
-  font-size: 0.85rem;
-  margin-top: 4px;
-}
+/* Modal genérico por si tu JS lo usa */
+.modal{ border:none; border-radius:12px; padding:0; width:min(580px,95vw); }
+.modal::backdrop{ background:rgba(0,0,0,.25); }
+.modal-body{ display:block; padding:20px; }
+.modal .actions{ border-top:1px solid var(--border); margin-top:16px; padding-top:12px; display:flex; justify-content:flex-end; gap:8px; }
+.error{ color:#dc2626; font-size:.85rem; margin-top:4px; }
