@@ -1,91 +1,25 @@
+<!-- /programs/edit/index.html -->
 <!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Edit Program · MBTools</title>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>MBTools.app — Edit a Program</title>
 
-  <!-- Usa rutas absolutas para evitar que fallen dentro de /programs/edit/ -->
-  <link rel="stylesheet" href="/shared/styles/shared.css">
-  <link rel="stylesheet" href="/programs/edit/styles/main.css">
-</head>
-<body>
-  <header class="container">
-    <a href="/programs/" class="back-link">← Back</a>
-    <h1>Edit a Program</h1>
-    <p class="subtitle">Find a program, open it, and reduce line quantities.</p>
-  </header>
+    <!-- estilos del módulo edit -->
+    <link rel="stylesheet" href="/programs/edit/styles/main.css" />
 
-  <main class="container">
-    <section id="listCard" class="card">
-      <div class="card-head">
-        <div class="row">
-          <input id="q" class="form-control" placeholder="Search program number, geo, customer, PN, description…" />
-          <div class="spacer"></div>
-          <button id="btnRefresh" class="action-cta" type="button">Refresh</button>
-        </div>
-      </div>
-      <div class="scroll">
-        <div id="mount"></div>
-      </div>
-    </section>
-  </main>
+    <!-- (opcional) precarga del módulo compartido -->
+    <link rel="modulepreload" href="/shared/scripts/data.js" />
+  </head>
+  <body>
+    <header class="container"></header>
+    <main class="container grid">
+      <!-- aquí tu contenido -->
+    </main>
+    <footer class="container"></footer>
 
-  <!-- Modal -->
-  <dialog id="editDialog" class="modal">
-    <form method="dialog" class="modal__content" id="editForm">
-      <header class="modal__header">
-        <h3 id="dlgTitle">Edit Program</h3>
-      </header>
-
-      <section class="modal__body">
-        <div class="grid grid-2">
-          <div>
-            <div class="meta"><span>Program Number</span><strong id="metaProgramNumber">—</strong></div>
-            <div class="meta"><span>Type</span><strong id="metaType">—</strong></div>
-            <div class="meta"><span>Geo</span><strong id="metaGeo">—</strong></div>
-            <div class="meta"><span>Country</span><strong id="metaCountry">—</strong></div>
-          </div>
-          <div>
-            <div class="meta"><span>Vertical</span><strong id="metaVertical">—</strong></div>
-            <div class="meta"><span>Customer</span><strong id="metaCustomer">—</strong></div>
-            <div class="meta"><span>Start</span><strong id="metaStart">—</strong></div>
-            <div class="meta"><span>End</span><strong id="metaEnd">—</strong></div>
-          </div>
-        </div>
-
-        <h4 class="mt">Lines (Max Qty can only be reduced)</h4>
-        <div class="table-wrap">
-          <table class="edit-table" id="dlgLines">
-            <thead>
-              <tr>
-                <th>PN</th>
-                <th>Description</th>
-                <th class="num">RRP</th>
-                <th class="num">Promo RRP</th>
-                <th class="num">Rebate</th>
-                <th class="num">Total Program Rebate</th>
-                <th class="num">Current Max Qty</th>
-                <th class="num">New Max Qty</th>
-              </tr>
-            </thead>
-            <tbody><!-- rows injected --></tbody>
-          </table>
-        </div>
-      </section>
-
-      <footer class="modal__footer">
-        <button type="button" class="btn ghost" id="btnCancel">Cancel</button>
-        <button type="submit" className="btn primary" id="btnSave">Save changes</button>
-      </footer>
-    </form>
-  </dialog>
-
-  <!-- Rutas ABSOLUTAS a tus módulos -->
-  <script type="module" src="/programs/edit/scripts/main.js"></script>
-  <script type="module">
-    import { initThemeToggle } from "/shared/scripts/theme.js";
-    initThemeToggle();
-  </script>
-</body>
+    <!-- 👇 SOLO este script: tu “entry point” -->
+    <script type="module" src="/programs/edit/scripts/main.js"></script>
+  </body>
 </html>

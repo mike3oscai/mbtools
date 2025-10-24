@@ -1,6 +1,7 @@
-// Edit Programs — table + modal. All DOM is built here.
+// /programs/edit/scripts/main.js
+import { loadCustomerSet, loadProductSet, loadVatSet } from "/shared/scripts/data.js";
 
-import { loadCustomerSet } from "../../shared/scripts/data.js";
+// …tu código de edición…
 
 const COLS = [
   "Program Number","Type","Geo","Country","Vertical","Customer",
