@@ -162,12 +162,35 @@ function openEditModal(program, line) {
       alert(`Quantity must be a number between 0 and ${current}.`);
       return;
     }
-    // Guardar: sobrescribir línea con la nueva cantidad (no incrementos)
     try {
-      const newLine = { ...line, maxQty: v };
-      await saveProgramWithLine(program, newLine);
-      line.maxQty = v; // refleja en memoria
-      renderList();    // refresca tabla
+      // Construye el set de líneas con la cantidad actualizada (solo esa línea)
+      const updatedLine = { ...line, maxQty: v };
+      const lines = (program.lines || []).map(ln => {
+        const same = (ln.pn ?? ln.PN) === (updatedLine.pn ?? updatedLine.PN);
+        const src = same ? updatedLine : ln;
+        return {
+          pn: src.pn ?? src.PN ?? "",
+          description: src.description ?? "",
+          rrp: Number(src.rrp) || 0,
+          promoRrp: Number(src.promoRrp) || 0,
+          vatOnRrp: src.vatOnRrp ?? "No",
+          rebate: Number(src.rebate) || 0,
+          maxQty: Number(src.maxQty) || 0,
+          totalProgramRebate: Number(src.totalProgramRebate) || 0,
+          programNumber: src.lineProgramNumber ?? program.programNumber
+        };
+      });
+
+      // Guarda (modo update) — el backend valida que no aumentes maxQty
+      await saveChanges(program.id, lines);
+
+      // Refresca memoria y UI
+      line.maxQty = v;
+      program.lines = program.lines.map(ln => {
+        if ((ln.pn ?? ln.PN) === (updatedLine.pn ?? updatedLine.PN)) return { ...ln, maxQty: v };
+        return ln;
+      });
+      renderList();
       modalEl.close();
     } catch (e) {
       alert("Error saving changes.");
@@ -188,52 +211,22 @@ function openEditModal(program, line) {
   modalEl.showModal();
 }
 
-async function saveProgramWithLine(program, updatedLine) {
-  // construye payload igual que en “create”, pero reemplazando solo esa línea
-  const id = program.id;
-  const header = {
-    programType: program.programType,
-    geo: program.geo,
-    country: program.country,
-    vertical: program.vertical,
-    customer: program.customer,
-    startDay: program.startDay,
-    endDay: program.endDay || null,
-    programNumber: program.programNumber,
-    activity: program.activity ?? null
-  };
-  const lines = (program.lines || []).map(ln => {
-    const isSame = (ln.pn ?? ln.PN) === (updatedLine.pn ?? updatedLine.PN);
-    const src = isSame ? updatedLine : ln;
-    return {
-      pn: src.pn ?? src.PN ?? "",
-      description: src.description ?? "",
-      rrp: Number(src.rrp) || 0,
-      promoRrp: Number(src.promoRrp) || 0,
-      vatOnRrp: src.vatOnRrp ?? "No",
-      rebate: Number(src.rebate) || 0,
-      maxQty: Number(src.maxQty) || 0,
-      totalProgramRebate: Number(src.totalProgramRebate) || 0,
-      programNumber: src.lineProgramNumber ?? program.programNumber
-    };
-  });
-
-  // usamos el mismo endpoint POST que ya tienes (sobrescribe por id)
-  const body = {
-    id,
-    createdAt: program.createdAt ?? new Date().toISOString(),
-    header,
-    lines
-  };
+// === Nueva: guardar en modo UPDATE (solo id + lines) ===
+async function saveChanges(programId, lines) {
   const res = await fetch("/api/programs", {
     method: "POST",
     headers: { "content-type": "application/json" },
-    body: JSON.stringify(body)
+    body: JSON.stringify({
+      mode: "update",
+      id: programId,
+      lines
+    })
   });
   if (!res.ok) {
-    const err = await res.json().catch(()=> ({}));
+    const err = await res.json().catch(() => ({}));
     throw new Error(err.error || res.statusText);
   }
+  return await res.json();
 }
 
 // ---- Boot
