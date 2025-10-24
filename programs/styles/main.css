@@ -236,37 +236,38 @@ html[data-theme="dark"] .totals-sticky{
   z-index: 50; /* por encima de celdas/encabezado */
 }
 
-/* Tooltip (debajo del icono, altura y ancho automáticos) */
+/* Tooltip (sobrio, sin sombras, altura y ancho automáticos) */
 .info-dot:hover::after {
   content: attr(data-tip);
   position: absolute;
-  top: calc(100% + 8px);
+  top: calc(100% + 6px);       /* justo debajo del icono */
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(20,22,28,.96);
+  background: #1c1e23;         /* fondo oscuro neutro */
   color: #fff;
-  border-radius: 8px;
-  padding: 10px 12px;
-  max-width: 500px;           /* límite para evitar tooltips enormes en pantallas grandes */
-  width: auto;                /* se ajusta al texto */
-  min-width: 200px;           /* tamaño mínimo cómodo */
-  height: auto;               /* altura dinámica */
-  white-space: normal;        /* permite saltos de línea normales */
-  overflow-wrap: break-word;  /* rompe palabras largas */
-  box-shadow: 0 10px 20px rgba(0,0,0,.25);
-  z-index: 2000;              /* por encima de sticky header */
+  border-radius: 6px;
+  padding: 8px 10px;
+  display: block;
+  width: max-content;          /* se adapta al texto */
+  max-width: 500px;            /* límite visual */
+  height: auto;                /* se ajusta al alto del contenido */
+  white-space: normal;         /* permite saltos de línea */
+  overflow-wrap: anywhere;     /* rompe palabras largas */
   line-height: 1.4;
   font-size: 0.85rem;
+  z-index: 3000;
+  text-align: left;
+  box-shadow: none;            /* sin sombras */
 }
 
-/* Flecha del tooltip, apuntando hacia el icono */
+/* Flecha del tooltip minimalista */
 .info-dot:hover::before {
   content: "";
   position: absolute;
-  top: calc(100% + 2px);
+  top: 100%;
   left: 50%;
   transform: translateX(-50%);
-  border: 6px solid transparent;
-  border-bottom-color: rgba(20,22,28,.96);
-  z-index: 2001;
+  border: 5px solid transparent;
+  border-bottom-color: #1c1e23; /* color del fondo */
+  z-index: 3001;
 }
