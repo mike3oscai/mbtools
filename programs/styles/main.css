@@ -1,273 +1,142 @@
 /* ===================================================================
    Programs (list/retrieve)
-   - Limpio, sin duplicados
    - Header sticky plano y opaco
-   - KPIs superiores, subtotales por programa y pie sticky
+   - KPIs, subtotales y pie sticky
+   - Tooltip de Activity sobrio, sin sombras y con altura auto
    =================================================================== */
 
-:root {
-  --header-bg-light: #ffffff;
-  --header-bg-dark: #0f1115;
+:root{
+  --header-bg-light:#ffffff;
+  --header-bg-dark:#0f1115;
 }
 
-/* -------- Utilidades suaves de la vista -------- */
-.back-link { color: var(--accent); text-decoration: none; }
-
-.action-card h3 { margin: .25rem 0 .35rem; font-weight: 600; }
-.action-card p  { color: var(--muted); margin: 0 0 .75rem; }
+/* -------- utilidades ligeras -------- */
+.back-link{ color:var(--accent); text-decoration:none; }
+.action-card h3{ margin:.25rem 0 .35rem; font-weight:600; }
+.action-card p{ color:var(--muted); margin:0 0 .75rem; }
 
 .action-icon{
-  width: 40px; height: 40px; border-radius: 999px;
-  display: inline-flex; align-items: center; justify-content: center;
-  border: 1px solid var(--card-border); background: var(--bg);
-  margin-bottom: .75rem; font-size: 18px;
+  width:40px;height:40px;border-radius:999px;
+  display:inline-flex;align-items:center;justify-content:center;
+  border:1px solid var(--card-border);background:var(--bg);
+  margin-bottom:.75rem;font-size:18px;
 }
-
-/* CTA genérico */
 .action-cta{
-  display: inline-block;
-  padding: .55rem .9rem;
-  border-radius: 10px;
-  border: 1px solid var(--card-border);
-  background: var(--bg);
-  color: var(--fg);
-  text-decoration: none;
-  font-weight: 600;
-  transition: border-color .2s ease, transform .2s ease;
+  display:inline-block;padding:.55rem .9rem;border-radius:10px;
+  border:1px solid var(--card-border);background:var(--bg);color:var(--fg);
+  text-decoration:none;font-weight:600;transition:border-color .2s,transform .2s;
 }
-.card:hover .action-cta{ border-color: var(--accent); transform: translateY(-1px); }
+.card:hover .action-cta{ border-color:var(--accent); transform:translateY(-1px); }
 
-/* -------- Tabla Retrieve Programs -------- */
+/* -------- tabla -------- */
 .retrieve-table{
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  font-size: 0.90rem;                 /* tamaño único y legible */
+  width:100%; border-collapse:separate; border-spacing:0;
+  font-size:.90rem;
 }
 
-/* Header sticky plano (sin sombras) y opaco */
+/* header sticky plano y opaco */
 .retrieve-table thead th{
-  position: sticky;
-  top: 0;
-  z-index: 20;                        /* por encima de filas/subtotales */
-  background-color: var(--header-bg-light);      /* opaco, coherente con el tema */
-  color: var(--fg);
-  text-align: left;
-  font-weight: 600;
-  letter-spacing: .02em;
-  padding: 10px 12px;
-  border-bottom: 2px solid var(--card-border);
-  background-image: none;
+  position:sticky; top:0; z-index:20;
+  background-color:var(--header-bg-light); color:var(--fg);
+  text-align:left; font-weight:600; letter-spacing:.02em;
+  padding:10px 12px; border-bottom:2px solid var(--card-border);
+  background-image:none; background-clip:padding-box;
 }
 html[data-theme="dark"] .retrieve-table thead th{
-  background-color: var(--header-bg-dark);          /* ajusta si usas otro base en dark */
-  border-bottom-color: rgba(255,255,255,.12);
+  background-color:var(--header-bg-dark);
+  border-bottom-color:rgba(255,255,255,.12);
 }
-
-.retrieve-table thead th {
-  background-clip: padding-box;
-}
-
 
 .retrieve-table tbody td{
-  padding: 10px 12px;
-  border-bottom: 1px solid var(--card-border);
-  vertical-align: middle;
+  padding:10px 12px; border-bottom:1px solid var(--card-border);
+  vertical-align:middle;
 }
+.retrieve-table .num{ text-align:right; font-variant-numeric:tabular-nums; }
 
-.retrieve-table .num{
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-}
-
-/* Alterna color por PROGRAMA (grupo) */
+/* alternancia por programa */
 .retrieve-table tbody tr.row-group-a td{
-  background: color-mix(in oklab, var(--card) 88%, var(--accent) 12%);
+  background:color-mix(in oklab, var(--card) 88%, var(--accent) 12%);
 }
 .retrieve-table tbody tr.row-group-b td{
-  background: color-mix(in oklab, var(--card) 92%, var(--accent) 8%);
+  background:color-mix(in oklab, var(--card) 92%, var(--accent) 8%);
 }
+.retrieve-table tbody tr.row-group-start td{ border-top:2px solid var(--card-border); }
+.retrieve-table tbody tr:hover td{ filter:brightness(.985); }
 
-/* Marca de inicio de grupo */
-.retrieve-table tbody tr.row-group-start td{
-  border-top: 2px solid var(--card-border);
-}
-
-/* Hover sutil */
-.retrieve-table tbody tr:hover td{ filter: brightness(.985); }
-
-/* Subtotal de programa */
+/* subtotal */
 .retrieve-table tr.subtotal td{
-  font-weight: 600;
-  background: color-mix(in oklab, var(--card) 85%, var(--accent) 15%);
-  border-top: 2px solid var(--card-border);
+  font-weight:600;
+  background:color-mix(in oklab, var(--card) 85%, var(--accent) 15%);
+  border-top:2px solid var(--card-border);
 }
-.retrieve-table tr.subtotal td.subtotal-label{ color: var(--muted); }
+.retrieve-table tr.subtotal td.subtotal-label{ color:var(--muted); }
 
-/* Área scroll de la tarjeta de lista (para sticky header/pie) */
-#listCard .scroll{
-  position: relative;
-  overflow: auto;
-  max-height: 70vh;                   /* da sentido al sticky */
-  border-radius: 12px;
-  background: var(--card);            /* base sólida */
-  box-shadow: none;                   /* sin relieves */
-}
-
-/* Pie de totales “sticky” */
+/* pie “sticky” dentro de la tarjeta */
 .totals-sticky{
-  position: sticky;
-  bottom: 0;
-  display: grid;
-  grid-template-columns: repeat(4, auto);
-  gap: 18px;
-  align-items: center;
-  padding: 10px 12px;
-  background: var(--header-bg-light);
-  border-top: 1px solid var(--card-border);
+  position:sticky; bottom:0; display:grid;
+  grid-template-columns:repeat(4,auto); gap:18px; align-items:center;
+  padding:10px 12px; background:var(--header-bg-light);
+  border-top:1px solid var(--card-border);
 }
-
 html[data-theme="dark"] .totals-sticky{
-  background-color: var(--header-bg-dark);          /* ajusta si usas otro base en dark */
-  border-bottom-color: rgba(255,255,255,.12);
+  background-color:var(--header-bg-dark);
+  border-bottom-color:rgba(255,255,255,.12);
 }
+@media (max-width:700px){ .totals-sticky{ grid-template-columns:1fr 1fr; } }
 
-@media (max-width: 700px){
-  .totals-sticky{ grid-template-columns: 1fr 1fr; }
-}
-
-/* -------- KPIs superiores -------- */
-.kpis{
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14px;
-}
-@media (max-width: 900px){
-  .kpis{ grid-template-columns: 1fr; }
-}
-.kpi{
-  background: color-mix(in oklab, var(--card) 92%, var(--accent) 8%);
-  border: 1px solid var(--card-border);
-  border-radius: 12px;
-  padding: 14px 16px;
-}
-.kpi-title{
-  font-size: .86rem;
-  color: var(--muted);
-  margin-bottom: 4px;
-}
-.kpi-value{
-  font-weight: 700;
-  font-size: 1.15rem;
-}
-
-/* Icono de información al final de cada fila */
-.info-dot{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  width:18px; height:18px;
-  border-radius:999px;
-  border:1px solid var(--card-border);
-  font-size:11px;
-  line-height:1;
-  color: var(--muted);
-  background: var(--card);
-  cursor: default;
-  position: relative;
-}
-
-/* Tooltip bonito (soporta saltos de línea si hay párrafos largos) */
-.info-dot:hover::after{
-  content: attr(data-tip);
-  position:absolute;
-  bottom: calc(100% + 8px);
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(20,22,28,.95);
-  color: #fff;
-  border-radius: 8px;
-  padding: 8px 10px;
-  max-width: 420px;
-  width: max-content;
-  white-space: pre-wrap;
-  box-shadow: 0 10px 20px rgba(0,0,0,.25);
-  z-index: 40;
-}
-
-/* pequeña “flecha” del tooltip */
-.info-dot:hover::before{
-  content: "";
-  position:absolute;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  border: 6px solid transparent;
-  border-top-color: rgba(20,22,28,.95);
-}
-
-/* Columna del icono angosta (última columna) */
+/* columna final estrecha (icono) */
 .retrieve-table thead th:last-child,
 .retrieve-table tbody td:last-child{
-  width: 40px;
-  text-align: center;
+  width:40px; text-align:center;
 }
 
-/* Desactivar el scroll interno de la tarjeta Retrieve */
-#listCard .scroll {
-  overflow: visible !important;
-  max-height: none !important;
-}
+/* *** IMPORTANTE ***:
+   desactivamos cualquier scroll interno para que NADA recorte el tooltip */
+#listCard .scroll{ overflow:visible!important; max-height:none!important; }
 
-/* Icono de información al final de cada fila */
+/* -------- Icono “i” y tooltip (Activity) -------- */
+
+/* icono */
 .info-dot{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  width:18px; height:18px;
-  border-radius:999px;
+  display:inline-flex; align-items:center; justify-content:center;
+  width:18px; height:18px; border-radius:999px;
   border:1px solid var(--card-border);
-  font-size:11px;
-  line-height:1;
-  color: var(--muted);
-  background: var(--card);
-  cursor: default;
-  position: relative;
-  z-index: 50; /* por encima de celdas/encabezado */
+  font-size:11px; line-height:1; color:var(--muted);
+  background:var(--card);
+  cursor:default; position:relative;
+  z-index:50; /* por encima de celdas/encabezado */
 }
 
-/* Tooltip (sobrio, sin sombras, altura y ancho automáticos) */
-.info-dot:hover::after {
-  content: attr(data-tip);
-  position: absolute;
-  top: calc(100% + 6px);       /* justo debajo del icono */
-  left: 50%;
-  transform: translateX(-50%);
-  background: #1c1e23;         /* fondo oscuro neutro */
-  color: #fff;
-  border-radius: 6px;
-  padding: 8px 10px;
-  display: block;
-  width: max-content;          /* se adapta al texto */
-  max-width: 500px;            /* límite visual */
-  height: auto;                /* se ajusta al alto del contenido */
-  white-space: normal;         /* permite saltos de línea */
-  overflow-wrap: anywhere;     /* rompe palabras largas */
-  line-height: 1.4;
-  font-size: 0.85rem;
-  z-index: 3000;
-  text-align: left;
-  box-shadow: none;            /* sin sombras */
+/* tooltip sobrio, SIN sombras, altura auto y ajuste al texto */
+.info-dot:hover::after{
+  content:attr(data-tip);
+  position:absolute;
+  top:calc(100% + 6px);                 /* debajo del icono */
+  left:50%; transform:translateX(-50%);
+  display:block;
+
+  /* caja */
+  background:#1c1e23; color:#fff;
+  border-radius:6px; padding:8px 10px;
+  text-align:left; line-height:1.4; font-size:.85rem;
+
+  /* adapta ANCHO y ALTO al contenido */
+  width:max-content;      /* se ajusta al texto */
+  max-width:520px;        /* límite de lectura */
+  height:auto;            /* crece en vertical */
+  white-space:normal;     /* permite saltos de línea */
+  overflow-wrap:anywhere; /* rompe palabras largas */
+  box-shadow:none;        /* app seria: sin sombras */
+
+  /* por encima de cualquier cosa sticky */
+  z-index:3000;
 }
 
-/* Flecha del tooltip minimalista */
-.info-dot:hover::before {
-  content: "";
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  border: 5px solid transparent;
-  border-bottom-color: #1c1e23; /* color del fondo */
-  z-index: 3001;
+/* pequeña flecha */
+.info-dot:hover::before{
+  content:"";
+  position:absolute; top:100%; left:50%; transform:translateX(-50%);
+  border:5px solid transparent;
+  border-bottom-color:#1c1e23;
+  z-index:3001;
 }

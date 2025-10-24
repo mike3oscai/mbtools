@@ -203,13 +203,14 @@ if (activity) {
   const dot = document.createElement("span");
   dot.className = "info-dot";
   dot.textContent = "i";
-  // IMPORTANTE: sin title para que no aparezca el tooltip nativo
-  dot.setAttribute("data-tip", activity); // nuestro tooltip CSS
+  // nada de title -> evita el tooltip nativo del navegador
+  dot.setAttribute("data-tip", activity);
   tdInfo.append(dot);
 } else {
   tdInfo.textContent = "";
 }
 tr.append(tdInfo);
+
 
 
         rows.push(tr);
