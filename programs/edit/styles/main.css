@@ -1,108 +1,213 @@
 /* ===================================================================
-   Programs (edit/list)
-   - Mismo lenguaje visual que retrieve
-   - Header sticky plano y opaco
-   - Toolbar simple y modal de edición
+   Programs › Edit (lista + modal)
+   Estilos auto-contenidos, alineados con la vista "Retrieve"
    =================================================================== */
 
 :root{
-  --header-bg-light:#ffffff;
-  --header-bg-dark:#0f1115;
+  --card: #fff;
+  --bg: #f6f7fb;
+  --fg: #1f2430;
+  --muted: #6b7280;
+  --accent: #3b82f6;
+  --accent-700: #2563eb;
+  --card-border: rgba(0,0,0,.08);
 }
 
-/* -------- utilidades ligeras -------- */
-.title{ font-size:28px; font-weight:800; margin:6px 0 4px; }
-.subtitle{ color:var(--muted); margin:0 0 14px; }
+html[data-theme="dark"]{
+  --card:#0f1115;
+  --bg:#0b0d12;
+  --fg:#e5e7eb;
+  --muted:#9aa3b2;
+  --accent:#60a5fa;
+  --accent-700:#3b82f6;
+  --card-border: rgba(255,255,255,.10);
+}
 
+/* ----- layout contenedores ----- */
+body{
+  background:var(--bg);
+  color:var(--fg);
+  font: 14px/1.45 system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
+}
+.container{
+  max-width: 1100px;
+  margin: 28px auto;
+  padding: 0 16px;
+}
+
+/* ----- cabecera de página ----- */
+.title{
+  font-size: 28px;
+  line-height: 1.2;
+  margin: 6px 0 4px;
+  font-weight: 800;
+}
+.subtitle{
+  margin: 0 0 14px;
+  color: var(--muted);
+}
+
+/* ----- toolbar (buscador + refrescar) ----- */
 .toolbar{
-  display:flex; gap:10px; align-items:center; margin:12px 0 16px;
+  display:flex;
+  gap:10px;
+  align-items:center;
+  margin: 12px 0 16px;
 }
 .inp{
-  flex:1 1 460px; height:36px; padding:0 12px;
-  border:1px solid var(--card-border); border-radius:10px;
-  background:var(--card); color:var(--fg); outline:none;
+  flex:1 1 460px;
+  height:36px;
+  padding: 0 12px;
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  background: var(--card);
+  color: var(--fg);
+  outline: none;
 }
-.inp:focus{ border-color:var(--accent); }
+.inp:focus{ border-color: var(--accent); }
+
 .btn{
-  height:36px; padding:0 12px; border-radius:10px;
-  border:1px solid var(--card-border); background:var(--bg); color:var(--fg);
-  cursor:pointer; font-weight:600;
+  height:36px;
+  padding: 0 12px;
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  background: var(--card);
+  color: var(--fg);
+  cursor: pointer;
 }
-.btn.primary{ background:var(--accent); border-color:var(--accent); color:#fff; }
-.btn:hover{ filter:brightness(.985); }
+.btn.primary{
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+.btn:hover{ filter: brightness(0.98); }
 
-/* -------- tabla (mismo estilo que .retrieve-table) -------- */
+/* ----- tabla de edición (alineada con retrieve-table) ----- */
 .edit-table{
-  width:100%;
-  border-collapse:separate; border-spacing:0;
-  font-size:.90rem;
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.92rem;
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--card);
+  border: 1px solid var(--card-border);
 }
 
-/* header sticky plano y opaco */
 .edit-table thead th{
-  position:sticky; top:0; z-index:20;
-  background-color:var(--header-bg-light); color:var(--fg);
-  text-align:left; font-weight:600; letter-spacing:.02em;
-  padding:10px 12px; border-bottom:2px solid var(--card-border);
-  background-image:none; background-clip:padding-box;
-}
-html[data-theme="dark"] .edit-table thead th{
-  background-color:var(--header-bg-dark);
-  border-bottom-color:rgba(255,255,255,.12);
+  position: sticky;
+  top: 0;                /* se pega si hay mucho contenido */
+  z-index: 2;
+  text-align: left;
+  background: var(--card);
+  color: var(--fg);
+  padding: 11px 12px;
+  border-bottom: 2px solid var(--card-border);
+  font-weight: 700;
+  letter-spacing: .02em;
 }
 
 .edit-table tbody td{
-  padding:10px 12px; border-bottom:1px solid var(--card-border);
-  vertical-align:middle; background:var(--card);
+  padding: 11px 12px;
+  border-bottom: 1px solid var(--card-border);
+  vertical-align: middle;
+  background: var(--card);
 }
-.edit-table .num{ text-align:right; font-variant-numeric:tabular-nums; }
-.edit-table tbody tr:hover td{ filter:brightness(.985); }
 
-/* columna final estrecha (icono) */
+.edit-table tbody tr:hover td{
+  filter: brightness(.985);
+}
+
+.edit-table .num{ 
+  text-align:right; 
+  font-variant-numeric: tabular-nums;
+}
+.edit-table .center{ text-align:center; }
+
+/* última columna estrecha (icono lápiz) */
 .edit-table thead th:last-child,
 .edit-table tbody td:last-child{
-  width:40px; text-align:center;
+  width: 42px;
+  text-align: center;
 }
 
 /* botón de icono (lápiz) */
 .icon-btn{
-  width:28px; height:28px; border-radius:999px;
-  border:1px solid var(--card-border); background:var(--card); color:var(--muted);
-  font-size:14px; line-height:1; display:inline-flex; align-items:center; justify-content:center;
-  cursor:pointer;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  border: 1px solid var(--card-border);
+  background: var(--card);
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center; justify-content: center;
+  cursor: pointer;
 }
-.icon-btn:hover{ border-color:var(--accent); color:var(--accent); }
+.icon-btn:hover{
+  border-color: var(--accent);
+  color: var(--accent-700);
+}
 
-/* -------- modal de edición (reducir qty) -------- */
+/* ----- modal de edición (reducir qty) ----- */
 .modal{
-  border:1px solid var(--card-border); border-radius:14px;
-  background:var(--card); color:var(--fg); padding:0; max-width:560px;
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  padding: 0;
+  background: var(--card);
+  color: var(--fg);
+  max-width: 560px;
 }
-.modal::backdrop{ background:rgba(0,0,0,.35); }
+.modal::backdrop{
+  background: rgba(0,0,0,.35);
+}
 
 .modal-body{
-  padding:16px; display:grid; gap:12px;
-  grid-template-columns:1fr;
+  padding: 16px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
 }
-.modal-body h2{ margin:0 0 4px; font-size:18px; }
-.modal-info{ display:grid; gap:4px; color:var(--muted); }
-.modal .lbl{ font-weight:600; }
+.modal-body h2{
+  margin: 0 0 4px;
+  font-size: 18px;
+}
+.modal-info{
+  display: grid;
+  gap: 4px;
+  color: var(--muted);
+}
+.modal .lbl{
+  font-weight: 600;
+}
 .modal .actions{
-  display:flex; gap:10px; justify-content:flex-end; padding-top:6px;
-  border-top:1px solid var(--card-border);
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  padding-top: 6px;
+  border-top: 1px solid var(--card-border);
 }
-.modal .inp{ width:150px; text-align:right; }
 
-/* -------- tarjetas suaves (si envuelves tabla) -------- */
+/* inputs dentro del modal */
+.modal .inp{
+  width: 150px;
+  text-align: right;
+}
+
+/* estado "muted" reutilizable */
+.muted{ color: var(--muted); }
+
+/* ----- tarjetas suaves (por si se quiere envolver la tabla) ----- */
 .card{
-  background:var(--card);
-  border:1px solid var(--card-border);
-  border-radius:14px;
-  padding:14px;
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  padding: 14px;
 }
 
-/* ------- responsive suave ------- */
-@media (max-width:920px){
-  .edit-table{ font-size:.88rem; }
-  .toolbar{ flex-wrap:wrap; }
+/* responsive suave */
+@media (max-width: 920px){
+  .edit-table{ font-size: .9rem; }
+  .toolbar{ flex-wrap: wrap; }
 }
