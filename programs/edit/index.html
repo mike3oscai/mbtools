@@ -4,22 +4,16 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>MBTools.app — Edit a Program</title>
+    <title>MBTools.app — Edit Program</title>
 
-    <!-- estilos del módulo edit -->
     <link rel="stylesheet" href="/programs/edit/styles/main.css" />
-
-    <!-- (opcional) precarga del módulo compartido -->
     <link rel="modulepreload" href="/shared/scripts/data.js" />
   </head>
   <body>
-    <header class="container"></header>
-    <main class="container grid">
-      <!-- aquí tu contenido -->
-    </main>
-    <footer class="container"></footer>
+    <header class="container" id="header"></header>
+    <main class="container" id="app"></main>
+    <footer class="container" id="footer"></footer>
 
-    <!-- 👇 SOLO este script: tu “entry point” -->
     <script type="module" src="/programs/edit/scripts/main.js"></script>
   </body>
 </html>

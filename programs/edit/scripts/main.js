@@ -1,239 +1,253 @@
 // /programs/edit/scripts/main.js
-import { loadCustomerSet, loadProductSet, loadVatSet } from "/shared/scripts/data.js";
+import { loadCustomerSet } from "/shared/scripts/data.js"; // reutilizamos shared
 
-// …tu código de edición…
-
-const COLS = [
-  "Program Number","Type","Geo","Country","Vertical","Customer",
-  "Start","End","PN","Description","RRP","Promo RRP","Rebate","Max Qty","Total Program Rebate",""
-];
-const IDX_MAXQTY = 13;
-
-const $ = (s, r=document) => r.querySelector(s);
-const h = (t, p={}, ...kids) => {
-  const el = Object.assign(document.createElement(t), p);
+function h(tag, props = {}, ...kids) {
+  const el = Object.assign(document.createElement(tag), props);
   for (const k of kids.flat()) el.append(k?.nodeType ? k : document.createTextNode(k ?? ""));
   return el;
-};
+}
 
+// ---- Construcción UI (toolbar + tabla) ----
+const app = document.getElementById("app");
+
+// Toolbar
+const q = h("input", {
+  id: "q",
+  className: "inp",
+  type: "search",
+  placeholder: "Search program/customer/PN…",
+});
+const btnRefresh = h("button", { id: "btnRefresh", className: "btn" }, "Refresh");
+const toolbar = h("div", { className: "toolbar" }, q, btnRefresh);
+
+// Tabla
+const table = h("table", { className: "edit-table", id: "tblEdit" });
+const thead = h(
+  "thead",
+  {},
+  h(
+    "tr",
+    {},
+    ...[
+      "Program Number",
+      "Type",
+      "Geo",
+      "Country",
+      "Vertical",
+      "Customer",
+      "Start",
+      "End",
+      "PN",
+      "Description",
+      "RRP",
+      "Promo RRP",
+      "Rebate",
+      "Max Qty",
+      "Total Program Rebate",
+      "" // columna icono lápiz
+    ].map((c) => h("th", {}, c))
+  )
+);
+const tbody = h("tbody", { id: "tbodyEdit" });
+table.append(thead, tbody);
+
+// Montaje
+app.replaceChildren(
+  h("h1", { className: "title" }, "Edit Programs"),
+  h("p", { className: "subtitle" }, "Find a program and reduce its quantities. Increasing is not allowed."),
+  toolbar,
+  table
+);
+
+// ---- Datos y render ----
 let programs = [];
 let customers = [];
 
-// state for dialog
-let currentProgram = null;
-let currentProgramLines = []; // original lines snapshot
-
-/* ----------------------- Fetch & helpers ----------------------- */
 async function fetchPrograms() {
   const res = await fetch("/api/programs?include=lines");
   if (!res.ok) throw new Error("Failed to load programs");
   return await res.json();
 }
-const fmtDate = d => d ? new Date(d).toISOString().slice(0,10) : "";
-const money = n => {
-  const x = Number(n);
-  return Number.isFinite(x) ? x.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}) : "";
-};
-const intfmt = n => {
-  const x = Number(n);
-  return Number.isFinite(x) ? x.toLocaleString() : "";
-};
-const getCustomerName = crm => customers.find(c => c.crmNumber === crm)?.customerName || crm;
 
-/* ----------------------- Render list ----------------------- */
+function fmtDate(d) {
+  if (!d) return "";
+  try { return new Date(d).toISOString().slice(0,10); } catch { return d; }
+}
+function n2(v) { const x = Number(v); return Number.isFinite(x) ? x.toFixed(2) : ""; }
+
 function renderList() {
-  const mount = $("#mount");
-  const term = $("#q").value.trim().toLowerCase();
-
-  const table = h("table", { className: "edit-table", id: "tblEdit" });
-  const thead = h("thead");
-  thead.append(h("tr", {},
-    ...COLS.map((c, i) => h("th", { className: (i===COLS.length-1) ? "edit-col" : "" }, c))
-  ));
-  const tbody = h("tbody");
+  const term = (q?.value || "").trim().toLowerCase();
+  const rows = [];
 
   for (const p of programs) {
-    const custName = getCustomerName(p.customer);
+    const custName = customers.find(c => c.crmNumber === p.customer)?.customerName || p.customer;
     const lines = Array.isArray(p.lines) && p.lines.length ? p.lines : [ {} ];
 
-    for (const ln of lines) {
-      const hay = [
-        p.programNumber, p.geo, p.country, p.vertical, custName, ln?.pn ?? ln?.PN, ln?.description
-      ].join(" ").toLowerCase();
-      if (term && !hay.includes(term)) continue;
-
-      const row = [
+    const filtered = lines.filter(ln => {
+      const pn = (ln.pn ?? ln.PN ?? "");
+      const txt = [
         p.programNumber, p.programType, p.geo, p.country, p.vertical, custName,
-        fmtDate(p.startDay), fmtDate(p.endDay),
-        ln?.pn ?? ln?.PN ?? "", ln?.description ?? "",
-        money(ln?.rrp), money(ln?.promoRrp), money(ln?.rebate),
-        intfmt(ln?.maxQty), money(ln?.totalProgramRebate)
-      ];
+        pn, ln?.description
+      ].join(" ").toLowerCase();
+      return !term || txt.includes(term);
+    });
+    if (filtered.length === 0) continue;
 
+    for (const ln of filtered) {
       const tr = h("tr", {},
-        ...row.map((val, idx) => h("td", { className: idx>=10 ? "num" : "" }, val))
+        h("td", {}, p.programNumber || ""),
+        h("td", {}, p.programType || ""),
+        h("td", {}, p.geo || ""),
+        h("td", {}, p.country || ""),
+        h("td", {}, p.vertical || ""),
+        h("td", {}, custName || ""),
+        h("td", {}, fmtDate(p.startDay)),
+        h("td", {}, fmtDate(p.endDay)),
+        h("td", {}, ln?.pn ?? ln?.PN ?? ""),
+        h("td", {}, ln?.description ?? ""),
+        h("td", { className: "num" }, n2(ln?.rrp)),
+        h("td", { className: "num" }, n2(ln?.promoRrp)),
+        h("td", { className: "num" }, n2(ln?.rebate)),
+        h("td", { className: "num" }, n2(ln?.maxQty)),
+        h("td", { className: "num" }, n2(ln?.totalProgramRebate)),
+        // Icono lápiz → abre modal
+        h("td", { className: "center" },
+          h("button", {
+            className: "icon-btn",
+            title: "Edit (reduce Max Qty)",
+            onclick: () => openEditModal(p, ln)
+          }, "✏️")
+        )
       );
-
-      // pencil
-      const tdEdit = h("td", { className: "edit-col" });
-      const btn = h("button", { type:"button", className:"action-icon", title:"Edit quantities" }, "✏️");
-      btn.addEventListener("click", () => openDialog(p));
-      tdEdit.append(btn);
-      tr.append(tdEdit);
-
-      tbody.append(tr);
+      rows.push(tr);
     }
   }
 
-  if (!tbody.children.length) {
-    tbody.append(h("tr", {}, h("td", { colSpan: COLS.length }, "No results.")));
+  if (!rows.length) {
+    tbody.replaceChildren(h("tr", {}, h("td", { colSpan: 16, className: "muted" }, "No matching programs.")));
+  } else {
+    tbody.replaceChildren(...rows);
   }
-
-  table.append(thead, tbody);
-  mount.replaceChildren(table);
 }
 
-/* ----------------------- Dialog ----------------------- */
-function openDialog(program) {
-  currentProgram = program;
-  currentProgramLines = JSON.parse(JSON.stringify(program.lines || [])); // deep-ish clone
-
-  // meta
-  $("#metaProgramNumber").textContent = program.programNumber || "—";
-  $("#metaType").textContent = program.programType || "—";
-  $("#metaGeo").textContent = program.geo || "—";
-  $("#metaCountry").textContent = program.country || "—";
-  $("#metaVertical").textContent = program.vertical || "—";
-  $("#metaCustomer").textContent = getCustomerName(program.customer) || "—";
-  $("#metaStart").textContent = fmtDate(program.startDay);
-  $("#metaEnd").textContent = fmtDate(program.endDay);
-
-  // lines
-  const tbody = $("#dlgLines tbody");
-  tbody.replaceChildren();
-
-  (program.lines || []).forEach((ln, idx) => {
-    const currentMax = Number(ln.maxQty) || 0;
-    const input = h("input", {
-      type: "number",
-      className: "form-control input-qty",
-      min: 0,
-      max: currentMax,
-      step: 1,
-      value: currentMax
-    });
-    input.addEventListener("input", () => {
-      // Force only reductions (<= original)
-      const orig = currentMax;
-      let v = Number(input.value);
-      if (!Number.isFinite(v) || v < 0) v = 0;
-      if (v > orig) v = orig;            // never increase
-      input.value = String(Math.floor(v));
-    });
-
-    const tr = h("tr", {},
-      h("td", {}, ln?.pn ?? ln?.PN ?? ""),
-      h("td", {}, ln?.description ?? ""),
-      h("td", { className:"num" }, money(ln?.rrp)),
-      h("td", { className:"num" }, money(ln?.promoRrp)),
-      h("td", { className:"num" }, money(ln?.rebate)),
-      h("td", { className:"num" }, money(ln?.totalProgramRebate)),
-      h("td", { className:"num" }, intfmt(currentMax)),
-      h("td", { className:"num" }, input)
-    );
-    // store a handle
-    tr.dataset.index = idx;
-    tbody.append(tr);
+// ---- Modal edición (solo bajar cantidades) ----
+let modalEl; // singleton
+function openEditModal(program, line) {
+  if (!modalEl) {
+    modalEl = h("dialog", { className: "modal" });
+    document.body.appendChild(modalEl);
+  }
+  const current = Number(line?.maxQty || 0);
+  const info = h("div", { className: "modal-info" },
+    h("div", {}, h("strong", {}, "Program: "), program.programNumber || ""),
+    h("div", {}, h("strong", {}, "PN: "), (line?.pn ?? line?.PN ?? "")),
+    h("div", {}, h("strong", {}, "Description: "), line?.description ?? "")
+  );
+  const qtyInput = h("input", {
+    type: "number",
+    className: "inp",
+    min: 0,
+    max: current,
+    step: "1",
+    value: String(current),
   });
+  const warn = h("div", { className: "muted" }, "You can only reduce quantities (≤ current).");
+  const btnCancel = h("button", { className: "btn" }, "Cancel");
+  const btnSave   = h("button", { className: "btn primary" }, "Save");
 
-  $("#dlgTitle").textContent = `Edit Program – ${program.programNumber}`;
-  const dlg = $("#editDialog");
-  dlg.showModal();
-
-  $("#btnCancel").onclick = () => dlg.close();
-  $("#editForm").onsubmit = async (ev) => {
-    ev.preventDefault();
-    await doSave();
+  btnCancel.onclick = () => modalEl.close();
+  btnSave.onclick = async () => {
+    const v = Number(qtyInput.value);
+    if (!Number.isFinite(v) || v < 0 || v > current) {
+      alert(`Quantity must be a number between 0 and ${current}.`);
+      return;
+    }
+    // Guardar: sobrescribir línea con la nueva cantidad (no incrementos)
+    try {
+      const newLine = { ...line, maxQty: v };
+      await saveProgramWithLine(program, newLine);
+      line.maxQty = v; // refleja en memoria
+      renderList();    // refresca tabla
+      modalEl.close();
+    } catch (e) {
+      alert("Error saving changes.");
+      console.error(e);
+    }
   };
+
+  modalEl.replaceChildren(
+    h("form", { method: "dialog", className: "modal-body" },
+      h("h2", {}, "Edit line"),
+      info,
+      h("label", { className: "lbl" }, "Max Qty"),
+      qtyInput,
+      warn,
+      h("div", { className: "actions" }, btnCancel, btnSave)
+    )
+  );
+  modalEl.showModal();
 }
 
-async function doSave() {
-  if (!currentProgram) return;
-
-  // read new maxQty values
-  const rows = Array.from($("#dlgLines tbody").rows);
-  const newLines = rows.map(tr => {
-    const idx = Number(tr.dataset.index);
-    const ln = currentProgram.lines[idx];
-    const input = tr.querySelector("input");
-    const newMax = Number(input.value);
-    const orig = Number(ln.maxQty) || 0;
-    // enforce decrease-only once more
-    const safeMax = Math.max(0, Math.min(orig, Number.isFinite(newMax) ? newMax : orig));
-    return { ...ln, maxQty: safeMax };
+async function saveProgramWithLine(program, updatedLine) {
+  // construye payload igual que en “create”, pero reemplazando solo esa línea
+  const id = program.id;
+  const header = {
+    programType: program.programType,
+    geo: program.geo,
+    country: program.country,
+    vertical: program.vertical,
+    customer: program.customer,
+    startDay: program.startDay,
+    endDay: program.endDay || null,
+    programNumber: program.programNumber,
+    activity: program.activity ?? null
+  };
+  const lines = (program.lines || []).map(ln => {
+    const isSame = (ln.pn ?? ln.PN) === (updatedLine.pn ?? updatedLine.PN);
+    const src = isSame ? updatedLine : ln;
+    return {
+      pn: src.pn ?? src.PN ?? "",
+      description: src.description ?? "",
+      rrp: Number(src.rrp) || 0,
+      promoRrp: Number(src.promoRrp) || 0,
+      vatOnRrp: src.vatOnRrp ?? "No",
+      rebate: Number(src.rebate) || 0,
+      maxQty: Number(src.maxQty) || 0,
+      totalProgramRebate: Number(src.totalProgramRebate) || 0,
+      programNumber: src.lineProgramNumber ?? program.programNumber
+    };
   });
 
-  // build payload
-  const payload = {
-    id: currentProgram.id,
-    createdAt: currentProgram.createdAt,
-    header: {
-      programNumber: currentProgram.programNumber,
-      programType: currentProgram.programType,
-      geo: currentProgram.geo,
-      country: currentProgram.country,
-      vertical: currentProgram.vertical,
-      customer: currentProgram.customer,
-      startDay: currentProgram.startDay,
-      endDay: currentProgram.endDay || null,
-      activity: currentProgram.activity ?? null
-    },
-    lines: newLines
+  // usamos el mismo endpoint POST que ya tienes (sobrescribe por id)
+  const body = {
+    id,
+    createdAt: program.createdAt ?? new Date().toISOString(),
+    header,
+    lines
   };
-
-  // send PUT (overwrite)
-  let res;
-  try {
-    res = await fetch(`/api/programs/${encodeURIComponent(currentProgram.id)}`, {
-      method: "PUT",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify(payload)
-    });
-  } catch (e) {
-    alert("Network error sending update");
-    return;
-  }
-
+  const res = await fetch("/api/programs", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(body)
+  });
   if (!res.ok) {
-    const err = await res.json().catch(()=>({}));
-    alert(`Error updating program: ${err.error || res.statusText}`);
-    return;
+    const err = await res.json().catch(()=> ({}));
+    throw new Error(err.error || res.statusText);
   }
-
-  // optimistic update local state
-  currentProgram.lines = newLines;
-  $("#editDialog").close();
-
-  // re-render list
-  renderList();
 }
 
-/* ----------------------- Boot ----------------------- */
+// ---- Boot
 async function boot() {
   try {
     [programs, customers] = await Promise.all([fetchPrograms(), loadCustomerSet()]);
-  } catch (e) {
-    console.error(e);
-    programs = [];
-    customers = [];
-  }
-  renderList();
-
-  $("#q").addEventListener("input", renderList);
-  $("#btnRefresh").addEventListener("click", async () => {
-    programs = await fetchPrograms();
     renderList();
-  });
+  } catch (e) {
+    tbody.replaceChildren(h("tr", {}, h("td", { colSpan: 16, className: "muted" }, "Failed to load")));
+    console.error(e);
+  }
 }
+
+q.addEventListener("input", renderList);
+btnRefresh.addEventListener("click", boot);
 
 boot();

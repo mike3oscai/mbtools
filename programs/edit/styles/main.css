@@ -1,68 +1,37 @@
-/* Edit Programs — table + modal */
-
-.subtitle{ color: var(--muted); margin-top: .25rem; }
-
-.card-head .row{ display:flex; gap:.75rem; align-items:center; }
-.card-head .spacer{ flex:1 1 auto; }
-
-.table-wrap{ overflow:auto; }
-.edit-table{
-  width:100%;
-  border-collapse:separate; border-spacing:0;
-  font-size:.92rem;
+/* /programs/edit/styles/main.css */
+:root{
+  --border: var(--card-border, #e6e6e6);
+  --muted:  var(--muted, #6b7280);
+  --fg:     var(--fg, #0f172a);
+  --bg:     var(--bg, #fff);
+  --accent: var(--accent, #2563eb);
 }
+
+.container{ max-width: 1200px; margin: 0 auto; padding: 16px; }
+.title{ margin: 0 0 4px; font-size: 1.5rem; }
+.subtitle{ margin: 0 0 16px; color: var(--muted); }
+
+.toolbar{ display:flex; gap:8px; align-items:center; margin: 8px 0 14px; }
+.inp{ padding: 8px 10px; border:1px solid var(--border); border-radius:8px; min-width: 320px; }
+.btn{ padding: 8px 12px; border:1px solid var(--border); background: var(--bg); border-radius:8px; cursor:pointer; }
+.btn.primary{ border-color: var(--accent); color: var(--bg); background: var(--accent); }
+
+.edit-table{ width:100%; border-collapse: separate; border-spacing:0; font-size:.95rem; }
 .edit-table thead th{
-  text-align:left; font-weight:600; padding:10px 12px;
-  border-bottom:1px solid var(--card-border);
-  position:sticky; top:0; background:var(--card); z-index:1;
+  position: sticky; top: 0; background: var(--bg);
+  text-align:left; font-weight:600; padding:10px 12px; border-bottom:2px solid var(--border);
 }
-.edit-table tbody td{
-  padding:10px 12px; border-bottom:1px solid var(--card-border);
-  vertical-align:middle;
-}
-.edit-table .num{ text-align:right; font-variant-numeric:tabular-nums; }
+.edit-table tbody td{ padding:10px 12px; border-bottom:1px solid var(--border); }
+.edit-table td.num{ text-align:right; font-variant-numeric: tabular-nums; }
+.edit-table td.center{ text-align:center; width: 40px; }
 
-.action-icon{
-  width:28px;height:28px;border-radius:999px;
-  border:1px solid var(--card-border); background:var(--bg);
-  display:inline-flex;align-items:center;justify-content:center;
-  font-size:14px; cursor:pointer;
-}
-.action-icon:hover{ border-color:var(--accent); }
+.icon-btn{ border:1px solid var(--border); border-radius:8px; padding:4px 8px; background: var(--bg); cursor:pointer; }
+.muted{ color: var(--muted); }
 
 /* Modal */
-.modal{ border:none; padding:0; width:min(100%, 980px); }
+.modal{ border:none; border-radius:12px; padding:0; width:min(560px, 92vw); }
 .modal::backdrop{ background: rgba(0,0,0,.25); }
-.modal__content{ background:var(--card); color:var(--fg); border:1px solid var(--card-border); border-radius:14px; overflow:hidden; }
-.modal__header{ padding:14px 16px; border-bottom:1px solid var(--card-border); }
-.modal__body{ padding:16px; }
-.modal__footer{ padding:12px 16px; display:flex; gap:10px; justify-content:flex-end; border-top:1px solid var(--card-border); }
-.meta{ display:flex; gap:.75rem; align-items:baseline; margin:.15rem 0; }
-.meta span{ color:var(--muted); min-width:120px; }
-.grid{ display:grid; gap:12px; }
-.grid-2{ grid-template-columns: repeat(2,minmax(0,1fr)); }
-.mt{ margin-top:12px; }
-
-/* Buttons */
-.btn{ border:1px solid var(--card-border); border-radius:10px; padding:.55rem .9rem; font-weight:600; }
-.btn.primary{ background:var(--accent); color:#fff; border-color:var(--accent); }
-.btn.ghost{ background:transparent; color:var(--fg); }
-
-/* Pencil column */
-th.edit-col, td.edit-col{ width:48px; text-align:center; }
-
-/* Compact input in table */
-.input-qty{
-  width:90px;
-  text-align:right;
-}
-
-/* small helper badge */
-.badge{
-  display:inline-block; padding:.1rem .4rem; border-radius:999px;
-  background: color-mix(in oklab, var(--accent) 12%, var(--card) 88%);
-  border:1px solid var(--card-border); font-size:.75rem; color:var(--fg);
-}
-
-/* search input width */
-#q{ min-width:360px; }
+.modal-body{ display:block; padding:16px; }
+.lbl{ display:block; margin:12px 0 6px; color: var(--muted); }
+.modal .actions{ display:flex; gap:8px; justify-content:flex-end; margin-top:14px; }
+.modal-info{ display:grid; grid-template-columns: 120px 1fr; gap:6px 10px; margin-bottom:10px; }
