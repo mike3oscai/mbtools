@@ -116,23 +116,35 @@ export async function renderCreateForm(container) {
   const grid = h("div", { className: "header-grid" });
   const L = (forId, text) => h("label", { className: "form-label", htmlFor: forId }, text);
 
-  grid.append(
-    // fila 1
-    L(programTypeSel.id, "Program Type"), programTypeSel,
-    L(customerSel.id,    "Customer"),      customerSel,
-    // fila 2
-    L(geoSel.id,         "Geo"),           geoSel,
-    L(startDayInp.id,    "Start Day"),     startDayInp,
-    // fila 3
-    L(countrySel.id,     "Country"),       countrySel,
-    L(endDayInp.id,      "End Day"),       endDayInp,
-    // fila 4
-    L(verticalSel.id,    "Vertical"),      verticalSel,
-    L(programNumInp.id,  "Program Number"),programNumInp,
-    // fila 5 (ocupa 2 columnas * 2 = 4): etiqueta + textarea
-    h("div", { className: "span-2-2" }, L(activityInp.id, "Describe this activity:")),
-    h("div", { className: "span-2-2" }, activityInp)
-  );
+grid.append(
+  // 1 Program Type
+  L(programTypeSel.id, "Program Type"), programTypeSel,
+
+  // 2 Geo
+  L(geoSel.id, "Geo"), geoSel,
+
+  // 3 Country
+  L(countrySel.id, "Country"), countrySel,
+
+  // 4 Vertical
+  L(verticalSel.id, "Vertical"), verticalSel,
+
+  // 5 Customer (después de Geo/Vertical para que la restricción tenga sentido)
+  L(customerSel.id, "Customer"), customerSel,
+
+  // 6 Start Day
+  L(startDayInp.id, "Start Day"), startDayInp,
+
+  // 7 End Day
+  L(endDayInp.id, "End Day"), endDayInp,
+
+  // 8 Describe this activity (sin wrappers; el CSS lo hace span de 2 col)
+  L(activityInp.id, "Describe this activity:"), activityInp,
+
+  // 9 Program Number (último)
+  L(programNumInp.id, "Program Number"), programNumInp
+);
+
 
   const actions = h("div", { className: "actions-row" },
     h("button", { id: "btnConfirm", className: "action-cta", type: "button" }, "Confirm"),
