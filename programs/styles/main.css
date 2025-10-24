@@ -218,3 +218,68 @@ html[data-theme="dark"] .totals-sticky{
   overflow: visible !important;
   max-height: none !important;
 }
+
+/* ==== Tooltips de comentarios (Activity) ==== */
+
+/* El icono de información */
+.comment-icon {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  line-height: 18px;
+  text-align: center;
+  font-weight: bold;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  font-size: 12px;
+  cursor: pointer;
+  position: relative;
+  margin-left: 6px;
+}
+
+/* Tooltip básico */
+.comment-icon::after {
+  content: attr(data-comment);
+  position: absolute;
+  bottom: -100%;                /* coloca el tooltip debajo del icono */
+  left: 50%;
+  transform: translate(-50%, 120%);
+  white-space: normal;
+  background: var(--fg);
+  color: var(--card);
+  padding: 8px 10px;
+  border-radius: 6px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+  width: 240px;
+  font-size: 0.8rem;
+  line-height: 1.2;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 100;                /* por encima del encabezado sticky */
+}
+
+/* Flechita inferior */
+.comment-icon::before {
+  content: "";
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 6px;
+  border-style: solid;
+  border-color: var(--fg) transparent transparent transparent;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease;
+  z-index: 101;
+}
+
+/* Hover visible */
+.comment-icon:hover::after,
+.comment-icon:hover::before {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, 130%);
+}
