@@ -32,7 +32,7 @@ const VERTICAL_OPTIONS = [
 /* ---------- Helpers ---------- */
 function h(tag, props = {}, ...children) {
   const el = Object.assign(document.createElement(tag), props);
-  for (const c of children.flat()) el.append(c?.nodeType ? c : document.createTextNode(c ?? "")); 
+  for (const c of children.flat()) el.append(c?.nodeType ? c : document.createTextNode(c ?? ""));
   return el;
 }
 const unique = (arr) => [...new Set(arr)];
@@ -103,7 +103,7 @@ export async function renderCreateForm(container) {
   const endDayInp      = h("input", { className: "form-control", type: "date", id: "fld-endDay", name: "endDay" });
   const programNumInp  = h("input", { className: "form-control", type: "text", id: "fld-programNumber", name: "programNumber", placeholder: "Auto after Confirm (editable)" });
 
-  // 👉 NUEVO: textarea “Describe this activity”
+  // Comentario de la actividad (se guarda en payload)
   const activityInp = h("textarea", {
     className: "form-control",
     id: "fld-activity",
@@ -112,39 +112,21 @@ export async function renderCreateForm(container) {
     placeholder: "Describe this activity..."
   });
 
-  // === Grid 4 cols (label|control|label|control) ===
+  // === Grid 4 cols ===
   const grid = h("div", { className: "header-grid" });
   const L = (forId, text) => h("label", { className: "form-label", htmlFor: forId }, text);
 
-grid.append(
-  // 1 Program Type
-  L(programTypeSel.id, "Program Type"), programTypeSel,
-
-  // 2 Geo
-  L(geoSel.id, "Geo"), geoSel,
-
-  // 3 Country
-  L(countrySel.id, "Country"), countrySel,
-
-  // 4 Vertical
-  L(verticalSel.id, "Vertical"), verticalSel,
-
-  // 5 Customer (después de Geo/Vertical para que la restricción tenga sentido)
-  L(customerSel.id, "Customer"), customerSel,
-
-  // 6 Start Day
-  L(startDayInp.id, "Start Day"), startDayInp,
-
-  // 7 End Day
-  L(endDayInp.id, "End Day"), endDayInp,
-
-  // 8 Describe this activity (sin wrappers; el CSS lo hace span de 2 col)
-  L(activityInp.id, "Describe this activity:"), activityInp,
-
-  // 9 Program Number (último)
-  L(programNumInp.id, "Program Number"), programNumInp
-);
-
+  grid.append(
+    L(programTypeSel.id, "Program Type"), programTypeSel,
+    L(geoSel.id, "Geo"), geoSel,
+    L(countrySel.id, "Country"), countrySel,
+    L(verticalSel.id, "Vertical"), verticalSel,
+    L(customerSel.id, "Customer"), customerSel,
+    L(startDayInp.id, "Start Day"), startDayInp,
+    L(endDayInp.id, "End Day"), endDayInp,
+    L(activityInp.id, "Describe this activity:"), activityInp,
+    L(programNumInp.id, "Program Number"), programNumInp
+  );
 
   const actions = h("div", { className: "actions-row" },
     h("button", { id: "btnConfirm", className: "action-cta", type: "button" }, "Confirm"),
@@ -332,7 +314,7 @@ grid.append(
     [programTypeSel, geoSel, countrySel, verticalSel, customerSel, startDayInp, endDayInp]
       .forEach(el => { el.disabled = false; el.value = ""; });
     programNumInp.value = "";
-    activityInp.value   = ""; // <— limpia el comentario
+    activityInp.value   = "";
     refreshCustomers();
 
     productsSection.style.display = "none";
@@ -387,13 +369,17 @@ grid.append(
     const existing = new Set(Array.from(tbody.querySelectorAll("tr")).map(tr => tr.dataset.pn));
     subset.forEach(p => {
       if (existing.has(p.PN)) return;
-      const tr = rowForProduct(p, programNumInp.value);
-      tbody.append(tr);
+
+      // Añadimos (devuelve fragment + referencia del TR de campos)
+      const { frag, trFields } = rowForProduct(p, programNumInp.value);
+      tbody.append(frag);
+
+      // Recalcular SOBRE EL TR DE CAMPOS (no el DocumentFragment)
+      recalcRow(trFields, countrySel);
       existing.add(p.PN);
-      recalcRow(tr, countrySel);
     });
 
-    btnSaveProgram.disabled = tbody.children.length === 0;
+    btnSaveProgram.disabled = tbody.querySelectorAll('tr[data-role="fields"]').length === 0;
   });
 
   /* ---------- SAVE PROGRAM ---------- */
@@ -407,9 +393,12 @@ grid.append(
       startDay: startDayInp.value,
       endDay: endDayInp.value || null,
       programNumber: programNumInp.value,
-      activity: activityInp.value.trim()   // <—— **AQUÍ VA EL COMENTARIO**
+      activity: activityInp.value.trim()
     };
-    const lines = Array.from(tbody.querySelectorAll('tr[data-role="fields"]')).map(tr => ({
+    const fieldsRows = Array.from(tbody.querySelectorAll('tr[data-role="fields"]'));
+    if (!fieldsRows.length) return alert("No products added.");
+
+    const lines = fieldsRows.map(tr => ({
       pn: tr.dataset.pn || (getCell(tr, "pn")?.textContent ?? ""),
       description: getCell(tr, "desc")?.textContent ?? "",
       rrp: numVal(getCell("input", tr, "rrp")),
@@ -420,7 +409,6 @@ grid.append(
       totalProgramRebate: numVal(getCell("span", tr, "total")),
       programNumber: (getCell("input", tr, "lineProgramNumber")?.value) || header.programNumber
     }));
-    if (!lines.length) return alert("No products added.");
 
     const body = {
       id: generateProgramId(header.programNumber, header.customer, header.startDay),
@@ -450,56 +438,49 @@ grid.append(
 
   /* ---------- Tabla helpers ---------- */
   function rowForProduct(p, programNumber) {
-  // --- FILA 1: resumen (PN + Description + Remove) ---
-  const trSummary = h("tr", {
-    "data-pn": p.PN,
-    "data-role": "summary",
-    className: "prod-summary"
-  },
-    // PN ocupa 2 columnas (PN + Description header)
-    h("td", { colSpan: 2, className: "pn-cell" }, p.PN),
-    // Descripción ocupa las siguientes 7 columnas
-    h("td", { colSpan: 7, className: "desc-cell" }, p.Description),
-    // Acción Remove (1 col)
-    h("td", { className: "actions-cell" }, (() => {
-      const btn = h("button", { type: "button", className: "action-cta sm" }, "Remove");
-      btn.addEventListener("click", () => {
-        const pn = p.PN;
-        tbody.querySelectorAll(`tr[data-pn="${pn}"]`).forEach(r => r.remove());
-        btnSaveProgram.disabled = tbody.querySelectorAll('tr[data-role="fields"]').length === 0;
-      });
-      return btn;
-    })())
-  );
+    // --- FILA 1: resumen (PN + Description + Remove ÚNICO) ---
+    const trSummary = h("tr", {
+      "data-pn": p.PN,
+      "data-role": "summary",
+      className: "prod-summary"
+    },
+      h("td", { colSpan: 2, className: "pn-cell" }, p.PN),
+      h("td", { colSpan: 7, className: "desc-cell" }, p.Description),
+      h("td", { className: "actions-cell" }, (() => {
+        const btn = h("button", { type: "button", className: "action-cta sm" }, "Remove");
+        btn.addEventListener("click", () => {
+          const pn = p.PN;
+          tbody.querySelectorAll(`tr[data-pn="${pn}"]`).forEach(r => r.remove());
+          btnSaveProgram.disabled = tbody.querySelectorAll('tr[data-role="fields"]').length === 0;
+        });
+        return btn;
+      })())
+    );
 
-  // --- FILA 2: campos (todo lo que tenías antes) ---
-  const trFields = h("tr", {
-    "data-pn": p.PN,
-    "data-role": "fields",
-    className: "prod-fields"
-  },
-    // celda vacía para alinear debajo de resumen (PN + Description)
-    h("td", { colSpan: 2 }, ""),
+    // --- FILA 2: campos (SIN botón Remove aquí) ---
+    const trFields = h("tr", {
+      "data-pn": p.PN,
+      "data-role": "fields",
+      className: "prod-fields"
+    },
+      h("td", { colSpan: 2 }, ""),
+      tdInputNumber("rrp", 0, onAnyChange),
+      tdInputNumber("promoRrp", 0, onAnyChange),
+      tdSelect("vat", ["Yes", "No"], "No", onAnyChange),
+      tdRebateCell(onAnyChange),
+      tdInputNumber("maxQty", 0, onAnyChange),
+      tdReadOnly("total", "0.00"),
+      tdInputText("lineProgramNumber", programNumber),
+      // <-- Quitamos el botón Remove duplicado de esta fila
+      h("td", {}, "") // celda vacía para mantener columnas
+    );
 
-    // el resto igual que tu fila original
-    tdInputNumber("rrp", 0, onAnyChange),
-    tdInputNumber("promoRrp", 0, onAnyChange),
-    tdSelect("vat", ["Yes", "No"], "No", onAnyChange),
-    tdRebateCell(onAnyChange),
-    tdInputNumber("maxQty", 0, onAnyChange),
-    tdReadOnly("total", "0.00"),
-    tdInputText("lineProgramNumber", programNumber),
-    tdActionRemove() // botón Remove redundante (útil si quitas el de arriba)
-  );
+    function onAnyChange(){ recalcRow(trFields, countrySel); }
 
-  function onAnyChange(){ recalcRow(trFields, countrySel); }
-
-  // devolvemos ambos TR para que los añadas juntos
-  const frag = document.createDocumentFragment();
-  frag.append(trSummary, trFields);
-  return frag;
-}
-
+    const frag = document.createDocumentFragment();
+    frag.append(trSummary, trFields);
+    return { frag, trFields };
+  }
 
   function recalcRow(tr, countrySelRef) {
     const rrpInput    = getCell("input", tr, "rrp");
@@ -551,7 +532,7 @@ grid.append(
     totalSpan.textContent = (rebateVal * qty).toFixed(2);
   }
   function recalcAllRows(tbodyEl, countrySelRef){
-    Array.from(tbodyEl.querySelectorAll("tr")).forEach(tr => recalcRow(tr, countrySelRef));
+    Array.from(tbodyEl.querySelectorAll('tr[data-role="fields"]')).forEach(tr => recalcRow(tr, countrySelRef));
   }
 
   function trHead(cols){ return h("tr", {}, ...cols.map(c => h("th", {}, c))); }
@@ -573,24 +554,6 @@ grid.append(
     if (onChange) sel.addEventListener("change", onChange);
     const cell = h("td", {}, sel); cell.dataset.col = col; return cell;
   }
-function tdActionRemove() {
-  const btn = h("button", { type: "button", className: "action-cta" }, "Remove");
-  const cell = h("td", {}, btn);
-
-  btn.addEventListener("click", () => {
-    const pn = btn.closest("tr")?.dataset.pn;
-    if (pn) {
-      // Elimina todas las filas del mismo producto (summary + fields)
-      tbody.querySelectorAll(`tr[data-pn="${pn}"]`).forEach(r => r.remove());
-    }
-
-    // Deshabilita el botón Save si ya no quedan productos
-    btnSaveProgram.disabled = tbody.querySelectorAll('tr[data-role="fields"]').length === 0;
-  });
-
-  return cell;
-}
-
 
   function numVal(node){
     if (!node) return 0;
