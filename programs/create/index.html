@@ -1,125 +1,46 @@
 <!doctype html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Create Program · MBTools</title>
 
-  <!-- Base global -->
+  <!-- Global -->
   <link rel="stylesheet" href="../../shared/styles/shared.css">
-  <!-- Tema suave (opcional). Si no lo usas, puedes quitarlo -->
-  <link rel="stylesheet" href="../../shared/styles/theme-soft.css">
-
-  <!-- Montserrat para toda la página -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
-  <!-- Estilos específicos de Create -->
-  <link rel="stylesheet" href="./styles/main.css">
-
-  <title>Programs · Create</title>
+  <!-- Page -->
+  <link rel="stylesheet" href="styles/main.css">
 </head>
-<body class="theme-soft">
-  <div class="app">
-    <header>
-      <div class="container row" style="justify-content:space-between; align-items:center; padding-block: 10px;">
-        <h1 style="margin:0; font-size: var(--fs-xl);">Create Program</h1>
-        <div class="row" style="gap:8px;">
-          <button id="toggleTheme" class="button">Dark/Light</button>
-        </div>
-      </div>
-    </header>
+<body>
+  <header class="container">
+    <a href="../" class="back-link">← Back</a>
+    <h1>Create a Program</h1>
+    <p>Fill in the fields below to create a new program.</p>
+  </header>
 
-    <main class="container page-programs-create">
-      <!-- Filtros / selector de productos -->
-      <section class="card">
-        <h2 style="margin-bottom: var(--space-3);">Add Products</h2>
-        <div class="row">
-          <label class="field">
-            <span class="field__label">Product</span>
-            <select id="productSelect" class="select">
-              <option value="" selected disabled>Select a product</option>
-              <!-- Ejemplos: reemplaza por tu carga real -->
-              <option value="PNJUF7|Pineapple 4GB 512GB Purple">PNJUF7 — Pineapple 4GB 512GB Purple</option>
-              <option value="PNWZ9E|Pineapple 4GB 512GB Blue">PNWZ9E — Pineapple 4GB 512GB Blue</option>
-              <option value="PNOXM|Mango 12GB 1TB Gold">PNOXM — Mango 12GB 1TB Gold</option>
-            </select>
-          </label>
+  <main class="container">
+    <!-- Program header card. La sección de productos y la tabla
+         se crean y añaden dinámicamente desde scripts/main.js -->
+    <section class="card form-card" aria-labelledby="program-header-title">
+      <h2 id="program-header-title">Program header</h2>
+      <form id="program-form" novalidate aria-label="Create program form"></form>
+    </section>
+  </main>
 
-          <label class="field">
-            <span class="field__label">RAM</span>
-            <select id="ramSelect" class="select">
-              <option value="" selected>Any</option>
-              <option>4GB</option>
-              <option>8GB</option>
-              <option>12GB</option>
-            </select>
-          </label>
+  <footer class="container">
+    <small>© <span id="y"></span> MBTools.app</small>
+  </footer>
 
-          <label class="field">
-            <span class="field__label">ROM</span>
-            <select id="romSelect" class="select">
-              <option value="" selected>Any</option>
-              <option>128GB</option>
-              <option>512GB</option>
-              <option>1TB</option>
-            </select>
-          </label>
+  <script type="module">
+    // Año footer
+    document.getElementById('y').textContent = new Date().getFullYear();
 
-          <div class="field field--btn">
-            <button id="btnAddProducts" class="button button--primary">Add Products</button>
-          </div>
-        </div>
-      </section>
+    // Tema (compartido)
+    import { initThemeToggle } from "../../shared/scripts/theme.js";
+    initThemeToggle();
 
-      <!-- Selected Products -->
-      <section class="card selected-panel" id="selectedPanel">
-        <div class="panel-header">
-          <h2 style="margin:0;">Selected products</h2>
-          <div class="row">
-            <button id="btnClearAll" class="button">Clear all</button>
-          </div>
-        </div>
-
-        <div class="panel-body">
-          <div class="program-table-wrap">
-            <table class="table programs-table" id="selectedProductsTable">
-              <thead>
-                <tr>
-                  <th class="cell--fit">PN</th>
-                  <th>PN Description</th>
-                  <th class="cell--fit">RRP</th>
-                  <th class="cell--fit">Promo RRP</th>
-                  <th class="cell--fit">Calculated RRP - VAT (Yes/No)</th>
-                  <th class="cell--fit">FE - Rebate</th>
-                  <th class="cell--fit">Max Quantity</th>
-                  <th class="cell--fit">Total Program Rebate</th>
-                  <th class="cell--fit">Program Number</th>
-                  <th class="cell--fit">Actions</th>
-                </tr>
-              </thead>
-              <tbody id="selectedProductsBody">
-                <!-- filas dinámicas -->
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <div class="panel-footer">
-          <button id="btnSaveProgram" class="button button--primary">Save Program</button>
-        </div>
-      </section>
-    </main>
-
-    <footer>
-      <div class="container" style="padding-block:12px;">
-        <small class="muted">© mbtools.app</small>
-      </div>
-    </footer>
-  </div>
-
-  <!-- JS -->
-  <script src="../../shared/scripts/theme.js"></script>
-  <script src="./scripts/create.js"></script>
+    // Render del formulario + inserción dinámica de secciones
+    import { renderCreateForm } from "./scripts/main.js";
+    renderCreateForm(document.getElementById("program-form"));
+  </script>
 </body>
 </html>
