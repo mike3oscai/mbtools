@@ -13,14 +13,11 @@
 
   <!-- Estilos compartidos -->
   <link rel="stylesheet" href="../../shared/styles/shared.css">
-
-  <!-- Puedes añadir más temas aquí cuando estén listos -->
-  <!-- <link rel="stylesheet" href="../../shared/styles/theme-soft.css"> -->
+  <!-- Estilos específicos de Create (¡imprescindible!) -->
+  <link rel="stylesheet" href="./styles/main.css">
 
   <style>
-    body {
-      font-family: 'Montserrat', system-ui, -apple-system, sans-serif;
-    }
+    body { font-family: 'Montserrat', system-ui, -apple-system, sans-serif; }
   </style>
 </head>
 <body>
@@ -32,13 +29,11 @@
     </header>
 
     <main class="container">
-      <!-- ====== Formulario de cabecera (renderizado por main.js) ====== -->
+      <!-- Seccion que rellena main.js -->
       <section id="createFormContainer" class="card">
-        <div class="loading">
-          <p>Loading create form…</p>
-        </div>
+        <div class="loading"><p>Loading create form…</p></div>
       </section>
-      <!-- Las secciones Products y Selected Products se añaden dinámicamente -->
+      <!-- Products y Selected products se inyectan dinámicamente -->
     </main>
 
     <footer class="footer">
@@ -48,10 +43,9 @@
     </footer>
   </div>
 
-  <!-- Scripts -->
+  <!-- Scripts como módulos -->
   <script type="module" src="../../shared/scripts/theme.js"></script>
   <script type="module" src="./scripts/main.js"></script>
-
   <script type="module">
     import { renderCreateForm } from "./scripts/main.js";
     const container = document.getElementById("createFormContainer");

@@ -1,4 +1,4 @@
-// Create a Program – header + products + table
+// Create a Program – header + products + table (ES module)
 
 import { loadCustomerSet, loadProductSet, loadVatSet } from "/shared/scripts/data.js";
 const GEOCOUNTRY_URL = "/data/geocountryset.json";
@@ -32,7 +32,7 @@ const VERTICAL_OPTIONS = [
 /* ---------- Helpers ---------- */
 function h(tag, props = {}, ...children) {
   const el = Object.assign(document.createElement(tag), props);
-  for (const c of children.flat()) el.append(c?.nodeType ? c : document.createTextNode(c ?? "")); 
+  for (const c of children.flat()) el.append(c?.nodeType ? c : document.createTextNode(c ?? ""));
   return el;
 }
 const unique = (arr) => [...new Set(arr)];
@@ -103,7 +103,6 @@ export async function renderCreateForm(container) {
   const endDayInp      = h("input", { className: "form-control", type: "date", id: "fld-endDay", name: "endDay" });
   const programNumInp  = h("input", { className: "form-control", type: "text", id: "fld-programNumber", name: "programNumber", placeholder: "Auto after Confirm (editable)" });
 
-  // 👉 NUEVO: textarea “Describe this activity”
   const activityInp = h("textarea", {
     className: "form-control",
     id: "fld-activity",
@@ -112,39 +111,21 @@ export async function renderCreateForm(container) {
     placeholder: "Describe this activity..."
   });
 
-  // === Grid 4 cols (label|control|label|control) ===
+  // === Grid (labels + controles) ===
   const grid = h("div", { className: "header-grid" });
   const L = (forId, text) => h("label", { className: "form-label", htmlFor: forId }, text);
 
-grid.append(
-  // 1 Program Type
-  L(programTypeSel.id, "Program Type"), programTypeSel,
-
-  // 2 Geo
-  L(geoSel.id, "Geo"), geoSel,
-
-  // 3 Country
-  L(countrySel.id, "Country"), countrySel,
-
-  // 4 Vertical
-  L(verticalSel.id, "Vertical"), verticalSel,
-
-  // 5 Customer (después de Geo/Vertical para que la restricción tenga sentido)
-  L(customerSel.id, "Customer"), customerSel,
-
-  // 6 Start Day
-  L(startDayInp.id, "Start Day"), startDayInp,
-
-  // 7 End Day
-  L(endDayInp.id, "End Day"), endDayInp,
-
-  // 8 Describe this activity (sin wrappers; el CSS lo hace span de 2 col)
-  L(activityInp.id, "Describe this activity:"), activityInp,
-
-  // 9 Program Number (último)
-  L(programNumInp.id, "Program Number"), programNumInp
-);
-
+  grid.append(
+    L(programTypeSel.id, "Program Type"), programTypeSel,
+    L(geoSel.id, "Geo"), geoSel,
+    L(countrySel.id, "Country"), countrySel,
+    L(verticalSel.id, "Vertical"), verticalSel,
+    L(customerSel.id, "Customer"), customerSel,
+    L(startDayInp.id, "Start Day"), startDayInp,
+    L(endDayInp.id, "End Day"), endDayInp,
+    L(activityInp.id, "Describe this activity:"), activityInp,
+    L(programNumInp.id, "Program Number"), programNumInp
+  );
 
   const actions = h("div", { className: "actions-row" },
     h("button", { id: "btnConfirm", className: "action-cta", type: "button" }, "Confirm"),
@@ -332,7 +313,7 @@ grid.append(
     [programTypeSel, geoSel, countrySel, verticalSel, customerSel, startDayInp, endDayInp]
       .forEach(el => { el.disabled = false; el.value = ""; });
     programNumInp.value = "";
-    activityInp.value   = ""; // <— limpia el comentario
+    activityInp.value   = "";
     refreshCustomers();
 
     productsSection.style.display = "none";
@@ -378,32 +359,27 @@ grid.append(
     return "";
   }
 
-/* ---------- Add Products + cálculo ---------- */
-btnAddProducts.addEventListener("click", () => {
-  const selectedPNs = Array.from(pnSel.selectedOptions).map(o => o.value);
-  const subset = selectedPNs.length ? products.filter(p => selectedPNs.includes(p.PN)) : filteredProducts();
-  if (!subset.length) return alert("Please select at least one PN or narrow filters to a non-empty list.");
+  /* ---------- Add Products + cálculo ---------- */
+  btnAddProducts.addEventListener("click", () => {
+    const selectedPNs = Array.from(pnSel.selectedOptions).map(o => o.value);
+    const subset = selectedPNs.length ? products.filter(p => selectedPNs.includes(p.PN)) : filteredProducts();
+    if (!subset.length) return alert("Please select at least one PN or narrow filters to a non-empty list.");
 
-  const existing = new Set(Array.from(tbody.querySelectorAll("tr")).map(tr => tr.dataset.pn));
-  subset.forEach(p => {
-    if (existing.has(p.PN)) return;
+    const existing = new Set(Array.from(tbody.querySelectorAll("tr")).map(tr => tr.dataset.pn));
+    subset.forEach(p => {
+      if (existing.has(p.PN)) return;
 
-    // ⬇️ ahora rowForProduct devuelve { frag, trFields }
-    const { frag, trFields } = rowForProduct(p, programNumInp.value);
-    tbody.append(frag);
+      const { frag, trFields } = rowForProduct(p, programNumInp.value);
+      tbody.append(frag);
+      recalcRow(trFields, countrySel);
 
-    // ⬇️ recalcular SOBRE el <tr> de campos (no sobre el fragment)
-    recalcRow(trFields, countrySel);
+      existing.add(p.PN);
+    });
 
-    existing.add(p.PN);
+    btnSaveProgram.disabled = tbody.querySelectorAll('tr[data-role="fields"]').length === 0;
   });
 
-  // habilitar guardado sólo si hay filas de campos
-  btnSaveProgram.disabled = tbody.querySelectorAll('tr[data-role="fields"]').length === 0;
-});
-
-
-  /* ---------- SAVE PROGRAM ---------- */
+  /* ---------- SAVE PROGRAM (con fallback local) ---------- */
   btnSaveProgram.addEventListener("click", async () => {
     const header = {
       programType: programTypeSel.value,
@@ -414,9 +390,13 @@ btnAddProducts.addEventListener("click", () => {
       startDay: startDayInp.value,
       endDay: endDayInp.value || null,
       programNumber: programNumInp.value,
-      activity: activityInp.value.trim()   // <—— **AQUÍ VA EL COMENTARIO**
+      activity: activityInp.value.trim()
     };
-    const lines = Array.from(tbody.querySelectorAll('tr[data-role="fields"]')).map(tr => ({
+
+    const fieldsRows = Array.from(tbody.querySelectorAll('tr[data-role="fields"]'));
+    if (!fieldsRows.length) return alert("No products added.");
+
+    const lines = fieldsRows.map(tr => ({
       pn: tr.dataset.pn || (getCell(tr, "pn")?.textContent ?? ""),
       description: getCell(tr, "desc")?.textContent ?? "",
       rrp: numVal(getCell("input", tr, "rrp")),
@@ -427,7 +407,6 @@ btnAddProducts.addEventListener("click", () => {
       totalProgramRebate: numVal(getCell("span", tr, "total")),
       programNumber: (getCell("input", tr, "lineProgramNumber")?.value) || header.programNumber
     }));
-    if (!lines.length) return alert("No products added.");
 
     const body = {
       id: generateProgramId(header.programNumber, header.customer, header.startDay),
@@ -436,71 +415,87 @@ btnAddProducts.addEventListener("click", () => {
       lines
     };
 
+    // 1) Intento de guardar en tu API
     try {
       const res = await fetch("/api/programs", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify(body)
       });
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        alert(`Error saving program: ${err.error || res.statusText}`);
+      if (res.ok) {
+        const saved = await res.json();
+        alert(`Program saved with id ${saved.id || body.id}`);
+        resetProgramForm();
         return;
       }
-      const saved = await res.json();
-      alert(`Program saved with id ${saved.id}`);
+      // si no ok, sigue al fallback
+    } catch { /* continúa al fallback */ }
+
+    // 2) Fallback: guardar como borrador local y ofrecer descarga
+    try {
+      const key = "programs:drafts";
+      const drafts = JSON.parse(localStorage.getItem(key) || "[]");
+      drafts.push(body);
+      localStorage.setItem(key, JSON.stringify(drafts));
+      // descarga
+      const blob = new Blob([JSON.stringify(body, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${body.header.programNumber || "PROGRAM"}_${Date.now()}.json`;
+      document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+
+      alert("Program saved locally (draft) and downloaded as JSON.");
       resetProgramForm();
     } catch {
-      alert(`Network error saving program`);
+      alert("Could not save program (network & local fallback failed).");
     }
   });
 
   /* ---------- Tabla helpers ---------- */
-function rowForProduct(p, programNumber) {
-  // --- FILA 1: resumen (PN + Description + Remove ÚNICO) ---
-  const trSummary = h("tr", {
-    "data-pn": p.PN,
-    "data-role": "summary",
-    className: "prod-summary"
-  },
-    h("td", { colSpan: 2, className: "pn-cell" }, p.PN),
-    h("td", { colSpan: 7, className: "desc-cell" }, p.Description),
-    h("td", { className: "actions-cell" }, (() => {
-      const btn = h("button", { type: "button", className: "action-cta sm" }, "Remove");
-      btn.addEventListener("click", () => {
-        const pn = p.PN;
-        tbody.querySelectorAll(`tr[data-pn="${pn}"]`).forEach(r => r.remove());
-        btnSaveProgram.disabled = tbody.querySelectorAll('tr[data-role="fields"]').length === 0;
-      });
-      return btn;
-    })())
-  );
+  function rowForProduct(p, programNumber) {
+    // FILA 1: resumen (Remove ÚNICO)
+    const trSummary = h("tr", {
+      "data-pn": p.PN,
+      "data-role": "summary",
+      className: "prod-summary"
+    },
+      h("td", { colSpan: 2, className: "pn-cell" }, p.PN),
+      h("td", { colSpan: 7, className: "desc-cell" }, p.Description),
+      h("td", { className: "actions-cell" }, (() => {
+        const btn = h("button", { type: "button", className: "action-cta sm" }, "Remove");
+        btn.addEventListener("click", () => {
+          const pn = p.PN;
+          tbody.querySelectorAll(`tr[data-pn="${pn}"]`).forEach(r => r.remove());
+          btnSaveProgram.disabled = tbody.querySelectorAll('tr[data-role="fields"]').length === 0;
+        });
+        return btn;
+      })())
+    );
 
-  // --- FILA 2: campos (SIN botón Remove aquí) ---
-  const trFields = h("tr", {
-    "data-pn": p.PN,
-    "data-role": "fields",
-    className: "prod-fields"
-  },
-    h("td", { colSpan: 2 }, ""),
-    tdInputNumber("rrp", 0, onAnyChange),
-    tdInputNumber("promoRrp", 0, onAnyChange),
-    tdSelect("vat", ["Yes", "No"], "No", onAnyChange),
-    tdRebateCell(onAnyChange),
-    tdInputNumber("maxQty", 0, onAnyChange),
-    tdReadOnly("total", "0.00"),
-    tdInputText("lineProgramNumber", programNumber),
-    h("td", {}, "") // celda vacía para alinear columnas
-  );
+    // FILA 2: campos (sin Remove)
+    const trFields = h("tr", {
+      "data-pn": p.PN,
+      "data-role": "fields",
+      className: "prod-fields"
+    },
+      h("td", { colSpan: 2 }, ""),
+      tdInputNumber("rrp", 0, onAnyChange),
+      tdInputNumber("promoRrp", 0, onAnyChange),
+      tdSelect("vat", ["Yes", "No"], "No", onAnyChange),
+      tdRebateCell(onAnyChange),
+      tdInputNumber("maxQty", 0, onAnyChange),
+      tdReadOnly("total", "0.00"),
+      tdInputText("lineProgramNumber", programNumber),
+      h("td", {}, "")
+    );
 
-  function onAnyChange(){ recalcRow(trFields, countrySel); }
+    function onAnyChange(){ recalcRow(trFields, countrySel); }
 
-  const frag = document.createDocumentFragment();
-  frag.append(trSummary, trFields);
-  return { frag, trFields };
-}
-
-
+    const frag = document.createDocumentFragment();
+    frag.append(trSummary, trFields);
+    return { frag, trFields };
+  }
 
   function recalcRow(tr, countrySelRef) {
     const rrpInput    = getCell("input", tr, "rrp");
@@ -551,14 +546,12 @@ function rowForProduct(p, programNumber) {
     const rebateVal = parseFloat(rebateInput.value || "0") || 0;
     totalSpan.textContent = (rebateVal * qty).toFixed(2);
   }
-function recalcAllRows(tbodyEl, countrySelRef){
-  Array.from(tbodyEl.querySelectorAll('tr[data-role="fields"]'))
-       .forEach(tr => recalcRow(tr, countrySelRef));
-}
-
+  function recalcAllRows(tbodyEl, countrySelRef){
+    Array.from(tbodyEl.querySelectorAll('tr[data-role="fields"]'))
+         .forEach(tr => recalcRow(tr, countrySelRef));
+  }
 
   function trHead(cols){ return h("tr", {}, ...cols.map(c => h("th", {}, c))); }
-  function td(txt, data = {}) { const el = h("td", {}, txt); if (data["data-col"]) el.dataset.col = data["data-col"]; return el; }
   function tdInputNumber(col, initial = 0, onInput){
     const inp = h("input", { type: "number", step: "0.01", value: initial, className: "form-control" });
     const cell = h("td", {}, inp); cell.dataset.col = col; if (onInput) inp.addEventListener("input", onInput); return cell;
@@ -576,25 +569,14 @@ function recalcAllRows(tbodyEl, countrySelRef){
     if (onChange) sel.addEventListener("change", onChange);
     const cell = h("td", {}, sel); cell.dataset.col = col; return cell;
   }
-function tdActionRemove() {
-  const btn = h("button", { type: "button", className: "action-cta" }, "Remove");
-  const cell = h("td", {}, btn);
-
-  btn.addEventListener("click", () => {
-    const pn = btn.closest("tr")?.dataset.pn;
-    if (pn) {
-      // Elimina todas las filas del mismo producto (summary + fields)
-      tbody.querySelectorAll(`tr[data-pn="${pn}"]`).forEach(r => r.remove());
+  function getCell(typeOrTr, maybeTr, maybeCol){
+    if (typeof typeOrTr === "string") {
+      const td = maybeTr.querySelector(`[data-col="${maybeCol}"]`);
+      return td ? td.querySelector(typeOrTr) : null;
     }
-
-    // Deshabilita el botón Save si ya no quedan productos
-    btnSaveProgram.disabled = tbody.querySelectorAll('tr[data-role="fields"]').length === 0;
-  });
-
-  return cell;
-}
-
-
+    const tr = typeOrTr, col = maybeTr;
+    return tr.querySelector(`[data-col="${col}"]`)?.querySelector("*") || tr.querySelector(`[data-col="${col}"]`);
+  }
   function numVal(node){
     if (!node) return 0;
     const t = node.tagName;
@@ -606,15 +588,6 @@ function tdActionRemove() {
     setSelectOptions(sel, options, placeholder);
     return sel;
   }
-  function getCell(typeOrTr, maybeTr, maybeCol){
-    if (typeof typeOrTr === "string") {
-      const td = maybeTr.querySelector(`[data-col="${maybeCol}"]`);
-      return td ? td.querySelector(typeOrTr) : null;
-    }
-    const tr = typeOrTr, col = maybeTr;
-    return tr.querySelector(`[data-col="${col}"]`)?.querySelector("*") || tr.querySelector(`[data-col="${col}"]`);
-  }
-
   function generateProgramId(programNumber, customer, startDay) {
     const base = `${programNumber || "NONUM"}|${customer || "NOCUST"}|${startDay || ""}`;
     let h = 0; for (let i = 0; i < base.length; i++) h = (h * 31 + base.charCodeAt(i)) >>> 0;

@@ -1,10 +1,6 @@
 /* /programs/create/styles/main.css */
 /* ============================================================
    Create Program — Card layout (compatible con tu DOM actual)
-   Estructura JS esperada:
-   - form#program-form > .header-grid (label.form-label + .form-control)
-   - textarea#fld-activity
-   - .actions-row con botones
    ============================================================ */
 
 :root{
@@ -15,12 +11,7 @@
   --bg: var(--bg, #ffffff);
 }
 
-/* Layout general */
 .container{ max-width:1200px; margin:0 auto; padding:16px; }
-.title{ font-size:1.5rem; font-weight:700; margin-bottom:8px; }
-.subtitle{ color:var(--muted); margin-bottom:24px; }
-
-/* Tarjeta */
 .card{
   background:var(--bg);
   border:1px solid var(--border);
@@ -32,18 +23,17 @@
 /* === GRID principal generado por tu JS === */
 .header-grid{
   display:grid;
-  grid-template-columns: minmax(240px, 1fr) minmax(280px, 1fr); /* 2 cols */
+  grid-template-columns: minmax(220px, 1fr) minmax(280px, 1fr);
   column-gap:28px;
   row-gap:16px;
   align-items:center;
 }
 
-/* Etiquetas y controles (tal y como los pinta tu JS) */
 .form-label{
   font-weight:600;
   font-size:.9rem;
   color:var(--fg);
-  margin:0;          /* las colocamos en la columna izquierda */
+  margin:0;
 }
 .form-control{
   width:100%;
@@ -55,16 +45,9 @@
   color:var(--fg);
 }
 
-/* Campo “Describe this activity” a 2 columnas
-   Tu JS crea label[for="fld-activity"] seguido de #fld-activity */
-.header-grid label[for="fld-activity"],
-#fld-activity{
-  grid-column: 1 / -1;   /* ocupar las 2 columnas */
-}
-#fld-activity{
-  min-height:96px;
-  resize:vertical;
-}
+/* "Describe this activity" ocupa 2 columnas */
+.header-grid label[for="fld-activity"], #fld-activity{ grid-column: 1 / -1; }
+#fld-activity{ min-height:96px; resize:vertical; }
 
 /* Botonera */
 .actions-row{
@@ -76,94 +59,38 @@
   margin-top:20px;
 }
 
-.btn{
-  padding:8px 14px;
-  border-radius:8px;
-  border:1px solid var(--border);
-  background:var(--bg);
-  color:var(--fg);
-  font-weight:600;
-  cursor:pointer;
-  transition:border-color .2s ease, transform .2s ease, opacity .2s ease;
-}
-.btn:hover{ border-color:var(--accent); transform:translateY(-1px); }
-.btn.primary{ background:var(--accent); border-color:var(--accent); color:#fff; }
-.btn.danger{ background:#dc2626; border-color:#dc2626; color:#fff; }
-.btn.primary:hover{ opacity:.9; }
-
-/* Inputs deshabilitados */
-input[disabled], select[disabled], textarea[disabled]{
-  background:#f3f4f6; cursor:not-allowed;
-}
-
-/* ===========================
-   Selected products - 2 líneas
-   =========================== */
-#selectedProductsCard table { width: 100%; }
+/* Selected products */
+#selectedProductsCard table { width: 100%; border-collapse: collapse; }
+#selectedProductsCard thead th{ text-align:left; padding:8px 10px; border-bottom:1px solid var(--border); }
+#selectedProductsCard tbody td{ padding:8px 10px; }
 
 #selectedProductsCard tbody tr.prod-summary td {
   border-bottom: 0;
   padding-top: 14px;
   padding-bottom: 6px;
 }
-
 #selectedProductsCard tbody tr.prod-fields td {
   padding-top: 6px;
   padding-bottom: 14px;
-  border-bottom: 1px solid var(--card-border);
+  border-bottom: 1px solid var(--border);
 }
 
-/* PN + Description en fila 1 */
 #selectedProductsCard .pn-cell {
   font-weight: 700;
   color: var(--fg);
   white-space: nowrap;
   width: 1%;
 }
-#selectedProductsCard .desc-cell {
-  color: var(--muted);
-}
+#selectedProductsCard .desc-cell { color: var(--muted); }
+#selectedProductsCard .actions-cell { text-align: right; }
+#selectedProductsCard .action-cta.sm { padding: .4rem .7rem; font-size: .9rem; }
 
-/* Botón a la derecha en fila 1 */
-#selectedProductsCard .actions-cell {
-  text-align: right;
-}
-#selectedProductsCard .action-cta.sm {
-  padding: .4rem .7rem;
-  font-size: .9rem;
-}
-
-/* Inputs compactos en fila 2 */
-#selectedProductsCard .prod-fields td .form-control {
-  min-width: 90px;
-}
-
-/* Cuando hay varios productos, separador visual ya viene por el border-bottom de .prod-fields */
-
+/* Inputs compactos fila 2 */
+#selectedProductsCard .prod-fields td .form-control { min-width: 90px; }
 
 /* Responsivo */
 @media (max-width: 900px){
-  .header-grid{
-    grid-template-columns: 1fr;  /* 1 columna en móvil */
-  }
-  .form-label{ margin-top:6px; }
+  .header-grid{ grid-template-columns: 1fr; }
   .actions-row{ justify-content:stretch; gap:8px; }
-  .btn{ flex:1 1 auto; }
+  .action-cta, .btn{ flex:1 1 auto; }
 }
-
-/* (Opcional) tabla de líneas si la añades debajo del form */
-.lines-table{
-  width:100%; border-collapse:collapse; font-size:.9rem; margin-top:20px;
-}
-.lines-table th, .lines-table td{
-  border-bottom:1px solid var(--border); padding:8px 10px;
-}
-.lines-table th{ text-align:left; font-weight:600; background:#f9fafb; }
-.lines-table td.num{ text-align:right; font-variant-numeric:tabular-nums; }
-
-/* Modal genérico por si tu JS lo usa */
-.modal{ border:none; border-radius:12px; padding:0; width:min(580px,95vw); }
-.modal::backdrop{ background:rgba(0,0,0,.25); }
-.modal-body{ display:block; padding:20px; }
-.modal .actions{ border-top:1px solid var(--border); margin-top:16px; padding-top:12px; display:flex; justify-content:flex-end; gap:8px; }
-.error{ color:#dc2626; font-size:.85rem; margin-top:4px; }
