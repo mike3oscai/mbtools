@@ -1,46 +1,61 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Create Program · MBTools</title>
 
-  <!-- Global -->
+  <title>MBTools · Create Program</title>
+
+  <!-- Tipografía global -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Estilos compartidos -->
   <link rel="stylesheet" href="../../shared/styles/shared.css">
-  <!-- Page -->
-  <link rel="stylesheet" href="styles/main.css">
+
+  <!-- Puedes añadir más temas aquí cuando estén listos -->
+  <!-- <link rel="stylesheet" href="../../shared/styles/theme-soft.css"> -->
+
+  <style>
+    body {
+      font-family: 'Montserrat', system-ui, -apple-system, sans-serif;
+    }
+  </style>
 </head>
 <body>
-  <header class="container">
-    <a href="../" class="back-link">← Back</a>
-    <h1>Create a Program</h1>
-    <p>Fill in the fields below to create a new program.</p>
-  </header>
+  <div class="page page-programs page-programs-create">
+    <header class="header">
+      <div class="container">
+        <h1 class="page-title">Create Program</h1>
+      </div>
+    </header>
 
-  <main class="container">
-    <!-- Program header card. La sección de productos y la tabla
-         se crean y añaden dinámicamente desde scripts/main.js -->
-    <section class="card form-card" aria-labelledby="program-header-title">
-      <h2 id="program-header-title">Program header</h2>
-      <form id="program-form" novalidate aria-label="Create program form"></form>
-    </section>
-  </main>
+    <main class="container">
+      <!-- ====== Formulario de cabecera (renderizado por main.js) ====== -->
+      <section id="createFormContainer" class="card">
+        <div class="loading">
+          <p>Loading create form…</p>
+        </div>
+      </section>
+      <!-- Las secciones Products y Selected Products se añaden dinámicamente -->
+    </main>
 
-  <footer class="container">
-    <small>© <span id="y"></span> MBTools.app</small>
-  </footer>
+    <footer class="footer">
+      <div class="container">
+        <small class="muted">© mbtools.app</small>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Scripts -->
+  <script type="module" src="../../shared/scripts/theme.js"></script>
+  <script type="module" src="./scripts/main.js"></script>
 
   <script type="module">
-    // Año footer
-    document.getElementById('y').textContent = new Date().getFullYear();
-
-    // Tema (compartido)
-    import { initThemeToggle } from "../../shared/scripts/theme.js";
-    initThemeToggle();
-
-    // Render del formulario + inserción dinámica de secciones
     import { renderCreateForm } from "./scripts/main.js";
-    renderCreateForm(document.getElementById("program-form"));
+    const container = document.getElementById("createFormContainer");
+    renderCreateForm(container);
   </script>
 </body>
 </html>

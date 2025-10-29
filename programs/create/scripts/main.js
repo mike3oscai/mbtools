@@ -378,23 +378,30 @@ grid.append(
     return "";
   }
 
-  /* ---------- Add Products + cálculo ---------- */
-  btnAddProducts.addEventListener("click", () => {
-    const selectedPNs = Array.from(pnSel.selectedOptions).map(o => o.value);
-    const subset = selectedPNs.length ? products.filter(p => selectedPNs.includes(p.PN)) : filteredProducts();
-    if (!subset.length) return alert("Please select at least one PN or narrow filters to a non-empty list.");
+/* ---------- Add Products + cálculo ---------- */
+btnAddProducts.addEventListener("click", () => {
+  const selectedPNs = Array.from(pnSel.selectedOptions).map(o => o.value);
+  const subset = selectedPNs.length ? products.filter(p => selectedPNs.includes(p.PN)) : filteredProducts();
+  if (!subset.length) return alert("Please select at least one PN or narrow filters to a non-empty list.");
 
-    const existing = new Set(Array.from(tbody.querySelectorAll("tr")).map(tr => tr.dataset.pn));
-    subset.forEach(p => {
-      if (existing.has(p.PN)) return;
-      const tr = rowForProduct(p, programNumInp.value);
-      tbody.append(tr);
-      existing.add(p.PN);
-      recalcRow(tr, countrySel);
-    });
+  const existing = new Set(Array.from(tbody.querySelectorAll("tr")).map(tr => tr.dataset.pn));
+  subset.forEach(p => {
+    if (existing.has(p.PN)) return;
 
-    btnSaveProgram.disabled = tbody.children.length === 0;
+    // ⬇️ ahora rowForProduct devuelve { frag, trFields }
+    const { frag, trFields } = rowForProduct(p, programNumInp.value);
+    tbody.append(frag);
+
+    // ⬇️ recalcular SOBRE el <tr> de campos (no sobre el fragment)
+    recalcRow(trFields, countrySel);
+
+    existing.add(p.PN);
   });
+
+  // habilitar guardado sólo si hay filas de campos
+  btnSaveProgram.disabled = tbody.querySelectorAll('tr[data-role="fields"]').length === 0;
+});
+
 
   /* ---------- SAVE PROGRAM ---------- */
   btnSaveProgram.addEventListener("click", async () => {
@@ -449,18 +456,15 @@ grid.append(
   });
 
   /* ---------- Tabla helpers ---------- */
-  function rowForProduct(p, programNumber) {
-  // --- FILA 1: resumen (PN + Description + Remove) ---
+function rowForProduct(p, programNumber) {
+  // --- FILA 1: resumen (PN + Description + Remove ÚNICO) ---
   const trSummary = h("tr", {
     "data-pn": p.PN,
     "data-role": "summary",
     className: "prod-summary"
   },
-    // PN ocupa 2 columnas (PN + Description header)
     h("td", { colSpan: 2, className: "pn-cell" }, p.PN),
-    // Descripción ocupa las siguientes 7 columnas
     h("td", { colSpan: 7, className: "desc-cell" }, p.Description),
-    // Acción Remove (1 col)
     h("td", { className: "actions-cell" }, (() => {
       const btn = h("button", { type: "button", className: "action-cta sm" }, "Remove");
       btn.addEventListener("click", () => {
@@ -472,16 +476,13 @@ grid.append(
     })())
   );
 
-  // --- FILA 2: campos (todo lo que tenías antes) ---
+  // --- FILA 2: campos (SIN botón Remove aquí) ---
   const trFields = h("tr", {
     "data-pn": p.PN,
     "data-role": "fields",
     className: "prod-fields"
   },
-    // celda vacía para alinear debajo de resumen (PN + Description)
     h("td", { colSpan: 2 }, ""),
-
-    // el resto igual que tu fila original
     tdInputNumber("rrp", 0, onAnyChange),
     tdInputNumber("promoRrp", 0, onAnyChange),
     tdSelect("vat", ["Yes", "No"], "No", onAnyChange),
@@ -489,16 +490,16 @@ grid.append(
     tdInputNumber("maxQty", 0, onAnyChange),
     tdReadOnly("total", "0.00"),
     tdInputText("lineProgramNumber", programNumber),
-    tdActionRemove() // botón Remove redundante (útil si quitas el de arriba)
+    h("td", {}, "") // celda vacía para alinear columnas
   );
 
   function onAnyChange(){ recalcRow(trFields, countrySel); }
 
-  // devolvemos ambos TR para que los añadas juntos
   const frag = document.createDocumentFragment();
   frag.append(trSummary, trFields);
-  return frag;
+  return { frag, trFields };
 }
+
 
 
   function recalcRow(tr, countrySelRef) {
@@ -550,9 +551,11 @@ grid.append(
     const rebateVal = parseFloat(rebateInput.value || "0") || 0;
     totalSpan.textContent = (rebateVal * qty).toFixed(2);
   }
-  function recalcAllRows(tbodyEl, countrySelRef){
-    Array.from(tbodyEl.querySelectorAll("tr")).forEach(tr => recalcRow(tr, countrySelRef));
-  }
+function recalcAllRows(tbodyEl, countrySelRef){
+  Array.from(tbodyEl.querySelectorAll('tr[data-role="fields"]'))
+       .forEach(tr => recalcRow(tr, countrySelRef));
+}
+
 
   function trHead(cols){ return h("tr", {}, ...cols.map(c => h("th", {}, c))); }
   function td(txt, data = {}) { const el = h("td", {}, txt); if (data["data-col"]) el.dataset.col = data["data-col"]; return el; }
