@@ -68,13 +68,6 @@ function hasLines() {
   ).length > 0;
 }
 
-
-// Devuelve true si hay líneas de producto en la tabla
-function hasLines() {
-  return document.querySelectorAll('#productsTbody tr[data-role="fields"], #productsTbody tr.prod-fields').length > 0;
-}
-
-
 /* ---------- Program number ---------- */
 function nextSequence(code, geo, year) {
   const key = `seq:${code}|${geo.toUpperCase()}|${year}`;
