@@ -61,6 +61,14 @@ function setSelectOptions(selectEl, options = [], placeholder = "Select...", sel
   }
 }
 
+// ¿Hay líneas en la tabla?
+function hasLines() {
+  return document.querySelectorAll(
+    '#productsTbody tr[data-role="fields"], #productsTbody tr.prod-fields'
+  ).length > 0;
+}
+
+
 // Devuelve true si hay líneas de producto en la tabla
 function hasLines() {
   return document.querySelectorAll('#productsTbody tr[data-role="fields"], #productsTbody tr.prod-fields').length > 0;
@@ -324,7 +332,6 @@ export async function renderCreateForm(container) {
 
     productsSection.style.display = "";
     tableCard.style.display = "";
-    tbody.replaceChildren();
     btnSaveProgram.disabled = !hasLines();
 
     productSel.value = ""; ramSel.value = ""; romSel.value = "";
@@ -375,17 +382,20 @@ export async function renderCreateForm(container) {
 subset.forEach(p => {
   if (existing.has(p.PN)) return;
 
-  const { frag, trFields } = rowForProduct(p, programNumInp.value);
+  const result = rowForProduct(p, programNumInp.value);
+  // Soporta ambas firmas: {frag, trFields} o solo DocumentFragment
+  const frag = result.frag || result;
+  const trFields = result.trFields || [...frag.querySelectorAll('tr')].find(tr => tr.matches('[data-role="fields"], .prod-fields'));
+
   tbody.append(frag);
 
-  // Recalcula SOBRE el TR de campos
-  recalcRow(trFields, countrySel);
-
+  if (trFields) recalcRow(trFields, countrySel);
   existing.add(p.PN);
 });
 
-// Habilita Save si hay al menos una fila de campos
+// Habilita Save si hay líneas
 btnSaveProgram.disabled = !hasLines();
+
 
   });
 
@@ -479,6 +489,7 @@ btn.addEventListener("click", () => {
   tbody.querySelectorAll(`tr[data-pn="${pn}"]`).forEach(r => r.remove());
   btnSaveProgram.disabled = !hasLines();
 });
+
 
         return btn;
       })())
@@ -607,3 +618,9 @@ btn.addEventListener("click", () => {
 }
 
 export function wireSelectedProducts() {}
+
+// --- Sincroniza el estado del botón Save al cargar la página ---
+document.addEventListener('DOMContentLoaded', () => {
+  const btn = document.getElementById('btnSaveProgram');
+  if (btn) btn.disabled = !hasLines();
+});
