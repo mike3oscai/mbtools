@@ -61,6 +61,12 @@ function setSelectOptions(selectEl, options = [], placeholder = "Select...", sel
   }
 }
 
+// Devuelve true si hay líneas de producto en la tabla
+function hasLines() {
+  return document.querySelectorAll('#productsTbody tr[data-role="fields"], #productsTbody tr.prod-fields').length > 0;
+}
+
+
 /* ---------- Program number ---------- */
 function nextSequence(code, geo, year) {
   const key = `seq:${code}|${geo.toUpperCase()}|${year}`;
@@ -316,10 +322,10 @@ export async function renderCreateForm(container) {
     activityInp.value   = "";
     refreshCustomers();
 
-    productsSection.style.display = "none";
-    tableCard.style.display = "none";
+    productsSection.style.display = "";
+    tableCard.style.display = "";
     tbody.replaceChildren();
-    btnSaveProgram.disabled = true;
+    btnSaveProgram.disabled = !hasLines();
 
     productSel.value = ""; ramSel.value = ""; romSel.value = "";
     chkSelectAll.checked = false;
@@ -366,17 +372,21 @@ export async function renderCreateForm(container) {
     if (!subset.length) return alert("Please select at least one PN or narrow filters to a non-empty list.");
 
     const existing = new Set(Array.from(tbody.querySelectorAll("tr")).map(tr => tr.dataset.pn));
-    subset.forEach(p => {
-      if (existing.has(p.PN)) return;
+subset.forEach(p => {
+  if (existing.has(p.PN)) return;
 
-      const { frag, trFields } = rowForProduct(p, programNumInp.value);
-      tbody.append(frag);
-      recalcRow(trFields, countrySel);
+  const { frag, trFields } = rowForProduct(p, programNumInp.value);
+  tbody.append(frag);
 
-      existing.add(p.PN);
-    });
+  // Recalcula SOBRE el TR de campos
+  recalcRow(trFields, countrySel);
 
-    btnSaveProgram.disabled = tbody.querySelectorAll('tr[data-role="fields"]').length === 0;
+  existing.add(p.PN);
+});
+
+// Habilita Save si hay al menos una fila de campos
+btnSaveProgram.disabled = !hasLines();
+
   });
 
   /* ---------- SAVE PROGRAM (con fallback local) ---------- */
@@ -464,11 +474,12 @@ export async function renderCreateForm(container) {
       h("td", { colSpan: 7, className: "desc-cell" }, p.Description),
       h("td", { className: "actions-cell" }, (() => {
         const btn = h("button", { type: "button", className: "action-cta sm" }, "Remove");
-        btn.addEventListener("click", () => {
-          const pn = p.PN;
-          tbody.querySelectorAll(`tr[data-pn="${pn}"]`).forEach(r => r.remove());
-          btnSaveProgram.disabled = tbody.querySelectorAll('tr[data-role="fields"]').length === 0;
-        });
+btn.addEventListener("click", () => {
+  const pn = p.PN;
+  tbody.querySelectorAll(`tr[data-pn="${pn}"]`).forEach(r => r.remove());
+  btnSaveProgram.disabled = !hasLines();
+});
+
         return btn;
       })())
     );
