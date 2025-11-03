@@ -406,7 +406,8 @@ btnSaveProgram.disabled = !hasLines();
       activity: activityInp.value.trim()
     };
 
-    const fieldsRows = Array.from(tbody.querySelectorAll('tr[data-role="fields"]'));
+    const fieldsRows = Array.from(tbody.querySelectorAll('.prod-fields'));
+
     if (!fieldsRows.length) return alert("No products added.");
 
     const lines = fieldsRows.map(tr => ({
