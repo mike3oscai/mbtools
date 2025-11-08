@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Deal Planner — MBTools.app</title>
+  <meta name="description" content="Planifica ofertas insertando productos y calcula la rentabilidad de cada deal." />
+  <meta name="color-scheme" content="light dark" />
+
+  <link rel="icon" href="../assets/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <!-- Estilos compartidos + específicos de Deal Planner -->
+  <link rel="stylesheet" href="../shared/styles/shared.css">
+  <link rel="stylesheet" href="./styles/main.css">
+</head>
+<body class="theme-soft">
+  <header class="container">
+    <a class="back-link" href="../">← Volver a MBTools</a>
+    <h1>Deal Planner</h1>
+    <p>Inserta productos y calcula la rentabilidad por deal.</p>
+  </header>
+
+  <main class="container">
+    <!-- El JS montará aquí la tarjeta "Customer" y, más adelante, el resto de tarjetas -->
+    <div id="dealplanner-root"></div>
+  </main>
+
+  <footer class="container">
+    <small>© <span id="y"></span> MBTools.app</small>
+  </footer>
+
+  <!-- Utilidades comunes (tema, etc.) -->
+  <script type="module">
+    document.getElementById('y').textContent = new Date().getFullYear();
+    import { initThemeToggle } from "../shared/scripts/theme.js";
+    initThemeToggle();
+  </script>
+
+  <!-- Lógica de Deal Planner -->
+  <script type="module" src="./scripts/main.js"></script>
+</body>
+</html>
