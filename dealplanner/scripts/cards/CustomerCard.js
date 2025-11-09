@@ -9,7 +9,7 @@ import { getCustomers } from "../dataService.js";
 export default async function renderCustomerCard(root) {
   const card  = createEl("section", { className: "card" });
   const head  = createEl("h2", { text: "Customer" });
-  const help  = createEl("p", { className: "dp-sub", text: "Selecciona el cliente y define Front/Back End y Distributor Fee." });
+  const help  = createEl("p", { className: "dp-sub", text: "Insert customer details" });
 
   const grid  = createEl("div", { className: "dp-grid" });
 

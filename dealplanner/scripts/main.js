@@ -28,7 +28,7 @@ function ensureRoot() {
 function mountHeader(root) {
   const header = createEl("div", { className: "action-card" });
   const h1 = createEl("h1", { text: "Deal Planner" });
-  const p = createEl("p", { text: "Crea y evalúa la rentabilidad de tus deals con datos del catálogo." });
+  const p = createEl("p", { text: "Create a deal to check profitability" });
   header.append(h1, p);
   root.append(header);
 }
