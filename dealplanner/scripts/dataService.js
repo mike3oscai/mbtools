@@ -1,77 +1,110 @@
 /* dataService.js
-   Load JSON catalogs from ../../data relative to this module.
-   Normalize Program/RAM/ROM keys case-insensitively and with aliases.
+   Loads and normalizes external datasets for Deal Planner.
+   - Catalog: ../data/productset.json  -> { program, ram, rom }
+   - Customers: ../data/customerset.json -> { customerName }
 */
 
-let customers = [];
-let products = [];          // raw
-let catalogNormalized = []; // [{ program, ram, rom }, ...]
+let _catalog = [];
+let _catalogLoaded = false;
 
-const DATA_BASE = new URL("../../data/", import.meta.url);
-const CUSTOMERS_URL = new URL("customerset.json", DATA_BASE);
-const PRODUCTS_URL  = new URL("productset.json",  DATA_BASE);
+let _customers = [];
+let _customersLoaded = false;
 
-async function fetchJson(url) {
-  const res = await fetch(url, { cache: "no-store" });
-  if (!res.ok) throw new Error(`Fetch failed ${url}: ${res.status}`);
-  return res.json();
+// -------- Helpers de fetch con varios paths candidatos (para servir en distintas raíces) -----
+async function fetchJsonWithFallback(paths) {
+  let lastErr = null;
+  for (const url of paths) {
+    try {
+      const res = await fetch(url, { cache: "no-store" });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return await res.json();
+    } catch (e) {
+      lastErr = e;
+    }
+  }
+  console.warn("Failed to fetch JSON from any candidate:", paths, "Last error:", lastErr);
+  return null;
 }
 
-export async function loadDatasets() {
-  const [c, p] = await Promise.all([
-    fetchJson(CUSTOMERS_URL).catch(() => []),
-    fetchJson(PRODUCTS_URL).catch(() => [])
+/* ==============================
+   PRODUCT CATALOG
+   ============================== */
+function normalizeCatalogRow(row) {
+  const program = row.Program ?? row.program ?? "";
+  const ram     = row.RAM     ?? row.ram     ?? "";
+  const rom     = row.ROM     ?? row.rom     ?? "";
+  return {
+    program: String(program).trim(),
+    ram: String(ram).trim(),
+    rom: String(rom).trim()
+  };
+}
+
+export async function loadCatalog() {
+  if (_catalogLoaded) return _catalog;
+
+  const data = await fetchJsonWithFallback([
+    "../data/productset.json",
+    "/data/productset.json",
+    "../../data/productset.json"
   ]);
-  customers = Array.isArray(c) ? c : [];
-  products  = Array.isArray(p) ? p : [];
-  catalogNormalized = normalizeCatalog(products);
+
+  if (!Array.isArray(data)) {
+    _catalog = [];
+    _catalogLoaded = true;
+    return _catalog;
+  }
+
+  const normalized = data.map(normalizeCatalogRow).filter(r => r.program || r.ram || r.rom);
+
+  // dedup por combinación program-ram-rom
+  const seen = new Set();
+  _catalog = normalized.filter(r => {
+    const k = `${r.program}||${r.ram}||${r.rom}`;
+    if (seen.has(k)) return false;
+    seen.add(k);
+    return true;
+  });
+
+  _catalogLoaded = true;
+  return _catalog;
 }
 
-export function getCustomers() { return customers; }
-export function getProducts()  { return products;  }           // raw (por si lo necesitas)
-export function getCatalog()   { return catalogNormalized; }   // normalizado
-
-/* ---------- helpers ---------- */
-
-function normStr(v) {
-  if (v === null || v === undefined) return "";
-  return String(v).trim();
-}
-function pick(o, candidates) {
-  // devuelve el primer valor definido entre una lista de posibles claves (case-insensitive)
-  for (const cand of candidates) {
-    // búsqueda directa
-    if (o && o.hasOwnProperty(cand)) return o[cand];
-  }
-  // búsqueda case-insensitive
-  const lowerMap = {};
-  for (const k of Object.keys(o || {})) lowerMap[k.toLowerCase()] = o[k];
-  for (const cand of candidates) {
-    const hit = lowerMap[cand.toLowerCase()];
-    if (hit !== undefined) return hit;
-  }
-  return undefined;
+export function getCatalog() {
+  return _catalog;
 }
 
-function normalizeCatalog(rows) {
-  // Intentamos cubrir variantes comunes de claves usadas históricamente
-  const PROG_KEYS = ["Program", "PROGRAM", "program"];
-  const RAM_KEYS  = ["RAM", "Ram", "ram", "RAM in GB", "ram_gb"];
-  const ROM_KEYS  = ["ROM", "Rom", "rom", "ROM in GB", "Storage", "STORAGE IN GB", "storage_gb"];
+/* ==============================
+   CUSTOMERS
+   ============================== */
+function normalizeCustomerRow(row) {
+  const name = row.customerName ?? row.CustomerName ?? row.name ?? "";
+  return { customerName: String(name).trim() };
+}
 
-  const out = [];
-  for (const r of rows || []) {
-    const program = normStr(pick(r, PROG_KEYS));
-    const ram     = normStr(pick(r, RAM_KEYS));
-    const rom     = normStr(pick(r, ROM_KEYS));
+export async function loadCustomers() {
+  if (_customersLoaded) return _customers;
 
-    if (!program) continue; // sin programa no sirve para encadenar
+  const data = await fetchJsonWithFallback([
+    "../data/customerset.json",
+    "/data/customerset.json",
+    "../../data/customerset.json"
+  ]);
 
-    out.push({
-      program,
-      ram,
-      rom
-    });
+  if (!Array.isArray(data)) {
+    _customers = [];
+    _customersLoaded = true;
+    return _customers;
   }
-  return out;
+
+  _customers = data
+    .map(normalizeCustomerRow)
+    .filter(r => r.customerName);
+
+  _customersLoaded = true;
+  return _customers;
+}
+
+export function getCustomers() {
+  return _customers;
 }

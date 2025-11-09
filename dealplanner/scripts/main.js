@@ -1,63 +1,91 @@
 /* main.js
-   Bootstrap: load datasets + store, mount Customer + list of product bundles, add "Add Product" control.
+   App bootstrap & composition: mounts Customer card, per-product bundles, and global Financials.
 */
 
-import { ensureMainContainer, createEl } from "./utils.js";
-import { loadDatasets } from "./dataService.js";
-import { load as loadStore, getProductIds, createProduct } from "./store.js";
+import { load as loadStore, getProductIds, createProduct, clearDraft } from "./store.js";
+import { createEl } from "./utils.js";
 import { on } from "./bus.js";
 import renderCustomerCard from "./cards/CustomerCard.js";
 import mountProductBundle from "./cards/ProductBundle.js";
+import renderFinancialsCardGlobal from "./cards/FinancialsCard.js";
+import { loadCatalog, loadCustomers } from "./dataService.js";
 
-document.addEventListener("DOMContentLoaded", async () => {
-  // Footer year and theme (optional)
-  const y = document.getElementById("y");
-  if (y) y.textContent = new Date().getFullYear();
-
-  // Datasets + state
-  loadStore();
-  await loadDatasets();
-
-  const main = ensureMainContainer();
+function ensureRoot() {
+  let main = document.querySelector("main.container");
+  if (!main) {
+    main = createEl("main", { className: "container" });
+    document.body.appendChild(main);
+  }
   let root = document.querySelector("#dealplanner-root");
   if (!root) {
     root = createEl("div", { attrs: { id: "dealplanner-root" } });
     main.append(root);
   }
+  return root;
+}
 
-  // Header
+function mountHeader(root) {
   const header = createEl("div", { className: "action-card" });
   const h1 = createEl("h1", { text: "Deal Planner" });
-  const p  = createEl("p", { text: "Build and evaluate deal profitability per product." });
+  const p = createEl("p", { text: "Crea y evalúa la rentabilidad de tus deals con datos del catálogo." });
   header.append(h1, p);
   root.append(header);
+}
 
-  // Customer Card (single)
+function ensureBundlesContainer(root) {
+  let wrap = document.querySelector("#product-bundles");
+  if (!wrap) {
+    wrap = createEl("div", { attrs: { id: "product-bundles" } });
+    root.append(wrap);
+  }
+  return wrap;
+}
+
+/** <<< NUEVO: barra de acciones debajo de Customer */
+function mountActionsBelowCustomer(root) {
+  const actions = createEl("div", { style: "margin:.5rem 0 1rem; display:flex; gap:.5rem; flex-wrap:wrap;" });
+
+  const btnAdd = createEl("button", { className: "btn", text: "Add Product" });
+  btnAdd.type = "button";
+  btnAdd.addEventListener("click", () => createProduct());
+
+  const btnClear = createEl("button", { className: "btn btn-ghost", text: "Clear Simulation" });
+  btnClear.type = "button";
+  btnClear.addEventListener("click", () => {
+    // Limpia borrador + recarga UI limpia
+    clearDraft();
+    // recarga sencilla para reconstruir todo con estado inicial
+    window.location.reload();
+  });
+
+  actions.append(btnAdd, btnClear);
+  root.append(actions);
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
+  loadStore();
+  await Promise.all([loadCatalog(), loadCustomers()]);
+
+  const root = ensureRoot();
+  mountHeader(root);
+
+  // Tarjeta Customer
   renderCustomerCard(root);
 
-  // Toolbar for products
-  const toolbar = createEl("div", { className: "dp-card-head" });
-  const h2 = createEl("h2", { text: "Products" });
-  const addBtn = createEl("button", { className: "btn", text: "Add Product" });
-  toolbar.append(h2, addBtn);
-  root.append(toolbar);
+  // <<< coloca aquí la barra con Add Product + Clear Simulation
+  mountActionsBelowCustomer(root);
 
-  // Container for product bundles
-  const list = createEl("div", { attrs: { id: "dp-bundles" } });
-  root.append(list);
-
-  // Mount existing products
+  // Bundles existentes
+  const bundlesWrap = ensureBundlesContainer(root);
   for (const id of getProductIds()) {
-    mountProductBundle(list, id);
+    mountProductBundle(bundlesWrap, id);
   }
 
-  // Add product: only create; mounting is handled by the event listener below
-  addBtn.addEventListener("click", () => {
-    createProduct();
+  // Alta de nuevos bundles
+  on("product:created", ({ productId }) => {
+    mountProductBundle(bundlesWrap, productId);
   });
 
-  // React to newly created products
-  on("product:created", ({ productId }) => {
-    mountProductBundle(list, productId);
-  });
+  // Financials global
+  renderFinancialsCardGlobal(root);
 });

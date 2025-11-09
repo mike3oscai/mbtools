@@ -1,16 +1,17 @@
 /* ProductCard.js
-   Product-level technical & cost inputs (per productId).
+   Product-level technical & cost inputs (per productId), using normalized catalog.
 */
 
 import { createEl, uniqueSorted, bindNumberInput, toFixed2 } from "../utils.js";
 import { getBundle, updateProductSection, deleteProduct } from "../store.js";
-import { getProducts } from "../dataService.js";
+import { getCatalog } from "../dataService.js";
 
 export default function renderProductCard(container, productId) {
   const card = createEl("section", { className: "card" });
   const head = createEl("div", { className: "dp-card-head" });
   const title = createEl("h2", { text: "Product" });
-  const btnRemove = createEl("button", { className: "btn btn-ghost", text: "Remove bundle" });
+  const btnRemove = createEl("button", { className: "btn btn-ghost", text: "Remove Product" });
+  btnRemove.type = "button";
   btnRemove.addEventListener("click", () => deleteProduct(productId));
   head.append(title, btnRemove);
 
@@ -20,11 +21,22 @@ export default function renderProductCard(container, productId) {
   const bundle = getBundle(productId);
   const model = bundle.product;
 
-  // Catalog helpers
-  const catalog = getProducts();
-  const allPrograms = uniqueSorted(catalog.map(p => p.Program));
-  const ramFor = (program) => uniqueSorted(catalog.filter(p => p.Program === program).map(p => p.RAM));
-  const romFor = (program, ram) => uniqueSorted(catalog.filter(p => p.Program === program && p.RAM === ram).map(p => p.ROM));
+  // Normalized catalog
+  const catalog = getCatalog();
+  const allPrograms = uniqueSorted(catalog.map(p => p.program).filter(Boolean));
+
+  const ramFor = (program) => {
+    const rams = catalog.filter(p => p.program === program).map(p => p.ram).filter(Boolean);
+    return uniqueSorted(rams);
+  };
+
+  const romFor = (program, ram) => {
+    const roms = catalog
+      .filter(p => p.program === program && (!ram || p.ram === ram))
+      .map(p => p.rom)
+      .filter(Boolean);
+    return uniqueSorted(roms);
+  };
 
   // Program
   const fProgram = createEl("div", { className: "dp-field" });
@@ -44,7 +56,10 @@ export default function renderProductCard(container, productId) {
   const lblRAM = createEl("label", { text: "RAM" });
   const selRAM = createEl("select");
   selRAM.append(createEl("option", { attrs: { value: "" }, text: "— Select RAM —" }));
-  selRAM.addEventListener("change", () => updateProductSection(productId, "product", { ram: selRAM.value || "", rom: "" }));
+  selRAM.addEventListener("change", () => {
+    updateProductSection(productId, "product", { ram: selRAM.value || "", rom: "" });
+    populateROM();
+  });
   fRAM.append(lblRAM, selRAM);
 
   // ROM
@@ -52,7 +67,9 @@ export default function renderProductCard(container, productId) {
   const lblROM = createEl("label", { text: "ROM" });
   const selROM = createEl("select");
   selROM.append(createEl("option", { attrs: { value: "" }, text: "— Select ROM —" }));
-  selROM.addEventListener("change", () => updateProductSection(productId, "product", { rom: selROM.value || "" }));
+  selROM.addEventListener("change", () => {
+    updateProductSection(productId, "product", { rom: selROM.value || "" });
+  });
   fROM.append(lblROM, selROM);
 
   // Type
@@ -62,6 +79,17 @@ export default function renderProductCard(container, productId) {
   inpType.value = model.type || "";
   inpType.addEventListener("input", () => updateProductSection(productId, "product", { type: inpType.value.trim() }));
   fType.append(lblType, inpType);
+
+  // RRP (€)  —— edit here (stored in pricing.rrp)
+  const fRrp = createEl("div", { className: "dp-field" });
+  const lblRrp = createEl("label", { text: "RRP (€)" });
+  const inpRrp = createEl("input");
+  bindNumberInput(
+    inpRrp,
+    () => getBundle(productId).pricing.rrp,
+    v  => updateProductSection(productId, "pricing", { rrp: v })
+  );
+  fRrp.append(lblRrp, inpRrp);
 
   // TMC $
   const fTmcUsd = createEl("div", { className: "dp-field" });
@@ -102,11 +130,17 @@ export default function renderProductCard(container, productId) {
   bindNumberInput(inpDEEE, () => model.deee, v => updateProductSection(productId, "product", { deee: v }));
   fDEEE.append(lblDEEE, inpDEEE);
 
-  grid.append(fProgram, fRAM, fROM, fType, fTmcUsd, fXRate, fTmcEur, fCL, fDEEE);
+  grid.append(
+    fProgram, fRAM, fROM, fType,
+    fRrp,
+    fTmcUsd, fXRate, fTmcEur,
+    fCL, fDEEE
+  );
 
   card.append(head, help, grid);
   container.append(card);
 
+  // Populate dependent selects
   function populateRAM() {
     const m = getBundle(productId).product;
     const opts = m.program ? ramFor(m.program) : [];
@@ -118,14 +152,14 @@ export default function renderProductCard(container, productId) {
 
   function populateROM() {
     const m = getBundle(productId).product;
-    const opts = (m.program && m.ram) ? romFor(m.program, m.ram) : [];
+    const opts = m.program ? romFor(m.program, m.ram) : [];
     selROM.innerHTML = "";
     selROM.append(createEl("option", { attrs: { value: "" }, text: "— Select ROM —" }));
     for (const r of opts) selROM.append(createEl("option", { attrs: { value: r }, text: r }));
     selROM.value = m.rom || "";
   }
 
-  // Initial
+  // Initial paint
   populateRAM();
   populateROM();
 }

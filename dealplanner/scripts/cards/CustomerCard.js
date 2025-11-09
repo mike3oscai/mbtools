@@ -1,54 +1,80 @@
 /* CustomerCard.js
-   Renders customer card (single instance).
+   Tarjeta para seleccionar cliente y definir Front End, Back End y Distributor Fee.
 */
 
-import { createEl, uniqueSorted, bindNumberInput } from "../utils.js";
-import { getCustomer, updateCustomer } from "../store.js";
+import { createEl } from "../utils.js";
+import { updateCustomer, getCustomer } from "../store.js";
 import { getCustomers } from "../dataService.js";
 
-export default function renderCustomerCard(root) {
+export default async function renderCustomerCard(root) {
   const card  = createEl("section", { className: "card" });
-  const title = createEl("h2", { text: "Customer" });
-  const help  = createEl("p", { text: "Select a customer and define Front/Back End and Distributor Fee." });
+  const head  = createEl("h2", { text: "Customer" });
+  const help  = createEl("p", { className: "dp-sub", text: "Selecciona el cliente y define Front/Back End y Distributor Fee." });
 
-  const grid = createEl("div", { className: "dp-grid" });
-  const customer = getCustomer();
+  const grid  = createEl("div", { className: "dp-grid" });
 
-  // Customer Name (datalist from customerset.json -> customerName)
-  const fCustomer   = createEl("div", { className: "dp-field" });
-  const lblCustomer = createEl("label", { text: "Customer Name" });
-  const inpCustomer = createEl("input", { attrs: { type: "text", list: "dlCustomerNames", placeholder: "e.g. Media Markt" } });
-  const dl          = createEl("datalist", { attrs: { id: "dlCustomerNames" } });
-  const names = uniqueSorted(getCustomers().map(c => c.customerName));
-  for (const n of names) dl.append(createEl("option", { attrs: { value: n } }));
-  inpCustomer.value = customer.name || "";
-  inpCustomer.addEventListener("input", () => updateCustomer({ name: inpCustomer.value.trim() }));
-  fCustomer.append(lblCustomer, inpCustomer, dl);
+  // Campos
+  const fName = createEl("div", { className: "dp-field" });
+  const lblName = createEl("label", { text: "Customer Name" });
+  const inpName = createEl("input", { attrs: { list: "customerList" } });
+  fName.append(lblName, inpName);
 
-  // Front End %
-  const fFE   = createEl("div", { className: "dp-field" });
+  const fFE = createEl("div", { className: "dp-field" });
   const lblFE = createEl("label", { text: "Front End (%)" });
-  const inpFE = createEl("input");
-  bindNumberInput(inpFE, () => customer.frontEnd, v => updateCustomer({ frontEnd: v }), { percent: true });
+  const inpFE = createEl("input", { attrs: { type: "number", step: "0.01", min: "0" } }); // ✅ admite decimales
   fFE.append(lblFE, inpFE);
 
-  // Back End %
-  const fBE   = createEl("div", { className: "dp-field" });
+  const fBE = createEl("div", { className: "dp-field" });
   const lblBE = createEl("label", { text: "Back End (%)" });
-  const inpBE = createEl("input");
-  bindNumberInput(inpBE, () => customer.backEnd, v => updateCustomer({ backEnd: v }), { percent: true });
+  const inpBE = createEl("input", { attrs: { type: "number", step: "0.01", min: "0" } }); // ✅ admite decimales
   fBE.append(lblBE, inpBE);
 
-  // Distributor Fee %
-  const fDF   = createEl("div", { className: "dp-field" });
+  const fDF = createEl("div", { className: "dp-field" });
   const lblDF = createEl("label", { text: "Distributor Fee (%)" });
-  const inpDF = createEl("input");
-  bindNumberInput(inpDF, () => customer.distributorFee, v => updateCustomer({ distributorFee: v }), { percent: true });
+  const inpDF = createEl("input", { attrs: { type: "number", step: "0.01", min: "0" } }); // ✅ admite decimales
   fDF.append(lblDF, inpDF);
 
-  grid.append(fCustomer, fFE, fBE, fDF);
-
-  const status = createEl("small", { className: "dp-status", text: "Fill the fields…" });
-  card.append(title, help, grid, status);
+  grid.append(fName, fFE, fBE, fDF);
+  card.append(head, help, grid);
   root.append(card);
+
+  // Populate customer datalist
+  try {
+    const customers = await getCustomers();
+    const datalist = createEl("datalist", { attrs: { id: "customerList" } });
+    for (const c of customers) {
+      const opt = createEl("option", { attrs: { value: c.customerName } });
+      datalist.append(opt);
+    }
+    root.append(datalist);
+  } catch (err) {
+    console.warn("No se pudieron cargar los clientes:", err);
+  }
+
+  // Populate con el estado actual
+  const state = getCustomer();
+  inpName.value = state.name || "";
+  inpFE.value   = state.frontEnd || 0;
+  inpBE.value   = state.backEnd || 0;
+  inpDF.value   = state.distributorFee || 0;
+
+  // Manejadores de eventos
+  inpName.addEventListener("change", () => {
+    updateCustomer({ name: inpName.value.trim() });
+  });
+
+  inpFE.addEventListener("input", () => {
+    const val = parseFloat(inpFE.value) || 0;
+    updateCustomer({ frontEnd: val });
+  });
+
+  inpBE.addEventListener("input", () => {
+    const val = parseFloat(inpBE.value) || 0;
+    updateCustomer({ backEnd: val });
+  });
+
+  inpDF.addEventListener("input", () => {
+    const val = parseFloat(inpDF.value) || 0;
+    updateCustomer({ distributorFee: val });
+  });
 }
