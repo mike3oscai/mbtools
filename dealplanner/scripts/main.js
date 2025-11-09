@@ -1,5 +1,5 @@
 /* main.js
-   App bootstrap & composition: mounts Customer card, per-product bundles, and global Financials.
+   App bootstrap & composition: mounts Customer card, per-product bundles, global Financials, and export.
 */
 
 import { load as loadStore, getProductIds, createProduct, clearDraft } from "./store.js";
@@ -9,6 +9,7 @@ import renderCustomerCard from "./cards/CustomerCard.js";
 import mountProductBundle from "./cards/ProductBundle.js";
 import renderFinancialsCardGlobal from "./cards/FinancialsCard.js";
 import { loadCatalog, loadCustomers } from "./dataService.js";
+import { exportToXlsx } from "./exportExcel.js";
 
 function ensureRoot() {
   let main = document.querySelector("main.container");
@@ -41,7 +42,7 @@ function ensureBundlesContainer(root) {
   return wrap;
 }
 
-/** <<< NUEVO: barra de acciones debajo de Customer */
+/** Barra de acciones debajo de Customer */
 function mountActionsBelowCustomer(root) {
   const actions = createEl("div", { style: "margin:.5rem 0 1rem; display:flex; gap:.5rem; flex-wrap:wrap;" });
 
@@ -52,9 +53,7 @@ function mountActionsBelowCustomer(root) {
   const btnClear = createEl("button", { className: "btn btn-ghost", text: "Clear Simulation" });
   btnClear.type = "button";
   btnClear.addEventListener("click", () => {
-    // Limpia borrador + recarga UI limpia
     clearDraft();
-    // recarga sencilla para reconstruir todo con estado inicial
     window.location.reload();
   });
 
@@ -69,23 +68,29 @@ document.addEventListener("DOMContentLoaded", async () => {
   const root = ensureRoot();
   mountHeader(root);
 
-  // Tarjeta Customer
+  // Customer
   renderCustomerCard(root);
-
-  // <<< coloca aquí la barra con Add Product + Clear Simulation
   mountActionsBelowCustomer(root);
 
-  // Bundles existentes
+  // Existing bundles
   const bundlesWrap = ensureBundlesContainer(root);
   for (const id of getProductIds()) {
     mountProductBundle(bundlesWrap, id);
   }
 
-  // Alta de nuevos bundles
+  // New bundles
   on("product:created", ({ productId }) => {
     mountProductBundle(bundlesWrap, productId);
   });
 
-  // Financials global
+  // Financials (global)
   renderFinancialsCardGlobal(root);
+
+  // Export to Excel (al final)
+  const footerActions = createEl("div", { style: "margin:1rem 0 2rem; display:flex; gap:.5rem; flex-wrap:wrap;" });
+const btnExport = createEl("button", { className: "btn", text: "Export to Excel" });
+btnExport.type = "button";
+btnExport.addEventListener("click", exportToXlsx);
+footerActions.append(btnExport);
+root.append(footerActions);
 });
